@@ -24,3 +24,6 @@ logging:
     root: INFO
     com.project: DEBUG
 
+openweather:
+  api:
+    key: 4f673522ff69c4d615b1e593ce6fa16b
