@@ -6,7 +6,11 @@ public class UserRequestDto {
     private String password;
     private String nickname;
     private String gender;
-    private String provider;
+    private String provider; 
+    private String auth; 
+    private String createdAt; 
+
+
 
     // Getter, Setter
     public String getUserId() { return userId; }
@@ -26,4 +30,10 @@ public class UserRequestDto {
 
     public String getProvider() { return provider; }
     public void setProvider(String provider) { this.provider = provider; }
+    
+    public String getAuth() { return auth; }
+    public void setAuth(String auth) { this.auth = auth; }
+    
+    public String getcreatedAt() { return createdAt; }
+    public void setcreatedAt(String createdAt) { this.createdAt = createdAt; }
 }

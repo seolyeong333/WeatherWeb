@@ -21,11 +21,24 @@ public class UserController {
     @PostMapping("/login")
    public ResponseEntity<String> login(@RequestBody UserRequestDto userDto) {   // ResponseEntity 사용 해야 HTTP 처리랑 "body"둘다 처리 가능
         boolean loginSuccess = userService.login(userDto);
-        System.out.println("로그인 요청 받음:");
+        System.out.println("로그인 요청");
         System.out.println("아이디: " + userDto.getUserId());
         System.out.println("비밀번호: " + userDto.getPassword());
-
+  
         if (loginSuccess) {
+            UserRequestDto userData = userService.userData(userDto.getUserId());
+            System.out.println("아이디: " + userData.getUserId());
+            System.out.println("이메일: " + userData.getEmail());
+            System.out.println("비밀번호: " + userData.getPassword());
+            System.out.println("닉네임: " + userData.getNickname());
+            System.out.println("성별: " + userData.getGender());
+            System.out.println("제공자(provider): " + userData.getProvider());
+            System.out.println(userService.checkId(userDto.getUserId()));
+            System.out.println(userService.checkEmail(userData.getEmail()));
+            System.out.println(userService.checkNickname(userData.getNickname()));
+            System.out.println(userService.findId(userData.getEmail()));
+            System.out.println(userService.findPasswd(userData));
+
             return ResponseEntity.ok("로그인 성공");
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인 실패");
@@ -34,7 +47,7 @@ public class UserController {
 
     @PostMapping("/signup")
     public String signup(@RequestBody UserRequestDto userDto) {
-        System.out.println("회원가입 요청 받음:");
+        System.out.println("회원가입 요청");
         System.out.println("아이디: " + userDto.getUserId());
         System.out.println("비밀번호: " + userDto.getPassword());
         System.out.println("닉네임: " + userDto.getNickname());
@@ -43,5 +56,9 @@ public class UserController {
         return "회원가입 성공";
     }
 
-    
+  
+
+
+
+
 }

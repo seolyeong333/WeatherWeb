@@ -6,7 +6,37 @@ import org.apache.ibatis.annotations.Mapper;
 
 @Mapper
 public interface MainMapper {
+    // 회원가입 (insert)
     void insertUser(UserRequestDto userDto);
-    int login(UserRequestDto userRequestDto);
+
+     // 아이디 중복 체크
+    int checkId(String userId);
+
+    // 이메일 중복 체크
+    int checkEmail(String email);
+
+    // 닉네임 중복 체크
+    int checkNickname(String nickname);
+
+    // 로그인 (id + password 확인)
+    int login(UserRequestDto userDto);
+
+    // 아이디로 회원 조회
+    UserRequestDto userData(String userId);
+
+    // 이메일로 아이디 찾기
+    String findId(String email);
+
+    // 유저아이디로 비밀번호 찾기
+    int findPasswd(UserRequestDto userDto);
+
+    // 비밀번호 변경
+    void changePasswd(UserRequestDto userDto);
+
+    // 회원 탈퇴
+    void deleteUser(String userId);
+
+    // 회원 정보 수정 (비밀번호 + 이메일 수정)
+    void modifyMember(UserRequestDto userDto);
 
 }

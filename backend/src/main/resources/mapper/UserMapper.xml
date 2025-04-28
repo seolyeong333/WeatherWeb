@@ -11,51 +11,43 @@
     SELECT COUNT(*) FROM users WHERE userId = #{userId} AND password = #{password}
     </select>
 
+	<select id="userData" parameterType="string" resultType="com.creepy.bit.domain.UserRequestDto">
+		SELECT * FROM users WHERE userId = #{userId}
+	</select>
 
-<!--
- <select id="findByUserId" parameterType="string" resultType="securitydb.User">
-        SELECT * FROM members WHERE userId = #{userId}
-    </select>
-  
-    <select id="check" parameterType="String" resultType="int">
- 		select count(*) from members where userId=#{userId}
- 	</select>
-    
-    <select id="findId" parameterType="String" resultType="String">
- 		select userId from members where email = #{email}	
- 	</select>
-    <select id="findPasswd" parameterType="String" resultType="String">
- 		select passwd from members where userId = #{userId}	
- 	</select>
- 	
-	<update id="changePasswd" parameterType="logon.LogonDataBean">
- 		update members set passwd=#{passwd}
- 		where userId=#{userId}
- 	</update>-->
-    <!--Check SQL
- 	<select id="checkId" parameterType="String" resultType="int">
- 		select count(*) from members where userId=#{userId}
- 	</select>
-    <select id="checkEmail" parameterType="String" resultType="int">
- 		select count(*) from members where email=#{email}
- 	</select>
- 	<select id="checkNickname" parameterType="String" resultType="int">
- 		select count(*) from members where nickname=#{nickname}
- 	</select>
- 	<select id="checkPwd" parameterType="String" resultType="int">
- 		select count(*) from members where userId=#{userId} and passwd=#{passwd}
- 	</select>
- 	
- 	 	<delete id="deleteUser" parameterType="String">
- 		delete from members where userId=#{userId}
- 	</delete>
- 
- 	
- 	<update id="modifyMember" >
- 		update members set passwd=#{passwd}, 
- 		email=#{email, jdbcType=VARCHAR}
- 		where userId=#{userId}
- 	</update>
+	<select id="checkId" parameterType="string" resultType="int">
+		SELECT COUNT(*) FROM users WHERE userId = #{userId}
+	</select>
 
--->
+	<select id="checkEmail" parameterType="string" resultType="int">
+		SELECT COUNT(*) FROM users WHERE email = #{email}
+	</select>
+
+	<select id="checkNickname" parameterType="string" resultType="int">
+		SELECT COUNT(*) FROM users WHERE nickname = #{nickname}
+	</select>
+
+	<select id="findId" parameterType="string" resultType="string">
+		SELECT userId FROM users WHERE email = #{email}
+	</select>
+
+	<select id="findPasswd" parameterType="com.creepy.bit.domain.UserRequestDto" resultType="int">
+		SELECT COUNT(*) FROM users WHERE userId = #{userId} AND email = #{email}
+	</select>
+
+	<update id="changePasswd" parameterType="com.creepy.bit.domain.UserRequestDto">
+		UPDATE users
+		SET password = #{password}
+		WHERE userId = #{userId}
+	</update>
+
+	<delete id="deleteUser" parameterType="string">
+		DELETE FROM users WHERE userId = #{userId}
+	</delete>
+
+	<update id="modifyMember" parameterType="com.creepy.bit.domain.UserRequestDto">
+		UPDATE users SET password = #{password}, email = #{email, jdbcType=VARCHAR} WHERE userId = #{userId}
+	</update>
+
+
 </mapper>
