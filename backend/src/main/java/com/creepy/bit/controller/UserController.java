@@ -19,7 +19,7 @@ public class UserController {
     private UserService userService;
 
     @PostMapping("/login")
-   public ResponseEntity<String> login(@RequestBody UserRequestDto userDto) {
+   public ResponseEntity<String> login(@RequestBody UserRequestDto userDto) {   // ResponseEntity 사용 해야 HTTP 처리랑 "body"둘다 처리 가능
         boolean loginSuccess = userService.login(userDto);
         System.out.println("로그인 요청 받음:");
         System.out.println("아이디: " + userDto.getUserId());

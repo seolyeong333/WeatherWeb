@@ -52,7 +52,7 @@ function Signup() {   // json 형식입니당.
           <option value="male">남자</option>
           <option value="female">여자</option>
         </select><br/><br/>
-
+        
         <button type="submit">회원가입</button>
       </form>
     </div>
