@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.creepy.bit.mapper.MainMapper">
+
+    <insert id="insertUser" >
+        INSERT INTO users (userId, email, password, nickname, gender)
+		VALUES (#{userId}, #{email}, #{password}, #{nickname}, #{gender})
+    </insert>
+
+    <select id="login" resultType="int">
+    SELECT COUNT(*) FROM users WHERE userId = #{userId} AND password = #{password}
+    </select>
+
+
+<!--
+ <select id="findByUserId" parameterType="string" resultType="securitydb.User">
+        SELECT * FROM members WHERE userId = #{userId}
+    </select>
+  
+    <select id="check" parameterType="String" resultType="int">
+ 		select count(*) from members where userId=#{userId}
+ 	</select>
+    
+    <select id="findId" parameterType="String" resultType="String">
+ 		select userId from members where email = #{email}	
+ 	</select>
+    <select id="findPasswd" parameterType="String" resultType="String">
+ 		select passwd from members where userId = #{userId}	
+ 	</select>
+ 	
+	<update id="changePasswd" parameterType="logon.LogonDataBean">
+ 		update members set passwd=#{passwd}
+ 		where userId=#{userId}
+ 	</update>-->
+    <!--Check SQL
+ 	<select id="checkId" parameterType="String" resultType="int">
+ 		select count(*) from members where userId=#{userId}
+ 	</select>
+    <select id="checkEmail" parameterType="String" resultType="int">
+ 		select count(*) from members where email=#{email}
+ 	</select>
+ 	<select id="checkNickname" parameterType="String" resultType="int">
+ 		select count(*) from members where nickname=#{nickname}
+ 	</select>
+ 	<select id="checkPwd" parameterType="String" resultType="int">
+ 		select count(*) from members where userId=#{userId} and passwd=#{passwd}
+ 	</select>
+ 	
+ 	 	<delete id="deleteUser" parameterType="String">
+ 		delete from members where userId=#{userId}
+ 	</delete>
+ 
+ 	
+ 	<update id="modifyMember" >
+ 		update members set passwd=#{passwd}, 
+ 		email=#{email, jdbcType=VARCHAR}
+ 		where userId=#{userId}
+ 	</update>
+
+-->
+</mapper>
