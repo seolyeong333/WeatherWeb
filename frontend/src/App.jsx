@@ -1,46 +1,16 @@
-import { useState } from 'react';
-import reactLogo from './assets/react.svg';
-import viteLogo from '/vite.svg';
-import './App.css';
-
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import WeatherPage from './pages/WeatherPage';
-
-function Home() {
-  const [count, setCount] = useState(0);
-
-  return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  );
-}
+// ✅ src/App.jsx
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import WeatherPage from "./pages/WeatherPage"; // 우리가 만든 WeatherPage 가져오기
+import MapPage from "./pages/MapPage";         // ✅ 새로 만든 MapPage 가져오기
+import MainPage from "./pages/MainPage"; // ✨ 추가
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/weather" element={<WeatherPage />} />
+      <Route path="/" element={<MainPage />} /> {/* 메인페이지 */}
+        <Route path="/weather" element={<WeatherPage />} /> {/* 메인: 날씨 페이지 */}
+        <Route path="/map" element={<MapPage />} />   {/* 지도: 카카오맵 페이지 */}
       </Routes>
     </BrowserRouter>
   );
