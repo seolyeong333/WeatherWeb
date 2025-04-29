@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
+import jakarta.mail.MessagingException;
 
 // @RestController API 요청 받는 곳
 
@@ -18,6 +19,8 @@ public class UserController {
     
 @Autowired
     private UserService userService;
+    
+@Autowired   
     private MailService mailService;
 
     @PostMapping("/login")
@@ -104,8 +107,9 @@ public class UserController {
 		String key = Integer.toString( (int) Math.floor(Math.random()*90000)+10000);
 	}
 
-	 @PostMapping("/sendmloail")
+	 @PostMapping("/sendmail")
         public String sendEmail(@RequestParam String email) {
+        System.out.println("메일전송 요청");
         String authKey = mailService.createAuthKey();
 
         try {
@@ -117,6 +121,4 @@ public class UserController {
             return "fail";
         }
     }
-
-
 }

@@ -27,9 +27,9 @@ public class MailService {
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
-        helper.setFrom("socialquizwebsite@gmail.com");
+        helper.setFrom("WeatherWeb@gmail.com");
         helper.setTo(email);
-        helper.setSubject("소셜 퀴즈 웹사이트 이메일 인증");
+        helper.setSubject("WeatherWeb 이메일 인증");
         String content = "<h1>인증코드:</h1><h2>" + authKey + "</h2>";
         helper.setText(content, true);
 
