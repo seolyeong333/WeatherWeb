@@ -1,3 +1,5 @@
+// ✅ SecurityConfig.java 지금은 시큐리티 끄는 역할
+
 package com.creepy.bit.config;
 
 import org.springframework.context.annotation.Bean;
