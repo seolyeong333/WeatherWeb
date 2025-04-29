@@ -3,14 +3,20 @@ import Header from "../components/Header";  // 헤더 컴포넌트 추가
 import WeatherBox from "../components/WeatherBox"; 
 import MapSection from "../components/MapSection";
 import AirSection from "../components/AirSection";
+import NationalWeatherFetcher from "../components/NationalWeatherFetcher";
+import { useState } from "react"; // ✅ 이거 추가
+
 
 function MainPage() {
+  const [nationalWeatherData, setNationalWeatherData] = useState([]);
+  const [isMorning, setIsMorning] = useState(true); // 🌟 추가
   return (
     <div style={{ width: "100vw", height: "100vh", overflow: "hidden", display: "flex", flexDirection: "column" }}>
       
       {/* 공통 헤더 */}
       <Header />
-
+{/* 날씨 데이터 패치하기 (숨겨진 컴포넌트) */}
+      <NationalWeatherFetcher setNationalWeatherData={setNationalWeatherData} />
       {/* 본문 */}
       <main style={{
         backgroundColor: "#E0E0E0",
@@ -45,7 +51,7 @@ function MainPage() {
             padding: "20px",
             boxSizing: "border-box",
           }}>
-            <MapSection />
+            <MapSection weatherData={nationalWeatherData} />
           </div>
 
         </section>

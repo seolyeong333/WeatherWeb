@@ -1,86 +1,66 @@
-// src/components/Header.jsx
 import { useState } from "react";
+import { Navbar, Nav, Button, Container } from "react-bootstrap";
+import { FaBars } from "react-icons/fa";
 
 function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   const toggleMenu = () => {
-    setMenuOpen(!menuOpen);
+    setMenuOpen(prev => !prev);
+  };
+
+  const closeMenu = () => {
+    setMenuOpen(false);
   };
 
   return (
-    <header style={{
-      height: "60px",
-      backgroundColor: "#D9D9D9",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "space-between",
-      padding: "0 20px",
-      position: "sticky",
-      top: 0,
-      zIndex: 1000, // 항상 위에 보이게
-    }}>
-      {/* 왼쪽: 메뉴 버튼 */}
-      <div style={{ display: "flex", alignItems: "center" }}>
-        <button 
-          onClick={toggleMenu} 
-          style={{
-            background: "none",
-            border: "none",
-            fontSize: "24px",
-            cursor: "pointer",
-          }}
-        >
-          &#9776; {/* 햄버거 메뉴 아이콘 (☰) */}
-        </button>
-      </div>
+    <>
+      <Navbar bg="light" expand="md" className="shadow-sm px-3">
+        <Button variant="link" className="text-dark me-3" onClick={toggleMenu}>
+          <FaBars size={20} />
+        </Button>
 
-      {/* 가운데: 네비게이션 */}
-      <nav style={{ display: "flex", gap: "50px", fontWeight: "bold" }}>
-        <a href="#" style={{ textDecoration: "none", color: "black" }}>홈</a>
-        <a href="#" style={{ textDecoration: "none", color: "black" }}>오늘의 날씨</a>
-        <a href="#" style={{ textDecoration: "none", color: "black" }}>오늘의 장소</a>
-        <a href="#" style={{ textDecoration: "none", color: "black" }}>마이페이지</a>
-      </nav>
+        <Navbar.Brand href="#" className="fw-bold">🌦️ WeatherWeb</Navbar.Brand>
 
-      {/* 오른쪽: 로그인 버튼 */}
-      <div>
-        <button style={{
-          padding: "6px 12px",
-          backgroundColor: "#8C8C8C",
-          border: "none",
-          borderRadius: "5px",
-          color: "white",
-          fontWeight: "bold",
-          cursor: "pointer",
-        }}>
-          로그인
-        </button>
-      </div>
+        <Navbar.Toggle aria-controls="basic-navbar-nav" />
+        <Navbar.Collapse id="basic-navbar-nav">
+          <Nav className="mx-auto">
+            <Nav.Link href="#">홈</Nav.Link>
+            <Nav.Link href="#">오늘의 날씨</Nav.Link>
+            <Nav.Link href="#">오늘의 장소</Nav.Link>
+            <Nav.Link href="#">오늘의 코디</Nav.Link>
+            <Nav.Link href="#">마이페이지</Nav.Link>
+          </Nav>
+          <Button variant="secondary">로그인</Button>
+        </Navbar.Collapse>
+      </Navbar>
 
-      {/* 햄버거 클릭 시 메뉴창 */}
+      {/* ✅ 사이드 메뉴 + 오버레이 */}
       {menuOpen && (
-        <div style={{
-          position: "absolute",
-          top: "60px",
-          left: "0",
-          width: "200px",
-          backgroundColor: "#F5F0FA",
-          border: "1px solid #ccc",
-          display: "flex",
-          flexDirection: "column",
-          gap: "20px",
-          padding: "20px",
-        }}>
-          <a href="#">Home</a>
-          <a href="#">Favorites</a>
-          <a href="#">Review</a>
-          <a href="#">Mypage</a>
-          <a href="#">Settings</a>
-          <a href="#">About us</a>
-        </div>
+        <>
+          {/* ✅ 오버레이 클릭시 닫힘 */}
+          <div 
+            className="position-fixed top-0 start-0 w-100 h-100 bg-dark bg-opacity-50"
+            onClick={closeMenu}
+            style={{ zIndex: 999 }}
+          ></div>
+
+          {/* ✅ 사이드바 */}
+          <div 
+            className="position-fixed top-0 start-0 bg-light shadow p-3"
+            style={{ width: "220px", height: "100vh", zIndex: 1000 }}
+          >
+            <Nav className="flex-column">
+              <Nav.Link href="#">Home</Nav.Link>
+              <Nav.Link href="#">Favorites</Nav.Link>
+              <Nav.Link href="#">Review</Nav.Link>
+              <Nav.Link href="#">Settings</Nav.Link>
+              <Nav.Link href="#">About</Nav.Link>
+            </Nav>
+          </div>
+        </>
       )}
-    </header>
+    </>
   );
 }
 
