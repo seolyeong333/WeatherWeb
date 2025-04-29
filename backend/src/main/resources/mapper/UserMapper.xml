@@ -45,9 +45,10 @@
 		DELETE FROM users WHERE userId = #{userId}
 	</delete>
 
-	<update id="modifyMember" parameterType="com.creepy.bit.domain.UserRequestDto">
+	<update id="modifyUser" parameterType="com.creepy.bit.domain.UserRequestDto">
 		UPDATE users SET password = #{password}, email = #{email, jdbcType=VARCHAR} WHERE userId = #{userId}
 	</update>
+ 
 
-
+ 
 </mapper>

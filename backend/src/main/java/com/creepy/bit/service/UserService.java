@@ -57,8 +57,8 @@ public class UserService {
         mainMapper.deleteUser(userId);
     }
 
-    public void modifyMember(UserRequestDto userDto){
-        mainMapper.modifyMember(userDto);
+    public void modifyUser(UserRequestDto userDto){
+        mainMapper.modifyUser(userDto);
     }
 
 

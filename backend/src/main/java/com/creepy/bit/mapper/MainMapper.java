@@ -37,6 +37,9 @@ public interface MainMapper {
     void deleteUser(String userId);
 
     // 회원 정보 수정 (비밀번호 + 이메일 수정)
-    void modifyMember(UserRequestDto userDto);
+    void modifyUser(UserRequestDto userDto);
+
+
+
 
 }
