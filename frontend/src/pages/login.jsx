@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 export function Login() {
-  const [formData, setForm] = useState({
+  const [formData, setFormData] = useState({
     userId: "",
     password: ""
   });
@@ -42,8 +42,8 @@ export function Login() {
     <div style={{ margin: "100px", textAlign: "center" }}>
       <h2>로그인</h2>
       <form onSubmit={submitHandler}>
-      <input type="text"name="userId" placeholder="아이디" value={form.userId} onChange={changeHandler} required/><br/><br/>
-      <input type="password" name="password" placeholder="비밀번호" value={form.password} onChange={changeHandler} required/><br/><br/>
+      <input type="text"name="userId" placeholder="아이디" value={formData.userId} onChange={changeHandler} required/><br/><br/>
+      <input type="password" name="password" placeholder="비밀번호" value={formData.password} onChange={changeHandler} required/><br/><br/>
       <button type="submit">로그인</button>
       </form>
     </div>

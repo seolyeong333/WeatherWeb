@@ -1,8 +1,8 @@
 import { useState } from "react";
 import {useNavigate} from "react-router-dom";
 
-function Signup() {   // json 형식입니당.
-  const [form, setForm] = useState({
+function Signup() {   // json 형식
+  const [formData, setForm] = useState({
     userId: "",
     email: "",
     password: "",
@@ -12,7 +12,7 @@ function Signup() {   // json 형식입니당.
 
   const changeHandler = (e) => {    
     setForm({
-      ...form,
+      ...formData,
       [e.target.name]: e.target.value
     });
   };
@@ -26,7 +26,7 @@ function Signup() {   // json 형식입니당.
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify(form)
+        body: JSON.stringify(formData)
       });
 
       if (response.ok) {
@@ -45,11 +45,11 @@ function Signup() {   // json 형식입니당.
     <div style={{ margin: "100px", textAlign: "center" }}>
       <h2>회원가입</h2>
       <form onSubmit={submitHandler}>
-        <input type="text"name="userId" placeholder="아이디" value={form.userId} onChange={changeHandler} required/><br/><br/>
-        <input type="text"name="email" placeholder="이메일" value={form.email} onChange={changeHandler} required/><br/><br/> 
-        <input type="password" name="password" placeholder="비밀번호" value={form.password} onChange={changeHandler} required/><br/><br/>
-        <input type="text" name="nickname" placeholder="닉네임" value={form.nickname} onChange={changeHandler} required/><br/><br/>
-        <select name="gender" value={form.gender} onChange={changeHandler} required>
+        <input type="text"name="userId" placeholder="아이디" value={formData.userId} onChange={changeHandler} required/><br/><br/>
+        <input type="text"name="email" placeholder="이메일" value={formData.email} onChange={changeHandler} required/><br/><br/> 
+        <input type="password" name="password" placeholder="비밀번호" value={formData.password} onChange={changeHandler} required/><br/><br/>
+        <input type="text" name="nickname" placeholder="닉네임" value={formData.nickname} onChange={changeHandler} required/><br/><br/>
+        <select name="gender" value={formData.gender} onChange={changeHandler} required>
           <option value="">성별 선택</option>
           <option value="male">남자</option>
           <option value="female">여자</option>

@@ -24,17 +24,6 @@ function TarotCard({result}) {
                         <div className="card-back"> 오늘의 운세 : 행운! </div>
                     </div>
             </motion.div>
-            <motion.div
-                className="card-container"
-                onClick={() => setFlipped(!isFlipped)}
-                animate={{ rotateY: isFlipped ? 180 : 0 }}  // 클릭 시 Y축으로 회전
-                transition={{duration: 0.8}}
-            >
-                    <div className="card">
-                        <div className="card-front"> 타로 뒷면 </div>
-                        <div className="card-back"> 오늘의 운세 : 행운! </div>
-                    </div>
-            </motion.div>
             
         </div>
     );
