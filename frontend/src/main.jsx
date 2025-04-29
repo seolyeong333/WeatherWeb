@@ -1,3 +1,5 @@
+import 'bootstrap/dist/css/bootstrap.min.css'; // 부트스트랩 CSS 추가
+
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
