@@ -1,20 +1,20 @@
 import { useState } from "react";
 
 export function Login() {
-  const [form, setForm] = useState({
+  const [formData, setForm] = useState({
     userId: "",
     password: ""
   });
 
-  const changeHandler = (e) => {
-    setForm({
-      ...form,
-      [e.target.name]: e.target.value
+  let changeHandler = (event) => {
+    setFormData({
+      ...formData,
+      [event.target.name]: event.target.value
     });
   };
 
-  const submitHandler = async (e) => {
-    e.preventDefault();
+  let submitHandler = async (event) => {
+    event.preventDefault();
 
     try {
       const response = await fetch("http://localhost:8080/api/auth/login", {
@@ -22,7 +22,7 @@ export function Login() {
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify(form)
+        body: JSON.stringify(formData)
       });
 
       if (response.ok) {

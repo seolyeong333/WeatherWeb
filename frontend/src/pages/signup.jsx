@@ -1,4 +1,5 @@
 import { useState } from "react";
+import {useNavigate} from "react-router-dom";
 
 function Signup() {   // json 형식입니당.
   const [form, setForm] = useState({
@@ -30,6 +31,7 @@ function Signup() {   // json 형식입니당.
 
       if (response.ok) {
         alert("회원가입 성공!");
+        navigate("/login")
       } else {
         alert("회원가입 실패 ㅠㅠ");
       }
