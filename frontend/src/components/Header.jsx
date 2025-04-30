@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Navbar, Nav, Button, Container } from "react-bootstrap";
 import { FaBars } from "react-icons/fa";
+import { NavLink } from "react-router-dom";
 
 function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -25,11 +26,11 @@ function Header() {
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="mx-auto">
-            <Nav.Link href="#">홈</Nav.Link>
+            <Nav.Link as={NavLink} to="/">홈</Nav.Link>
             <Nav.Link href="#">오늘의 날씨</Nav.Link>
             <Nav.Link href="#">오늘의 장소</Nav.Link>
             <Nav.Link href="#">오늘의 코디</Nav.Link>
-            <Nav.Link href="#">마이페이지</Nav.Link>
+            <Nav.Link as={NavLink} to="/mypage">마이페이지</Nav.Link>
           </Nav>
           <Button variant="secondary">로그인</Button>
         </Navbar.Collapse>
