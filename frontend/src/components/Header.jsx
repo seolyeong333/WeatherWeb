@@ -1,16 +1,26 @@
 import { useState } from "react";
 import { Navbar, Nav, Button, Container } from "react-bootstrap";
 import { FaBars } from "react-icons/fa";
+import { motion } from "framer-motion";
+import Login from "../pages/Login";
 
 function Header() {
+  // 왼쪽 Menu-bar
   const [menuOpen, setMenuOpen] = useState(false);
-
   const toggleMenu = () => {
     setMenuOpen(prev => !prev);
   };
-
   const closeMenu = () => {
     setMenuOpen(false);
+  };
+
+  // Login
+  const [showLogin, setShowLogin] = useState(false);
+  const openLogin = () => {
+    setShowLogin(true);
+  };
+  const closeLogin = () => {
+    setShowLogin(false);
   };
 
   return (
@@ -31,7 +41,7 @@ function Header() {
             <Nav.Link href="#">오늘의 코디</Nav.Link>
             <Nav.Link href="#">마이페이지</Nav.Link>
           </Nav>
-          <Button variant="secondary">로그인</Button>
+          <Button variant="secondary" type="button" onClick={openLogin}>로그인</Button>
         </Navbar.Collapse>
       </Navbar>
 
@@ -58,6 +68,31 @@ function Header() {
               <Nav.Link href="#">About</Nav.Link>
             </Nav>
           </div>
+        </>
+      )}
+
+      {/* 로그인 모달 */}
+      {showLogin && (
+        <>
+          {/* 오버레이 */}
+          <div 
+            className="position-fixed top-0 start-0 w-100 h-100 bg-dark bg-opacity-50"
+            onClick={closeLogin}
+            style={{ zIndex: 1099 }}
+          ></div>
+
+          {/* 로그인 창 */}
+          <motion.div
+            className="bg-white p-4 rounded shadow"
+            style={{ zIndex: 1100, width: "320px", position: "fixed", top: "100px", left: "50%", transform: "translateX(-50%)"}}
+            initial={{ y: -20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ type: "spring", stiffness: 100 }}
+          >
+            <button onClick={closeLogin} className="btn-close float-end" aria-label="Close"></button>
+            <Login 
+              closeLogin={closeLogin} />
+          </motion.div>
         </>
       )}
     </>

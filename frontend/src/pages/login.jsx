@@ -17,7 +17,7 @@ export function Login() {
     event.preventDefault();
 
     try {
-      const response = await fetch("http://localhost:8080/api/auth/login", {
+      const response = await fetch("https://202f7e78-8052-42f1-8f54-7cbfd15d742f.mock.pstmn.io/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
