@@ -1,8 +1,11 @@
-import { useState } from "react";
+// ✅ src/pages/MyPage.jsx
+import { useState, useEffect, useContext } from "react";
 import { Tab, Nav, Row, Col, Card, Button } from "react-bootstrap";
 import Header from "../components/Header";
-import { FaUser, FaCommentDots, FaExclamationCircle } from "react-icons/fa"; // 아이콘 사용
-import './MyPage.css';
+import { FaUser, FaCommentDots, FaExclamationCircle } from "react-icons/fa";
+import { WeatherContext } from "../components/WeatherContext";
+import "./MyPage.css";
+
 function MyPage() {
   const [userInfo] = useState({
     nickname: "홍길동",
@@ -10,15 +13,68 @@ function MyPage() {
     joinedAt: "2024-12-15",
   });
 
+  const {
+    isRainy,
+    isSnowy,
+    isSunny,
+    isCloudy,
+    isThunder,
+  } = useContext(WeatherContext);
+
+  useEffect(() => {
+    const container = document.getElementById("rain-overlay");
+    if ((isRainy || isThunder) && container) {
+      container.innerHTML = "";
+      for (let i = 0; i < 80; i++) {
+        const drop = document.createElement("div");
+        drop.className = "raindrop";
+        drop.style.left = `${Math.random() * 100}%`;
+        drop.style.animationDelay = `${Math.random().toFixed(2)}s`;
+        drop.style.animationDuration = `${0.8 + Math.random()}s`;
+        container.appendChild(drop);
+      }
+    } else if (container) {
+      container.innerHTML = "";
+    }
+  }, [isRainy, isThunder]);
+
+  useEffect(() => {
+    const container = document.getElementById("snow-overlay");
+    if (isSnowy && container) {
+      container.innerHTML = "";
+      for (let i = 0; i < 40; i++) {
+        const flake = document.createElement("div");
+        flake.className = "snowflake";
+        flake.innerText = "❄";
+        flake.style.left = `${Math.random() * 100}%`;
+        flake.style.animationDelay = `${Math.random().toFixed(2)}s`;
+        flake.style.fontSize = `${8 + Math.random() * 8}px`;
+        flake.style.opacity = "0.2";
+        container.appendChild(flake);
+      }
+    } else if (container) {
+      container.innerHTML = "";
+    }
+  }, [isSnowy]);
+
   return (
     <>
+      {(isRainy || isThunder) && <div id="rain-overlay" className="rain-overlay" />}
+      {isSnowy && <div id="snow-overlay" className="snow-overlay" />}
+      {isSunny && <div className="weather-sunny-overlay" />}
+      {isCloudy && <div className="weather-cloudy-overlay" />}
+      {isThunder && <div className="weather-thunder-overlay" />}
+
       <Header />
 
-      <div className="container mt-5 mb-5">
+      <div className={`main-content container mt-5 mb-5
+        ${isCloudy || isRainy ? "cloudy-background" : ""}
+        ${isSunny ? "sunny-background" : ""}
+        ${isThunder ? "thunder-background" : ""}`}
+      >
         <h2 className="fw-bold mb-4">👤 마이페이지</h2>
         <Tab.Container defaultActiveKey="info">
           <Row>
-            {/* 좌측 탭 메뉴 */}
             <Col md={3} className="mb-3">
               <Nav variant="pills" className="flex-column shadow-sm rounded-3 p-3 bg-light">
                 <Nav.Item>
@@ -39,10 +95,8 @@ function MyPage() {
               </Nav>
             </Col>
 
-            {/* 우측 내용 영역 */}
             <Col md={9}>
               <Tab.Content>
-                {/* 1. 내 정보 */}
                 <Tab.Pane eventKey="info">
                   <Card className="shadow-sm rounded-4">
                     <Card.Body>
@@ -58,7 +112,6 @@ function MyPage() {
                   </Card>
                 </Tab.Pane>
 
-                {/* 2. 한줄평 관리 */}
                 <Tab.Pane eventKey="reviews">
                   <Card className="shadow-sm rounded-4">
                     <Card.Body>
@@ -77,7 +130,6 @@ function MyPage() {
                   </Card>
                 </Tab.Pane>
 
-                {/* 3. 신고 내역 */}
                 <Tab.Pane eventKey="reports">
                   <Card className="shadow-sm rounded-4">
                     <Card.Body>

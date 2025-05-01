@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { getForecast } from "../api/weather";
 import { Card, Row, Col } from "react-bootstrap";
-import { getKoreanWeatherDescription } from "../api/weatherMapping"; // ✅ 매핑 함수 import
+import { getKoreanWeatherDescription } from "../api/weatherMapping";
+import { toKST } from "../hooks/time"; // ✅ KST 변환 함수 import
 
 function WeeklyForecast() {
   const [dailyWeather, setDailyWeather] = useState([]);
@@ -13,9 +14,10 @@ function WeeklyForecast() {
 
       const dailyMap = {};
       res.data.list.forEach((item) => {
-        const date = item.dt_txt.split(" ")[0];
-        if (!dailyMap[date]) dailyMap[date] = [];
-        dailyMap[date].push(item);
+        const kstDate = toKST(item.dt_txt);
+        const dateStr = kstDate.toISOString().split("T")[0];
+        if (!dailyMap[dateStr]) dailyMap[dateStr] = [];
+        dailyMap[dateStr].push({ ...item, dt_kst: kstDate });
       });
 
       const daily = Object.entries(dailyMap).slice(0, 7).map(([date, items]) => {
@@ -24,11 +26,11 @@ function WeeklyForecast() {
         const tempMax = Math.max(...temps).toFixed(1);
         const icon = items[0].weather[0].icon;
         const rawDesc = items[0].weather[0].description;
-        const description = getKoreanWeatherDescription(rawDesc); // ✅ 설명 변환
+        const description = getKoreanWeatherDescription(rawDesc);
 
         return {
           date,
-          day: new Date(date).toLocaleDateString("ko-KR", { weekday: "short" }),
+          day: toKST(date).toLocaleDateString("ko-KR", { weekday: "short" }),
           tempMin,
           tempMax,
           icon,

@@ -1,71 +1,103 @@
+// ✅ src/components/WeatherBox.jsx
 import { useEffect, useState } from "react";
 import { getCurrentWeather, getAirPollution, getForecast } from "../api/weather";
 import axios from "axios";
 import { getKoreanWeatherDescription } from "../api/weatherMapping";
+import { toKST } from "../hooks/time";
 
-// 현실 기반 색상 매핑
 const weatherColorClassMap = {
-  "맑음": "bg-primary-subtle",        // 하늘색
-  "흐림": "bg-secondary-subtle",      // 회색
-  "구름 많음": "bg-body-tertiary",    // 옅은 회색
-  "비": "bg-info-subtle",             // 파란색
-  "소나기": "bg-info-subtle",
-  "눈": "bg-light",                   // 흰색
-  "뇌우": "bg-dark-subtle",           // 어두운 회색
-  "안개": "bg-light-subtle",
-  "연무": "bg-light-subtle",
+  "맑음": "bg-info-subtle",
+  "흐림": "bg-secondary-subtle",
+  "구름 많음": "bg-light-subtle",
+  "비": "bg-primary-subtle",
+  "소나기": "bg-primary-subtle",
+  "눈": "bg-light",
+  "뇌우": "bg-dark-subtle",
+  "안개": "bg-body-tertiary",
+  "연무": "bg-body-tertiary",
 };
 
-function WeatherBox() {
+function WeatherBox({
+  setIsRainy,
+  setIsSunny,
+  setIsCloudy,
+  setIsSnowy,
+  setIsThunder,
+  overrideWeather,
+}) {
   const [location, setLocation] = useState("");
   const [current, setCurrent] = useState(null);
   const [forecast, setForecast] = useState([]);
   const [air, setAir] = useState(null);
 
-  const KAKAO_REST_API_KEY = "e7c76873999ef901948568fdbf33233b";
-
   const getCardColorClass = (desc) => weatherColorClassMap[desc] || "bg-light";
+
+  const getAnimationClass = (desc) => {
+    if (desc.includes("뇌우") || desc.includes("비") || desc.includes("소나기")) return "weather-rain";
+    if (desc.includes("흐림") || desc.includes("구름")) return "weather-cloudy";
+    if (desc.includes("맑음")) return "weather-sunny";
+    if (desc.includes("눈")) return "weather-snow";
+    return "";
+  };
 
   useEffect(() => {
     navigator.geolocation.getCurrentPosition(async (position) => {
       const { latitude, longitude } = position.coords;
 
-      getCurrentWeather(latitude, longitude).then((res) => setCurrent(res.data));
+      getCurrentWeather(latitude, longitude).then((res) => {
+        setCurrent(res.data);
+
+        const rawDesc = res.data.weather[0].description;
+        const desc = overrideWeather || getKoreanWeatherDescription(rawDesc);
+
+        if (setIsRainy) setIsRainy(desc.includes("비") || desc.includes("소나기"));
+        if (setIsSunny) setIsSunny(desc.includes("맑음"));
+        if (setIsCloudy) setIsCloudy(desc.includes("흐림") || desc.includes("구름"));
+        if (setIsSnowy) setIsSnowy(desc.includes("눈"));
+        if (setIsThunder) setIsThunder(desc.includes("뇌우"));
+      });
 
       getForecast(latitude, longitude).then((res) => {
         const now = new Date();
-        const upcoming = res.data.list.filter((item) => {
-          const forecastTime = new Date(item.dt_txt);
-          return forecastTime > now;
-        }).slice(0, 2);
+        const upcoming = res.data.list
+          .filter((item) => toKST(item.dt_txt) > now)
+          .slice(0, 2);
         setForecast(upcoming);
       });
 
-      getAirPollution(latitude, longitude).then((res) => setAir(res.data.list[0].components));
+      getAirPollution(latitude, longitude).then((res) =>
+        setAir(res.data.list[0].components)
+      );
 
       try {
         const response = await axios.get(
           `https://dapi.kakao.com/v2/local/geo/coord2regioncode.json?x=${longitude}&y=${latitude}`,
           {
-            headers: { Authorization: `KakaoAK ${KAKAO_REST_API_KEY}` },
+            headers: {
+              Authorization: `KakaoAK e7c76873999ef901948568fdbf33233b`,
+            },
           }
         );
         if (response.data.documents.length > 0) {
           const region = response.data.documents[0];
-          setLocation(`${region.region_1depth_name} ${region.region_2depth_name} ${region.region_3depth_name}`);
+          setLocation(
+            `${region.region_1depth_name} ${region.region_2depth_name} ${region.region_3depth_name}`
+          );
         }
       } catch (error) {
         console.error("카카오 위치 변환 실패:", error);
       }
     });
-  }, []);
+  }, [overrideWeather]);
 
   if (!current || forecast.length === 0) return <div>Loading...</div>;
 
   const iconCode = current.weather[0].icon;
   const iconUrl = `http://openweathermap.org/img/wn/${iconCode}@2x.png`;
-  const currentDesc = getKoreanWeatherDescription(current.weather[0].description);
+  const rawDesc = current.weather[0].description;
+  const currentDesc = overrideWeather || getKoreanWeatherDescription(rawDesc);
   const currentCardClass = getCardColorClass(currentDesc);
+  const currentAnimClass = getAnimationClass(currentDesc);
 
   const getAirGrade = (pm, type) => {
     if (type === "pm10") {
@@ -88,8 +120,7 @@ function WeatherBox() {
 
   return (
     <div className="container">
-      {/* 현재 날씨 */}
-      <div className={`card mb-4 ${currentCardClass}`}>
+      <div className={`card mb-4 position-relative ${currentCardClass} ${currentAnimClass}`}>
         <div className="card-body d-flex align-items-center gap-4">
           <img src={iconUrl} alt="weather" width="80" />
           <div>
@@ -100,11 +131,10 @@ function WeatherBox() {
         </div>
       </div>
 
-      {/* 미세먼지 카드 */}
       {air && (
         <div className="row g-3 mb-4">
           <div className="col-md-6">
-            <div className={`card ${pm10Grade.border}`}>
+            <div className={`card border ${pm10Grade.border}`}>
               <div className="card-body">
                 <h6 className="card-title">🌫 미세먼지 (PM10)</h6>
                 <p>농도: {pm10} μg/m³</p>
@@ -113,7 +143,7 @@ function WeatherBox() {
             </div>
           </div>
           <div className="col-md-6">
-            <div className={`card ${pm25Grade.border}`}>
+            <div className={`card border ${pm25Grade.border}`}>
               <div className="card-body">
                 <h6 className="card-title">🌁 초미세먼지 (PM2.5)</h6>
                 <p>농도: {pm25} μg/m³</p>
@@ -124,7 +154,6 @@ function WeatherBox() {
         </div>
       )}
 
-      {/* 향후 예보 */}
       <h6 className="mb-3">🕘 향후 6시간 예보</h6>
       <div className="row g-3">
         {forecast.map((f, i) => {
@@ -135,7 +164,7 @@ function WeatherBox() {
               <div className={`card ${cardColor}`}>
                 <div className="card-body">
                   <p className="card-text">
-                    {new Date(f.dt_txt).toLocaleString("ko-KR", {
+                    {toKST(f.dt_txt).toLocaleString("ko-KR", {
                       month: "numeric",
                       day: "numeric",
                       hour: "numeric",

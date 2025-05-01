@@ -21,7 +21,7 @@ function Header() {
           <FaBars size={20} />
         </Button>
 
-        <Navbar.Brand href="#" className="fw-bold">🌦️ WeatherWeb</Navbar.Brand>
+        <Navbar.Brand href="#" className="fw-bold">🌦️ ONDA</Navbar.Brand>
 
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">

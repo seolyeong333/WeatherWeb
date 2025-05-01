@@ -1,0 +1,46 @@
+.weather-container {
+    position: relative;
+    padding: 1rem;
+  }
+  
+  .weather-card {
+    position: relative;
+    background: #f0f8ff;
+    border-radius: 16px;
+    padding: 2rem;
+    overflow: hidden;
+    z-index: 1;
+  }
+  
+  /* 🌧️ 비 애니메이션 */
+  .weather-rain {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+  }
+  
+  .raindrop {
+    position: absolute;
+    top: -20px;
+    width: 2px;
+    height: 20px;
+    background: rgba(0, 0, 255, 0.2);
+    border-radius: 1px;
+    animation-name: fall;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+    opacity: 0.6;
+  }
+  
+  @keyframes fall {
+    0% {
+      transform: translateY(0);
+      opacity: 0.6;
+    }
+    100% {
+      transform: translateY(120vh);
+      opacity: 0;
+    }
+  }
+  
