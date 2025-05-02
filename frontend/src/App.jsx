@@ -9,7 +9,7 @@ function App() {
     <WeatherProvider> {/* ✅ 전체 앱을 감싸줌 */}
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<MainPage />} />
+          <Route path="/main" element={<MainPage />} />
           <Route path="/mypage" element={<MyPage />} />
         </Routes>
       </BrowserRouter>

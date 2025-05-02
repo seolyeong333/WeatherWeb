@@ -1,4 +1,6 @@
-// ✅ src/pages/MainPage.jsx
+// ✅ MainPage.jsx
+// 메인 날씨 페이지: 전체 날씨 UI 렌더링 + 날씨에 따른 배경 애니메이션 및 테스트 모드 제공
+
 import Header from "../components/Header";
 import WeatherBox from "../components/WeatherBox";
 import MapSection from "../components/MapSection";
@@ -7,20 +9,28 @@ import WeeklyForecast from "../components/WeeklyForecast";
 import { useEffect, useState } from "react";
 import "./MainPage.css";
 
+// 테스트용 날씨 시퀀스 (🧪 버튼 클릭 시 순환)
 const testWeatherSequence = ["맑음", "흐림", "비", "뇌우", "눈"];
 
 function MainPage() {
+  // 전국 날씨 데이터 (지도용)
   const [nationalWeatherData, setNationalWeatherData] = useState([]);
+
+  // 날씨 상태 - 실제 날씨 or 테스트 시 상태 반영
   const [isRainy, setIsRainy] = useState(false);
   const [isSunny, setIsSunny] = useState(false);
   const [isCloudy, setIsCloudy] = useState(false);
   const [isSnowy, setIsSnowy] = useState(false);
   const [isThunder, setIsThunder] = useState(false);
-  const [testIndex, setTestIndex] = useState(0);
 
-  const overrideWeather = testWeatherSequence[testIndex];
+  // 테스트 모드 설정
+  const [testIndex, setTestIndex] = useState(0);          // 현재 테스트 중인 날씨 index
+  const [isTestMode, setIsTestMode] = useState(true);     // 테스트 모드 ON/OFF
 
-  // 💧 비/천둥
+  // overrideWeather: 테스트 모드일 경우만 값이 설정됨
+  const overrideWeather = isTestMode ? testWeatherSequence[testIndex] : null;
+
+  // 🌧️ 비 / 천둥일 경우 비 애니메이션 생성
   useEffect(() => {
     const container = document.getElementById("rain-overlay");
     if ((isRainy || isThunder) && container) {
@@ -38,7 +48,7 @@ function MainPage() {
     }
   }, [isRainy, isThunder]);
 
-  // ❄️ 눈
+  // ❄️ 눈 애니메이션 생성
   useEffect(() => {
     const container = document.getElementById("snow-overlay");
     if (isSnowy && container) {
@@ -60,6 +70,7 @@ function MainPage() {
     }
   }, [isSnowy]);
 
+  // 현재 날씨 상태를 이모지로 표현 (화면 하단용)
   const getCurrentWeatherLabel = () => {
     if (isThunder) return "⛈️ 뇌우";
     if (isRainy) return "🌧️ 비";
@@ -71,6 +82,7 @@ function MainPage() {
 
   return (
     <div className="main-container">
+      {/* 배경 오버레이 (조건부 렌더링) */}
       {(isRainy || isThunder) && <div id="rain-overlay" className="rain-overlay" />}
       {isSnowy && <div id="snow-overlay" className="snow-overlay" />}
       {isSunny && <div className="weather-sunny-overlay" />}
@@ -78,8 +90,13 @@ function MainPage() {
       {isThunder && <div className="weather-thunder-overlay" />}
 
       <Header />
+
+      {/* 전국 날씨 지도용 데이터 fetch */}
       <NationalWeatherFetcher setNationalWeatherData={setNationalWeatherData} />
-      <main className={`main-content 
+
+      {/* 메인 날씨 + 지도 + 예보 영역 */}
+      <main className={`
+        main-content 
         ${isCloudy || isRainy ? "cloudy-background" : ""}
         ${isSunny ? "sunny-background" : ""}
         ${isThunder ? "thunder-background" : ""}
@@ -92,28 +109,38 @@ function MainPage() {
               setIsCloudy={setIsCloudy}
               setIsSnowy={setIsSnowy}
               setIsThunder={setIsThunder}
-              overrideWeather={overrideWeather}
+              overrideWeather={overrideWeather}  // 테스트 모드일 경우 전달
             />
           </div>
           <div className="map-box box-shadow">
             <MapSection weatherData={nationalWeatherData} />
           </div>
         </section>
+
+        {/* 📆 주간 예보 */}
         <section className="forecast-section box-shadow">
           <WeeklyForecast />
         </section>
 
-        {/* ✅ 테스트 토글 및 상태 표시 */}
+        {/* 🧪 테스트 토글 버튼 UI */}
         <div className="text-center mt-4">
           <button
-            className="btn btn-outline-dark"
-            onClick={() => setTestIndex((prev) => (prev + 1) % testWeatherSequence.length)}
+            className="btn btn-sm btn-outline-primary me-2"
+            onClick={() => setIsTestMode(prev => !prev)}
           >
-            날씨 테스트 토글 ({overrideWeather})
+            {isTestMode ? "🔁 실제 날씨 보기" : "🧪 테스트 모드 보기"}
           </button>
-          <div className="mt-2">
-            <strong>🌍 현재 적용된 날씨 효과:</strong> {getCurrentWeatherLabel()}
-          </div>
+
+          {isTestMode && (
+            <>
+              <button
+                className="btn btn-outline-dark"
+                onClick={() => setTestIndex((prev) => (prev + 1) % testWeatherSequence.length)}
+              >
+                날씨 테스트 토글 ({overrideWeather})
+              </button>
+            </>
+          )}
         </div>
       </main>
     </div>

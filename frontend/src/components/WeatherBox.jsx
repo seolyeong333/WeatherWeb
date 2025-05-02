@@ -1,10 +1,13 @@
 // ✅ src/components/WeatherBox.jsx
+// 역할: 현재 위치의 날씨, 미세먼지 정보, 6시간 예보를 보여주는 박스 UI
+
 import { useEffect, useState } from "react";
 import { getCurrentWeather, getAirPollution, getForecast } from "../api/weather";
 import axios from "axios";
 import { getKoreanWeatherDescription } from "../api/weatherMapping";
 import { toKST } from "../hooks/time";
 
+// 날씨 설명에 따라 카드 배경색 클래스 매핑
 const weatherColorClassMap = {
   "맑음": "bg-info-subtle",
   "흐림": "bg-secondary-subtle",
@@ -17,21 +20,24 @@ const weatherColorClassMap = {
   "연무": "bg-body-tertiary",
 };
 
+// 메인 WeatherBox 컴포넌트
 function WeatherBox({
-  setIsRainy,
-  setIsSunny,
-  setIsCloudy,
-  setIsSnowy,
-  setIsThunder,
-  overrideWeather,
+  setIsRainy,   // 부모에게 비 상태 전달
+  setIsSunny,   // ☀️
+  setIsCloudy,  // ☁️
+  setIsSnowy,   // ❄️
+  setIsThunder, // ⛈️
+  overrideWeather, // 테스트용 날씨 오버라이드
 }) {
-  const [location, setLocation] = useState("");
-  const [current, setCurrent] = useState(null);
-  const [forecast, setForecast] = useState([]);
-  const [air, setAir] = useState(null);
+  const [location, setLocation] = useState("");      // 위치명 (카카오에서 변환)
+  const [current, setCurrent] = useState(null);      // 현재 날씨 데이터
+  const [forecast, setForecast] = useState([]);      // 6시간 예보 데이터
+  const [air, setAir] = useState(null);              // 미세먼지(PM) 데이터
 
+  // 날씨에 따른 카드 색상 클래스 반환
   const getCardColorClass = (desc) => weatherColorClassMap[desc] || "bg-light";
 
+  // 날씨에 따른 애니메이션 클래스 결정
   const getAnimationClass = (desc) => {
     if (desc.includes("뇌우") || desc.includes("비") || desc.includes("소나기")) return "weather-rain";
     if (desc.includes("흐림") || desc.includes("구름")) return "weather-cloudy";
@@ -40,16 +46,19 @@ function WeatherBox({
     return "";
   };
 
+  // 컴포넌트 마운트 시 → 사용자 위치 기반 날씨, 공기, 위치명 불러오기
   useEffect(() => {
     navigator.geolocation.getCurrentPosition(async (position) => {
       const { latitude, longitude } = position.coords;
 
+      // ✅ 현재 날씨
       getCurrentWeather(latitude, longitude).then((res) => {
         setCurrent(res.data);
 
         const rawDesc = res.data.weather[0].description;
         const desc = overrideWeather || getKoreanWeatherDescription(rawDesc);
 
+        // 각 상태값 부모에 전달
         if (setIsRainy) setIsRainy(desc.includes("비") || desc.includes("소나기"));
         if (setIsSunny) setIsSunny(desc.includes("맑음"));
         if (setIsCloudy) setIsCloudy(desc.includes("흐림") || desc.includes("구름"));
@@ -57,18 +66,21 @@ function WeatherBox({
         if (setIsThunder) setIsThunder(desc.includes("뇌우"));
       });
 
+      // ✅ 6시간 이내 예보 (2개만 가져옴)
       getForecast(latitude, longitude).then((res) => {
         const now = new Date();
         const upcoming = res.data.list
           .filter((item) => toKST(item.dt_txt) > now)
-          .slice(0, 2);
+          .slice(0, 2); // 다음 6시간 예보 기준
         setForecast(upcoming);
       });
 
+      // ✅ 공기질 (미세먼지)
       getAirPollution(latitude, longitude).then((res) =>
         setAir(res.data.list[0].components)
       );
 
+      // ✅ 카카오 API로 위치 이름 가져오기 (행정동 기준)
       try {
         const response = await axios.get(
           `https://dapi.kakao.com/v2/local/geo/coord2regioncode.json?x=${longitude}&y=${latitude}`,
@@ -90,15 +102,20 @@ function WeatherBox({
     });
   }, [overrideWeather]);
 
+  // 아직 데이터 준비 안 되면 로딩 메시지
   if (!current || forecast.length === 0) return <div>Loading...</div>;
 
+  // 날씨 아이콘 처리
   const iconCode = current.weather[0].icon;
   const iconUrl = `http://openweathermap.org/img/wn/${iconCode}@2x.png`;
+
+  // 설명 변환 및 스타일 계산
   const rawDesc = current.weather[0].description;
   const currentDesc = overrideWeather || getKoreanWeatherDescription(rawDesc);
   const currentCardClass = getCardColorClass(currentDesc);
   const currentAnimClass = getAnimationClass(currentDesc);
 
+  // 미세먼지 상태값 계산
   const getAirGrade = (pm, type) => {
     if (type === "pm10") {
       if (pm <= 30) return { label: "좋음", color: "success", border: "border-success" };
@@ -118,8 +135,10 @@ function WeatherBox({
   const pm10Grade = getAirGrade(pm10, "pm10");
   const pm25Grade = getAirGrade(pm25, "pm25");
 
+  // ✅ 렌더링 시작
   return (
     <div className="container">
+      {/* 현재 날씨 카드 */}
       <div className={`card mb-4 position-relative ${currentCardClass} ${currentAnimClass}`}>
         <div className="card-body d-flex align-items-center gap-4">
           <img src={iconUrl} alt="weather" width="80" />
@@ -131,6 +150,7 @@ function WeatherBox({
         </div>
       </div>
 
+      {/* 미세먼지 카드 */}
       {air && (
         <div className="row g-3 mb-4">
           <div className="col-md-6">
@@ -154,6 +174,7 @@ function WeatherBox({
         </div>
       )}
 
+      {/* 6시간 예보 */}
       <h6 className="mb-3">🕘 향후 6시간 예보</h6>
       <div className="row g-3">
         {forecast.map((f, i) => {

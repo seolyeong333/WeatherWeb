@@ -31,6 +31,7 @@ html, body {
   height: 100%;
   color: black;
   background-color: #ffffff; /* 기본 배경 */
+  font-family: 'Pretendard', sans-serif !important;
 }
 
 /* ✅ 나머지 기본 스타일 */
@@ -70,4 +71,8 @@ button:focus-visible {
   button {
     background-color: #f9f9f9;
   }
+}
+/* index.css 또는 App.css */
+* {
+  font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 }
