@@ -1,20 +1,20 @@
 package com.creepy.bit.domain;
+import java.time.LocalDate;
 
 public class UserRequestDto {
-    private String userId;
+    private int userId;
     private String email;
     private String password;
     private String nickname;
     private String gender;
+    private LocalDate birthday;
     private String provider; 
     private String auth; 
     private String createdAt; 
 
-
-
     // Getter, Setter
-    public String getUserId() { return userId; }
-    public void setUserId(String userId) { this.userId = userId; }
+    public int getUserId() { return userId; }
+    public void setUserId(int userId) { this.userId = userId; }
 
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
@@ -27,6 +27,9 @@ public class UserRequestDto {
 
     public String getGender() { return gender; }
     public void setGender(String gender) { this.gender = gender; }
+
+    public LocalDate getBirthday() { return birthday; }
+    public void setBirthday(LocalDate birthday) { this.birthday = birthday; }
 
     public String getProvider() { return provider; }
     public void setProvider(String provider) { this.provider = provider; }

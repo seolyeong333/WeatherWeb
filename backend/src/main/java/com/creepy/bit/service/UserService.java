@@ -20,14 +20,9 @@ public class UserService {
         mainMapper.insertUser(userDto);
     }
 
-    public UserRequestDto userData(String userId){
-        UserRequestDto result = mainMapper.userData(userId);
+    public UserRequestDto userData(String email){
+        UserRequestDto result = mainMapper.userData(email);
         return result;
-    }
-
-    public int checkId(String userId){
-        int count = mainMapper.checkId(userId);
-        return count;
     }
 
     public int checkEmail(String email){
@@ -39,22 +34,12 @@ public class UserService {
         return count;
     }
 
-    public String findId(String email){
-        String result = mainMapper.findId(email);
-        return result;
-    }
-    
-    public int findPasswd(UserRequestDto userDto){
-    int count = mainMapper.findPasswd(userDto);
-    return count;
-
-}
     public void changePasswd(UserRequestDto userDto){
         mainMapper.changePasswd(userDto);
     }
 
-    public void deleteUser(String userId){
-        mainMapper.deleteUser(userId);
+    public void deleteUser(String email){
+        mainMapper.deleteUser(email);
     }
 
     public void modifyUser(UserRequestDto userDto){

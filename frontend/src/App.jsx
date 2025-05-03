@@ -6,6 +6,9 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Signup from './pages/signup';
 import Login from './pages/login'; 
 import EmailAuth from './pages/emailauth'; 
+import FindPasswd from './pages/findpasswd'; 
+import ChangePasswd from './pages/changepasswd'; 
+import DeleteUser from './pages/deleteuser'; 
 
 function App() {
   const [count, setCount] = useState(0)
@@ -16,6 +19,9 @@ function App() {
       <Route path="/signup" element={<Signup />} />
       <Route path="/login" element={<Login />} />
       <Route path="/emailauth" element={<EmailAuth />} />
+      <Route path="/findpasswd" element={<FindPasswd />} />
+      <Route path="/changepasswd" element={<ChangePasswd />} />
+      <Route path="/deleteuser" element={<DeleteUser />} />
     </Routes>
   </BrowserRouter>
   )

@@ -1,17 +1,19 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom"
 
-function Signup() {   // json 형식입니당.
+function Signup() {
   const navigate = useNavigate();
+
+  // 생년월일 추가
   const [form, setForm] = useState({
-    userId: "",
     email: "",
     password: "",
     nickname: "",
-    gender: ""
+    gender: "",
+    birthday: "" // ← 추가됨
   });
 
-  const changeHandler = (e) => {    
+  const changeHandler = (e) => {
     setForm({
       ...form,
       [e.target.name]: e.target.value
@@ -32,7 +34,7 @@ function Signup() {   // json 형식입니당.
 
       if (response.ok) {
         alert("회원가입 성공!");
-        navigate("/login")
+        navigate("/login");
       } else {
         alert("회원가입 실패 ㅠㅠ");
       }
@@ -46,15 +48,24 @@ function Signup() {   // json 형식입니당.
     <div style={{ margin: "100px", textAlign: "center" }}>
       <h2>회원가입</h2>
       <form onSubmit={submitHandler}>
-        <input type="text"name="userId" placeholder="아이디" value={form.userId} onChange={changeHandler} required/><br/><br/>
-        <input type="text"name="email" placeholder="이메일" value={form.email} onChange={changeHandler} required/><br/><br/> 
-        <input type="password" name="password" placeholder="비밀번호" value={form.password} onChange={changeHandler} required/><br/><br/>
-        <input type="text" name="nickname" placeholder="닉네임" value={form.nickname} onChange={changeHandler} required/><br/><br/>
+        <input type="email" name="email" placeholder="이메일" value={form.email} onChange={changeHandler} required /><br /><br />
+        <input type="password" name="password" placeholder="비밀번호" value={form.password} onChange={changeHandler} required /><br /><br />
+        <input type="text" name="nickname" placeholder="닉네임" value={form.nickname} onChange={changeHandler} required /><br /><br />
+        
         <select name="gender" value={form.gender} onChange={changeHandler} required>
           <option value="">성별 선택</option>
           <option value="male">남자</option>
           <option value="female">여자</option>
-        </select><br/><br/>
+        </select><br /><br />
+
+        {/* 생년월일 입력 필드 추가 */}
+        <input
+          type="date"
+          name="birthday"
+          value={form.birthday}
+          onChange={changeHandler}
+          required
+        /><br /><br />
 
         <button type="submit">회원가입</button>
       </form>

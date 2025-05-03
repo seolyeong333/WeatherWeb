@@ -6,6 +6,7 @@ function EmailAuth() {
   const [userInputKey, setUserInputKey] = useState(""); // 사용자가 입력하는 인증코드
   const [emailStatus, setEmailStatus] = useState(""); // 인증 상태 메시지
 
+
   // 이메일로 인증코드 요청
   const sendEmailHandler = async () => {
     if (!email) {
@@ -20,11 +21,7 @@ function EmailAuth() {
 
       const data = await response.text(); // 서버가 문자열(userId, duplicate, none, fail 등)을 리턴하니까
 
-      if (data === "duplicate") {
-        setEmailStatus("이미 가입된 이메일입니다.");
-      } else if (data === "none") {
-        setEmailStatus("등록되지 않은 이메일입니다.");
-      } else if (data === "fail") {
+      if (data === "fail") {
         setEmailStatus("메일 전송 실패");
       } else {
         setAuthKeySent(data); // 인증코드 저장
@@ -44,9 +41,9 @@ function EmailAuth() {
     }
 
     if (authKeySent === userInputKey.trim()) {
-      alert("✅ 인증 성공!");
+      alert("인증 성공!");
     } else {
-      alert("❌ 인증 실패. 올바른 인증코드를 입력하세요.");
+      alert("인증 실패. 올바른 인증코드를 입력하세요.");
     }
   };
 
