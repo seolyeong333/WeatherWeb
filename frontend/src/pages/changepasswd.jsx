@@ -2,30 +2,30 @@ import { useState } from "react";
 
 function ChangePasswd() {
   const [email, setEmail] = useState("");
-  const [newPassword, setNewPassword] = useState("");
+  const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [result, setResult] = useState("");
 
   const handleChangePassword = async (e) => {
     e.preventDefault();
 
-    if ( !email || !newPassword || !confirmPassword) {
+    if ( !email || !password || !confirmPassword) {
       alert("모든 항목을 입력하세요.");
       return;
     }
 
-    if (newPassword !== confirmPassword) {
+    if (password !== confirmPassword) {
       alert("비밀번호가 일치하지 않습니다.");
       return;
     }
 
     try {
-      const response = await fetch("http://localhost:8080/api/auth/changePasswd", {
-        method: "POST",
+      const response = await fetch("http://localhost:8080/api/users/password", {
+        method: "PATCH",
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ email, password: newPassword })
+        body: JSON.stringify({ email, password: password })
       });
 
       const data = await response.text();
@@ -51,8 +51,8 @@ function ChangePasswd() {
         <input
           type="password"
           placeholder="새 비밀번호"
-          value={newPassword}
-          onChange={(e) => setNewPassword(e.target.value)}
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
           required
           style={{ width: "100%", maxWidth: "300px", padding: "10px", marginBottom: "10px" }}
         /><br />

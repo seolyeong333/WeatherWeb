@@ -15,14 +15,16 @@ function EmailAuth() {
     }
 
     try {
-      const response = await fetch(`http://localhost:8080/api/auth/sendmail?email=${encodeURIComponent(email)}`, {
-        method: "POST"
+      const response = await fetch(`http://localhost:8080/api/users/email/auth`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email })
       });
 
       const data = await response.text(); // 서버가 문자열(userId, duplicate, none, fail 등)을 리턴하니까
 
       if (data === "fail") {
-        setEmailStatus("메일 전송 실패");
+        setEmailStatus("메일 전송 실패"); 
       } else {
         setAuthKeySent(data); // 인증코드 저장
         setEmailStatus("인증 메일을 보냈습니다. 이메일을 확인하세요.");

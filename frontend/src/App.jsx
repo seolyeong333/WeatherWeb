@@ -9,6 +9,7 @@ import EmailAuth from './pages/emailauth';
 import FindPasswd from './pages/findpasswd'; 
 import ChangePasswd from './pages/changepasswd'; 
 import DeleteUser from './pages/deleteuser'; 
+import Info from './pages/info'; 
 
 function App() {
   const [count, setCount] = useState(0)
@@ -22,6 +23,7 @@ function App() {
       <Route path="/findpasswd" element={<FindPasswd />} />
       <Route path="/changepasswd" element={<ChangePasswd />} />
       <Route path="/deleteuser" element={<DeleteUser />} />
+      <Route path="/info" element={<Info />} />
     </Routes>
   </BrowserRouter>
   )

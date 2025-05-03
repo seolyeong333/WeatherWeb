@@ -13,7 +13,7 @@ function FindPasswd() {
     }
 
     try {
-      const response = await fetch("http://localhost:8080/api/auth/findPasswd", {
+      const response = await fetch("http://localhost:8080/api/users/password/reset", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
