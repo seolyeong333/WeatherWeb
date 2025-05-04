@@ -1,10 +1,12 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom"
 
 export function Login() {
   const [form, setForm] = useState({
     userId: "",
     password: ""
   });
+  const navigate = useNavigate();
 
   const changeHandler = (e) => {
     setForm({
@@ -29,6 +31,7 @@ export function Login() {
         const data = await response.text(); // 로그인 성공 시 토큰이나 사용자 정보 받을 수 있음
         console.log("로그인 성공:", data);
         alert("로그인 성공!");
+        navigate("/signup");  // 이거 메인페이지로 바꾸라 마 
         } else {
         alert("로그인 실패 ㅠㅠ");
       }
