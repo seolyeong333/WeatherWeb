@@ -10,7 +10,10 @@ import FindPasswd from './pages/findpasswd';
 import ChangePasswd from './pages/changepasswd'; 
 import DeleteUser from './pages/deleteuser'; 
 import Info from './pages/info'; 
-
+import NoticeForm from './pages/noticeform'; 
+import NoticeDetail from './pages/noticedetail'; 
+import NoticeList from './pages/noticelist'; 
+import NoticeEdit from './pages/noticeedit';
 function App() {
   const [count, setCount] = useState(0)
 
@@ -24,6 +27,10 @@ function App() {
       <Route path="/changepasswd" element={<ChangePasswd />} />
       <Route path="/deleteuser" element={<DeleteUser />} />
       <Route path="/info" element={<Info />} />
+      <Route path="/noticeform" element={<NoticeForm />} />
+      <Route path="/notice/:id" element={<NoticeDetail />} />
+      <Route path="/noticelist" element={<NoticeList />} />
+      <Route path="/notice/edit/:id" element={<NoticeEdit />} />
     </Routes>
   </BrowserRouter>
   )

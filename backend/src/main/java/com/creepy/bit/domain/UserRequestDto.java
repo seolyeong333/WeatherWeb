@@ -37,6 +37,6 @@ public class UserRequestDto {
     public String getAuth() { return auth; }
     public void setAuth(String auth) { this.auth = auth; }
     
-    public String getcreatedAt() { return createdAt; }
-    public void setcreatedAt(String createdAt) { this.createdAt = createdAt; }
+    public String getCreatedAt() { return createdAt; }
+    public void setCreatedAt(String createdAt) { this.createdAt = createdAt; }
 }

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.creepy.bit.mapper.MainMapper">
+
+<!-- 전체 공지 조회 -->
+    <select id="getAllNotices" resultType="com.creepy.bit.domain.NoticeDto">
+        SELECT * FROM notices
+        ORDER BY createdAt DESC
+    </select>
+
+    <!-- 공지 ID로 하나 조회 -->
+    <select id="getNoticeById" parameterType="int" resultType="com.creepy.bit.domain.NoticeDto">
+        SELECT * FROM notices
+        WHERE noticeId = #{noticeId}
+    </select>
+
+    <!-- 공지 등록 -->
+    <insert id="insertNotice" parameterType="com.creepy.bit.domain.NoticeDto">
+        INSERT INTO notices (title, content)
+        VALUES (#{title}, #{content})
+    </insert>
+
+    <!-- 공지 수정 -->
+    <update id="updateNotice" parameterType="com.creepy.bit.domain.NoticeDto">
+        UPDATE notices
+        SET title = #{title},
+            content = #{content}
+        WHERE noticeId = #{noticeId}
+    </update>
+
+    <!-- 공지 삭제 -->
+    <delete id="deleteNotice" parameterType="int">
+        DELETE FROM notices
+        WHERE noticeId = #{noticeId}
+    </delete>
+
+</mapper>
