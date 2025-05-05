@@ -33,6 +33,16 @@ public class UserController {
     // 회원가입
     @PostMapping("")
     public ResponseEntity<String> signup(@RequestBody UserRequestDto userDto) {
+
+         if (userService.checkEmail(userDto.getEmail()) > 0) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body("이미 사용 중인 이메일입니다.");
+    }
+
+    // 닉네임 중복 체크
+    if (userService.checkNickname(userDto.getNickname()) > 0) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body("이미 사용 중인 닉네임입니다.");
+    }
+
         userService.signup(userDto);
         return ResponseEntity.ok("회원가입 성공");
     }
@@ -85,15 +95,29 @@ public class UserController {
 
     // 이메일 인증코드 발송
     @PostMapping("/email/auth")
-    public ResponseEntity<String> sendEmailAuthCode(@RequestBody Map<String, String> request) {
-        String email = request.get("email");
-        String authKey = mailService.createAuthKey();
+public ResponseEntity<String> sendEmailAuthCode(@RequestBody Map<String, String> request) {
+    String email = request.get("email");
+    String type = request.get("type"); 
+    String authKey = mailService.createAuthKey();
 
-        try {
-            mailService.sendAuthMail(email, authKey);
-            return ResponseEntity.ok(authKey); // 프론트에서 비교용으로 활용
-        } catch (MessagingException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("fail");
+    if ("signup".equals(type)) {    // 회원가입 시 
+        if (userService.checkEmail(email) > 0) {
+            System.out.println("이메일 중복이다~");
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("duplicate");    // 회원가입은 중복이면 안되니까 duplicate 넘김
+        }
+    } else if ("reset".equals(type)) { // 비밀번호 초기화 시 
+        if (userService.checkEmail(email) == 0) {
+            System.out.println("이메일 없다~");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("notFound");    // 비밀번호 찾기는 중복이어야 하니까 notFound 넘김 
         }
     }
+
+    try {
+        mailService.sendAuthMail(email, authKey);
+        return ResponseEntity.ok(authKey); // 프론트에서 비교용
+    } catch (MessagingException e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("fail");
+    }
+}
+
 }

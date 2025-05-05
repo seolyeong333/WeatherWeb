@@ -2,11 +2,11 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom"
 
 export function Login() {
+  const navigate = useNavigate();
   const [form, setForm] = useState({
     userId: "",
     password: ""
   });
-  const navigate = useNavigate();
 
   const changeHandler = (e) => {
     setForm({
@@ -48,6 +48,8 @@ export function Login() {
       <input type="text"name="email" placeholder="이메일" value={form.email} onChange={changeHandler} required/><br/><br/>
       <input type="password" name="password" placeholder="비밀번호" value={form.password} onChange={changeHandler} required/><br/><br/>
       <button type="submit">로그인</button>
+      <button onClick={() => navigate("/findpasswd")}> 비밀번호 찾기 </button>
+      <button onClick={() => navigate("/signup")}> 회원가입 </button>
       </form>
     </div>
   );
