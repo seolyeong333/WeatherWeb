@@ -1,6 +1,3 @@
-// ✅ WeatherService.java
-// 역할: OpenWeather API를 호출해서 현재 날씨, 공기질, 5일 예보 데이터를 받아오는 서비스 클래스
-
 package com.creepy.bit.service;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -11,26 +8,35 @@ import org.springframework.web.util.UriComponentsBuilder;
 @Service
 public class WeatherService {
 
-    // 🌟 application.yml에서 OpenWeather API 키를 주입받음
+    // OpenWeather에서 발급받은 API 키 (yml 또는 properties에 설정돼 있어야 함)
     @Value("${openweather.api.key}")
     private String apiKey;
 
-    private final RestTemplate restTemplate = new RestTemplate(); // HTTP 통신을 위한 RestTemplate 객체 생성
+    // HTTP 요청용 객체. REST API 호출할 때 사용
+    private final RestTemplate restTemplate = new RestTemplate();
 
-    // 🌟 현재 날씨 정보 가져오기
+    /**
+     * 현재 날씨 데이터를 가져옴
+     * 호출 예시: https://api.openweathermap.org/data/2.5/weather?lat=...&lon=...
+     * lang=kr 설정 덕분에 날씨 상태 설명이 한글로 옴
+     */
     public String getCurrentWeather(double lat, double lon) {
         String url = UriComponentsBuilder.fromHttpUrl("https://api.openweathermap.org/data/2.5/weather")
-                .queryParam("lat", lat)          // 위도
-                .queryParam("lon", lon)          // 경도
-                .queryParam("appid", apiKey)     // API 키
-                .queryParam("units", "metric")   // 온도 섭씨
-                .queryParam("lang", "kr")        // 한국어
+                .queryParam("lat", lat)              // 위도
+                .queryParam("lon", lon)              // 경도
+                .queryParam("appid", apiKey)         // 내 API 키
+                .queryParam("units", "metric")       // 섭씨(°C) 기준으로 받기
+                .queryParam("lang", "kr")            // 한글로 받기
                 .toUriString();
 
-        return restTemplate.getForObject(url, String.class); // GET 요청 결과를 문자열로 반환
+        // 요청해서 결과(JSON 문자열)를 그대로 리턴
+        return restTemplate.getForObject(url, String.class);
     }
 
-    // 🌟 공기질(Air Pollution) 정보 가져오기
+    /**
+     * 현재 위치 기준의 공기 오염 정보 가져옴 (미세먼지 등)
+     * 호출 예시: https://api.openweathermap.org/data/2.5/air_pollution?lat=...&lon=...
+     */
     public String getAirPollution(double lat, double lon) {
         String url = UriComponentsBuilder.fromHttpUrl("https://api.openweathermap.org/data/2.5/air_pollution")
                 .queryParam("lat", lat)
@@ -41,7 +47,10 @@ public class WeatherService {
         return restTemplate.getForObject(url, String.class);
     }
 
-    // 🌟 5일 예보 데이터 가져오기 (3시간 간격 데이터)
+    /**
+     * 5일간 날씨 예보 (3시간 간격 데이터로 최대 40개 정도 옴)
+     * 예보 정보는 날씨별 아이콘, 온도, 구름 등 다양하게 포함됨
+     */
     public String getForecast(double lat, double lon) {
         String url = UriComponentsBuilder.fromHttpUrl("https://api.openweathermap.org/data/2.5/forecast")
                 .queryParam("lat", lat)
