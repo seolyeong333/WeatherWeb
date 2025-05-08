@@ -190,3 +190,35 @@
 .thunder-background {
   animation: cloudyPulseBg 20s ease-in-out infinite;
 }
+.rainbow-animated-bar {
+  height: 4px;
+  background: linear-gradient(
+    to right,
+    red,
+    orange,
+    yellow,
+    green,
+    blue,
+    indigo,
+    violet
+  );
+  background-size: 200% 100%;         /* 전체 길이보다 두 배 */
+  animation: rainbowMove 6s ease-in-out infinite;
+  border-radius: 50px;
+  opacity: 0.85;
+  margin-top: -1px;
+  z-index: 999;
+}
+
+@keyframes rainbowMove {
+  0% {
+    background-position: 0% 0%;
+  }
+  50% {
+    background-position: 100% 0%;
+  }
+  100% {
+    background-position: 0% 0%;
+  }
+}
+

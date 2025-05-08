@@ -47,7 +47,7 @@ function Header() {
           <Nav className="mx-auto">
             <Nav.Link href="/main">홈</Nav.Link>
             <Nav.Link href="#">오늘의 날씨</Nav.Link>
-            <Nav.Link href="#">오늘의 장소</Nav.Link>
+            <Nav.Link href="/today-place">오늘의 장소</Nav.Link>
             <Nav.Link href="#">오늘의 코디</Nav.Link>
             <Nav.Link href="/mypage">마이페이지</Nav.Link>
           </Nav>
@@ -58,7 +58,8 @@ function Header() {
           </Button>
         </Navbar.Collapse>
       </Navbar>
-
+      <div className="rainbow-animated-bar"></div> {/* ✅ 요거 추가 */}
+      
       {/* 🔹 왼쪽 사이드 메뉴 (오버레이 포함) */}
       {menuOpen && (
         <>

@@ -2,6 +2,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import MainPage from "./pages/MainPage";
 import MyPage from "./pages/MyPage";
+import TodayPlace from "./pages/TodayPlace";
 import { WeatherProvider } from "./components/WeatherContext"; // ✅
 
 function App() {
@@ -11,6 +12,7 @@ function App() {
         <Routes>
           <Route path="/main" element={<MainPage />} />
           <Route path="/mypage" element={<MyPage />} />
+          <Route path="/today-place" element={<TodayPlace />} />
         </Routes>
       </BrowserRouter>
     </WeatherProvider>
