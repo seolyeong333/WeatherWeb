@@ -53,20 +53,30 @@ public class UserController {
 
     // 회원가입
     @PostMapping("")
-    public ResponseEntity<String> signup(@RequestBody UserRequestDto userDto) {
+    public ResponseEntity<Map<String, String>> signup(@RequestBody UserRequestDto userDto) {
         System.out.println("UserController POST 호출");
-         if (userService.checkEmail(userDto.getEmail()) > 0) {
-        return ResponseEntity.status(HttpStatus.CONFLICT).body("이미 사용 중인 이메일입니다.");
-    }
 
-    // 닉네임 중복 체크
-    if (userService.checkNickname(userDto.getNickname()) > 0) {
-        return ResponseEntity.status(HttpStatus.CONFLICT).body("이미 사용 중인 닉네임입니다.");
-    }
+        Map<String, String> response = new HashMap<>();
 
+        // 이메일 중복 체크
+        if (userService.checkEmail(userDto.getEmail()) > 0) {
+            response.put("error", "이미 사용 중인 이메일입니다.");
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
+        }
+
+        // 닉네임 중복 체크
+        if (userService.checkNickname(userDto.getNickname()) > 0) {
+            response.put("error", "이미 사용 중인 닉네임입니다.");
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
+        }
+
+        // 회원가입 처리
         userService.signup(userDto);
-        return ResponseEntity.ok("회원가입 성공");
+        response.put("message", "회원가입 성공");
+
+        return ResponseEntity.ok(response);
     }
+
 
     // 회원정보 조회
     @GetMapping("/info")

@@ -40,3 +40,10 @@ openai:
   api-key:${OPENAI_API_KEY}
 jwt:
   secret: ThisIsASecretKeyThatIsLongEnoughToBeSecureAndUsedInHS256!
+  
+openweather:
+  api:
+    key: "4f673522ff69c4d615b1e593ce6fa16b"
+
+kakao:
+  rest-api-key: "e7c76873999ef901948568fdbf33233b"

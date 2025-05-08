@@ -1,59 +1,188 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom"
+import { useState, useEffect } from "react";
+import { Form, Button } from "react-bootstrap";
+import { FaGoogle } from "react-icons/fa";
+import { SiKakaotalk, SiNaver } from "react-icons/si";
 
-export function Login() {
-  const navigate = useNavigate();
-  const [form, setForm] = useState({
-    userId: "",
-    password: ""
+function Login({ closeLogin }) {
+  const [isSignup, setIsSignup] = useState(false);
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+    nickname: "",
+    gender: "",
+    birthday: "",
+    remember: false,
   });
 
+  const [repassword, setRepassword] = useState("");
+  const [authKeySent, setAuthKeySent] = useState("");
+  const [userInputKey, setUserInputKey] = useState("");
+  const [isVerified, setIsVerified] = useState(false);
+  const [emailStatus, setEmailStatus] = useState("");
+  const [isCodeSent, setIsCodeSent] = useState(false);
+  const [emailReadOnly, setEmailReadOnly] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(300);
+
+  useEffect(() => {
+    if (!isCodeSent || timeLeft <= 0) return;
+    const timer = setInterval(() => setTimeLeft(prev => prev - 1), 1000);
+    return () => clearInterval(timer);
+  }, [isCodeSent, timeLeft]);
+
+  const formatTime = (s) => `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`;
+
   const changeHandler = (e) => {
-    setForm({
-      ...form,
-      [e.target.name]: e.target.value
-    });
+    const { name, value, type, checked } = e.target;
+    if (name === "repassword") setRepassword(value);
+    else {
+      setFormData({
+        ...formData,
+        [name]: type === "checkbox" ? checked : value,
+      });
+    }
+  };
+
+  const sendEmailHandler = async () => {
+    if (!formData.email) return alert("이메일을 입력하세요.");
+    try {
+      const res = await fetch("http://localhost:8080/api/users/email/auth", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: formData.email, type: "signup" }),
+      });
+      const data = await res.text();
+      if (data === "duplicate") setEmailStatus("이미 존재하는 이메일입니다.");
+      else {
+        setAuthKeySent(data);
+        setIsCodeSent(true);
+        setTimeLeft(300);
+        setEmailStatus("인증 메일이 전송되었습니다.");
+      }
+    } catch (err) {
+      console.error(err);
+      setEmailStatus("이메일 인증 실패");
+    }
+  };
+
+  const verifyAuthKeyHandler = async () => {
+    try {
+      const res = await fetch("http://localhost:8080/api/users/email/verify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: formData.email, authKey: userInputKey }),
+      });
+      if (res.ok) {
+        alert("이메일 인증 완료!");
+        setIsVerified(true);
+        setEmailReadOnly(true);
+        setEmailStatus("");
+      } else {
+        alert("인증 실패");
+      }
+    } catch (e) {
+      console.error(e);
+      alert("서버 오류");
+    }
   };
 
   const submitHandler = async (e) => {
     e.preventDefault();
+    const url = isSignup ? "http://localhost:8080/api/users" : "http://localhost:8080/api/users/login";
 
-    try { 
-      const response = await fetch("http://localhost:8080/api/users/login", {
+    if (isSignup) {
+      if (!isVerified) return alert("이메일 인증 먼저 하세요.");
+      if (formData.password !== repassword) return alert("비밀번호 불일치");
+    }
+
+    try {
+      const res = await fetch(url, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(form)
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(isSignup ? formData : {
+          email: formData.email,
+          password: formData.password,
+        }),
       });
-      
-      if (response.ok) {
-        const data = await response.json(); // JSON으로 받는다고 가정 (token 포함)
-        const token = data.token; // 백엔드가 내려주는 JSON 필드 이름 맞게 확인
-        console.log(token);
-        console.log(data);
-        localStorage.setItem("token", token);
-        alert("로그인 성공!");
-        navigate("/mainpage");
+
+      if (res.ok) {
+        const result = await res.json();
+        alert(isSignup ? "회원가입 성공!" : `로그인 성공! 환영합니다, ${result.nickname}님`);
+        if (!isSignup) closeLogin?.();
       } else {
-        alert("로그인 실패 ㅠㅠ");
+        const err = await res.text();
+        alert(`실패: ${err}`);
       }
-    } catch (error) {
-      console.error("Error:", error);
-      alert("오류 발생");
+    } catch (err) {
+      console.error(err);
+      alert("서버 오류");
     }
   };
 
   return (
-    <div style={{ margin: "100px", textAlign: "center" }}>
-      <h2>로그인</h2>
-      <form onSubmit={submitHandler}>
-      <input type="email"name="email" placeholder="이메일" value={form.email} onChange={changeHandler} required/><br/><br/>
-      <input type="password" name="password" placeholder="비밀번호" value={form.password} onChange={changeHandler} required/><br/><br/>
-      <button type="submit">로그인</button>
-      <button onClick={() => navigate("/findpasswd")}> 비밀번호 찾기 </button>
-      <button onClick={() => navigate("/signup")}> 회원가입 </button>
-      </form>
+    <div className="mx-auto px-3" style={{ width: "100%", maxWidth: "450px", textAlign: "center", padding: "2.5rem 2rem", minHeight: "580px" }}>
+      <div className="d-flex justify-content-center align-items-center mb-3" style={{ fontWeight: 600, fontSize: "1.5rem" }}>
+        <span style={{ color: "#333" }}>ON</span>
+        <img src="/onda-favicon.png" alt="ONDA 로고" style={{ height: "52px" }} />
+        <span style={{ color: "#333" }}>DA</span>
+      </div>
+
+      <Form onSubmit={submitHandler}>
+        <Form.Control type="email" name="email" placeholder="이메일" className="mb-3" value={formData.email} onChange={changeHandler} required readOnly={emailReadOnly} />
+
+        {isSignup && !isVerified && (
+          <>
+            <Button onClick={sendEmailHandler} className="mb-2" size="sm">인증코드 요청</Button>
+            {isCodeSent && (
+              <>
+                <Form.Control type="text" placeholder="인증코드 입력" value={userInputKey} onChange={(e) => setUserInputKey(e.target.value)} className="mb-2" />
+                <Button onClick={verifyAuthKeyHandler} size="sm">인증하기</Button>
+                <div className="text-danger mt-2">유효 시간: {formatTime(timeLeft)}</div>
+              </>
+            )}
+            {emailStatus && <div className="text-danger mt-2">{emailStatus}</div>}
+          </>
+        )}
+
+        <Form.Control type="password" name="password" placeholder="비밀번호" className="mb-3" value={formData.password} onChange={changeHandler} required />
+        {isSignup && (
+          <>
+            <Form.Control type="password" name="repassword" placeholder="비밀번호 재입력" className="mb-3" value={repassword} onChange={changeHandler} required />
+            <Form.Control type="text" name="nickname" placeholder="닉네임" className="mb-3" value={formData.nickname} onChange={changeHandler} required />
+            <Form.Select name="gender" className="mb-3" value={formData.gender} onChange={changeHandler} required>
+              <option value="">성별 선택</option>
+              <option value="male">남자</option>
+              <option value="female">여자</option>
+            </Form.Select>
+            <Form.Control type="date" name="birthday" className="mb-3" value={formData.birthday} onChange={changeHandler} required />
+          </>
+        )}
+
+        <Button type="submit" variant="dark" className="w-100 mb-3">
+          {isSignup ? "회원가입" : "로그인"}
+        </Button>
+      </Form>
+
+      {!isSignup && (
+        <div className="mb-4">
+          <Button onClick={() => window.location.href = "https://accounts.google.com/o/oauth2/v2/auth"} className="w-100 mb-3 d-flex align-items-center justify-content-center" variant="light">
+            <FaGoogle className="me-2" /> 구글 계정으로 로그인
+          </Button>
+          <Button onClick={() => window.location.href = "https://kauth.kakao.com/oauth/authorize"} className="w-100 mb-3" style={{ backgroundColor: "#FEE500", color: "#000", fontWeight: "bold" }}>
+            <SiKakaotalk className="me-2" /> 카카오 계정으로 로그인
+          </Button>
+          <Button onClick={() => window.location.href = "https://nid.naver.com/oauth2.0/authorize"} className="w-100" style={{ backgroundColor: "#03C75A", color: "#fff", fontWeight: "bold" }}>
+            <SiNaver className="me-2" /> 네이버 계정으로 로그인
+          </Button>
+        </div>
+      )}
+
+      <div style={{ fontSize: "0.9rem" }}>
+        {isSignup ? (
+          <>이미 계정이 있으신가요? <a href="#" className="fw-semibold" style={{ color: "#333" }} onClick={() => setIsSignup(false)}>로그인</a></>
+        ) : (
+          <>회원이 아니신가요? <a href="#" className="fw-semibold" style={{ color: "#333" }} onClick={() => setIsSignup(true)}>회원가입</a></>
+        )}
+      </div>
     </div>
   );
 }
