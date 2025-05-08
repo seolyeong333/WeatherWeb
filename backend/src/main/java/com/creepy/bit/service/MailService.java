@@ -2,6 +2,7 @@ package com.creepy.bit.service;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -30,9 +31,26 @@ public class MailService {
         helper.setFrom("WeatherWeb@gmail.com");
         helper.setTo(email);
         helper.setSubject("WeatherWeb 이메일 인증");
-        String content = "<h1>인증코드:</h1><h2>" + authKey + "</h2>";
-        helper.setText(content, true);
+        String content = """
+            <div style="font-family: Arial, sans-serif; padding: 20px; border: 1px solid #ddd;">
+                <h2 style="color: #5B8DEF;">WeatherWeb 이메일 인증</h2>
+                <p>아래 인증코드를 입력하여 이메일 인증을 완료해 주세요.</p>
+                <div style="font-size: 24px; font-weight: bold; color: #333; margin: 20px 0;">
+                    인증코드: <span style="color: #5B8DEF;">%s</span>
+                </div>
+                <p style="color: #999; font-size: 12px;">본 인증코드는 5분 동안만 유효합니다.</p>
+            </div>
+        """.formatted(authKey);
 
+
+        helper.setText(content, true);
         mailSender.send(message);
     }
+
+
+    
 }
+
+
+
+

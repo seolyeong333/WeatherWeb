@@ -14,6 +14,8 @@ import NoticeForm from './pages/noticeform';
 import NoticeDetail from './pages/noticedetail'; 
 import NoticeList from './pages/noticelist'; 
 import NoticeEdit from './pages/noticeedit';
+import AIChat from './pages/aichat';
+import MainPage from './pages/mainpage'
 function App() {
   const [count, setCount] = useState(0)
 
@@ -31,6 +33,8 @@ function App() {
       <Route path="/notice/:id" element={<NoticeDetail />} />
       <Route path="/noticelist" element={<NoticeList />} />
       <Route path="/notice/edit/:id" element={<NoticeEdit />} />
+      <Route path="/aichat" element={<AIChat />} />
+      <Route path="/mainpage" element={<MainPage />} />
     </Routes>
   </BrowserRouter>
   )

@@ -2,12 +2,12 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 function NoticeList() {
+  const navigate = useNavigate();
   const [notices, setNotices] = useState([]);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalElements, setTotalElements] = useState(0); // 전체 게시글 수
   const pageSize = 10;
-  const navigate = useNavigate();
 
   const fetchNotices = async () => {
     try {
@@ -49,7 +49,14 @@ function NoticeList() {
                 </td>
                 <td style={{ padding: "8px" }}>{notice.title}</td>
                 <td style={{ padding: "8px", textAlign: "center" }}>
-                  {new Date(notice.createdAt).toLocaleDateString()}
+                  {new Date(notice.createdAt).toLocaleString("ko-KR", {
+                    year: "numeric",
+                    month: "2-digit",
+                    day: "2-digit",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    hour12: false 
+                  })}
                 </td>
               </tr>
             ))

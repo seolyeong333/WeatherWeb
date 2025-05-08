@@ -36,3 +36,7 @@ logging:
     root: INFO
     com.project: DEBUG
 
+openai:
+  api-key:${OPENAI_API_KEY}
+jwt:
+  secret: ThisIsASecretKeyThatIsLongEnoughToBeSecureAndUsedInHS256!
