@@ -6,28 +6,29 @@ function TodayPlace() {
   useEffect(() => {
     if (!window.kakao || !window.kakao.maps) return;
 
-    // 위치 요청
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         const lat = pos.coords.latitude;
         const lon = pos.coords.longitude;
-
-        const container = mapRef.current;
-        const options = {
-          center: new window.kakao.maps.LatLng(lat, lon),
+        console.log("정확히 잡힌 위도/경도", lat, lon);
+        const loc = new window.kakao.maps.LatLng(lat, lon);
+        const map = new window.kakao.maps.Map(mapRef.current, {
+          center: loc,
           level: 5,
-        };
+        });
 
-        const map = new window.kakao.maps.Map(container, options);
-
-        // 현재 위치 마커
         new window.kakao.maps.Marker({
           map,
-          position: new window.kakao.maps.LatLng(lat, lon),
+          position: loc,
         });
       },
       (err) => {
-        console.error("위치 가져오기 실패", err);
+        console.error("정확한 위치를 불러오지 못했습니다", err);
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 5000,
+        maximumAge: 0,
       }
     );
   }, []);
