@@ -38,7 +38,7 @@ public interface MainMapper {
     void modifyUser(UserRequestDto userDto);
 
     // Notice
-
+    // 공지 전체 조회
     List<NoticeDto> getAllNotices();
 
     // 공지 ID로 조회

@@ -46,4 +46,5 @@ public class NoticeService {
         mainMapper.deleteNotice(noticeId);
     }
 
+
 }

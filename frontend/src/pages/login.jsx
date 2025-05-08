@@ -18,7 +18,7 @@ export function Login() {
   const submitHandler = async (e) => {
     e.preventDefault();
 
-    try {
+    try { 
       const response = await fetch("http://localhost:8080/api/users/login", {
         method: "POST",
         headers: {
@@ -26,13 +26,16 @@ export function Login() {
         },
         body: JSON.stringify(form)
       });
-
+      
       if (response.ok) {
-        const data = await response.text(); // 로그인 성공 시 토큰이나 사용자 정보 받을 수 있음
-        console.log("로그인 성공:", data);
+        const data = await response.json(); // JSON으로 받는다고 가정 (token 포함)
+        const token = data.token; // 백엔드가 내려주는 JSON 필드 이름 맞게 확인
+        console.log(token);
+        console.log(data);
+        localStorage.setItem("token", token);
         alert("로그인 성공!");
-        navigate("/signup");  // 이거 메인페이지로 바꾸라 마 
-        } else {
+        navigate("/mainpage");
+      } else {
         alert("로그인 실패 ㅠㅠ");
       }
     } catch (error) {
@@ -45,7 +48,7 @@ export function Login() {
     <div style={{ margin: "100px", textAlign: "center" }}>
       <h2>로그인</h2>
       <form onSubmit={submitHandler}>
-      <input type="text"name="email" placeholder="이메일" value={form.email} onChange={changeHandler} required/><br/><br/>
+      <input type="email"name="email" placeholder="이메일" value={form.email} onChange={changeHandler} required/><br/><br/>
       <input type="password" name="password" placeholder="비밀번호" value={form.password} onChange={changeHandler} required/><br/><br/>
       <button type="submit">로그인</button>
       <button onClick={() => navigate("/findpasswd")}> 비밀번호 찾기 </button>

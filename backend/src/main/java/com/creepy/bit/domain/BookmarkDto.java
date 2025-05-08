@@ -5,10 +5,9 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class NoticeDto {
-    private int noticeId;
-    private String title;
-    private String content;
+public class BookmarkDto {
+    private int bookmarkId;
+    private int userId;
+    private String placeId;
     private String createdAt;
-
 }
