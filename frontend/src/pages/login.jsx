@@ -107,7 +107,12 @@ function Login({ closeLogin }) {
       if (res.ok) {
         const result = await res.json();
         alert(isSignup ? "회원가입 성공!" : `로그인 성공! 환영합니다, ${result.nickname}님`);
-        if (!isSignup) closeLogin?.();
+        if (!isSignup) {
+          const token = result.token; // 백엔드가 내려주는 JSON 필드 이름 맞게 확인
+          console.log(token);
+          console.log(result);
+          localStorage.setItem("token", token);
+          closeLogin?.();}
       } else {
         const err = await res.text();
         alert(`실패: ${err}`);
