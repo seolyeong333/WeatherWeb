@@ -9,6 +9,8 @@ import Login from "./Login/login.jsx";      // 로그인 모달 컴포넌트
 
 function Header() {
   // 🔹 왼쪽 메뉴 열림 여부
+  const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem("token"));
+
   const [menuOpen, setMenuOpen] = useState(false);
   const toggleMenu = () => setMenuOpen(prev => !prev);
   const closeMenu = () => setMenuOpen(false);
@@ -53,9 +55,19 @@ function Header() {
           </Nav>
 
           {/* 로그인 버튼 (우측) */}
-          <Button variant="secondary" type="button" onClick={openLogin}>
-            로그인
-          </Button>
+          {isLoggedIn ? (
+              <Button variant="outline-danger" onClick={() => {
+                localStorage.removeItem("token");
+                setIsLoggedIn(false);
+              }}>
+                로그아웃
+              </Button>
+            ) : (
+              <Button variant="secondary" onClick={openLogin}>
+                로그인
+              </Button>
+            )}
+
         </Navbar.Collapse>
       </Navbar>
       <div className="rainbow-animated-bar"></div> {/* ✅ 요거 추가 */}
@@ -114,7 +126,7 @@ function Header() {
             <button onClick={closeLogin} className="btn-close float-end" aria-label="Close"></button>
 
             {/* 로그인 폼 렌더링 */}
-            <Login closeLogin={closeLogin} />
+            <Login closeLogin={closeLogin} setIsLoggedIn={setIsLoggedIn}/>
           </motion.div>
         </>
       )}
