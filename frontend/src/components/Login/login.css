@@ -1,0 +1,29 @@
+.loginModal {
+    width: 100%;
+    max-width: 450px;
+    min-height: 580px;
+    padding: 2.5rem 2rem;
+    text-align: center;
+    border-radius: 1.2rem;
+  }
+  
+  .loginModal .logo {
+    font-weight: 600;
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.2rem;
+  }
+  
+  .loginModal .logo img {
+    height: 52px;
+  }
+
+  .loginModal a {
+    color: #333;
+    font-weight: 500;
+    text-decoration: none;
+    cursor: pointer;
+  }

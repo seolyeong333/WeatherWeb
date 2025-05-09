@@ -5,7 +5,7 @@ import { useState } from "react";
 import { Navbar, Nav, Button } from "react-bootstrap";
 import { FaBars } from "react-icons/fa";
 import { motion } from "framer-motion";  // 애니메이션 효과
-import Login from "../pages/login";      // 로그인 모달 컴포넌트
+import Login from "./Login/login.jsx";      // 로그인 모달 컴포넌트
 
 function Header() {
   // 🔹 왼쪽 메뉴 열림 여부
