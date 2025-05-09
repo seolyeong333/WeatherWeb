@@ -5,7 +5,7 @@ import { FaGoogle } from "react-icons/fa";
 import { SiKakaotalk, SiNaver } from "react-icons/si";
 import "./Login.css"; 
 
-function Login({ closeLogin }) {
+function Login({ closeLogin, setIsLoggedIn }) {
   const [isSignup, setIsSignup] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
@@ -117,6 +117,7 @@ function Login({ closeLogin }) {
           console.log(token);
           console.log(result);
           localStorage.setItem("token", token);
+          setIsLoggedIn(true);    
           closeLogin?.();}
       } else {
         const err = await res.text();
