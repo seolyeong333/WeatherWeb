@@ -38,6 +38,16 @@ public class JWTUtil {
                 .compact();
     }
 
+    public String generateSocialToken(String email, String nickname) {
+        return Jwts.builder()
+                .setSubject(email)
+                .claim("nickname", nickname)
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + expiration))
+                .signWith(secretKey, SignatureAlgorithm.HS256)
+                .compact();
+    }
+
     // Claims 추출
     public Claims getClaims(String token) {
         return Jwts.parserBuilder()

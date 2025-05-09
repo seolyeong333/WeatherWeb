@@ -38,6 +38,7 @@ logging:
 
 openai:
   api-key:${OPENAI_API_KEY}
+
 jwt:
   secret: ThisIsASecretKeyThatIsLongEnoughToBeSecureAndUsedInHS256!
   
@@ -45,5 +46,9 @@ openweather:
   api:
     key: "4f673522ff69c4d615b1e593ce6fa16b"
 
-kakao:
+kakaomap:
   rest-api-key: "e7c76873999ef901948568fdbf33233b"
+
+kakao:
+  api_key: "e6277124451eab83b9d7885e70191688"
+  redirect_uri: http://localhost:8080/api/users/login/kakao
