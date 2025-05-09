@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Form, Button } from "react-bootstrap";
 import { FaGoogle } from "react-icons/fa";
 import { SiKakaotalk, SiNaver } from "react-icons/si";
@@ -14,82 +14,112 @@ function Login({ closeLogin }) {
     remember: false,
   });
 
+  const [repassword, setRepassword] = useState("");
+  const [authKeySent, setAuthKeySent] = useState("");
+  const [userInputKey, setUserInputKey] = useState("");
+  const [isVerified, setIsVerified] = useState(false);
+  const [emailStatus, setEmailStatus] = useState("");
+  const [isCodeSent, setIsCodeSent] = useState(false);
+  const [emailReadOnly, setEmailReadOnly] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(300);
+
+  useEffect(() => {
+    if (!isCodeSent || timeLeft <= 0) return;
+    const timer = setInterval(() => setTimeLeft(prev => prev - 1), 1000);
+    return () => clearInterval(timer);
+  }, [isCodeSent, timeLeft]);
+
+  const formatTime = (s) => `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`;
+
   const changeHandler = (e) => {
     const { name, value, type, checked } = e.target;
-    setFormData({
-      ...formData,
-      [name]: type === "checkbox" ? checked : value,
-    });
+    if (name === "repassword") setRepassword(value);
+    else {
+      setFormData({
+        ...formData,
+        [name]: type === "checkbox" ? checked : value,
+      });
+    }
+  };
+
+  const sendEmailHandler = async () => {
+    if (!formData.email) return alert("이메일을 입력하세요.");
+    try {
+      const res = await fetch("http://localhost:8080/api/users/email/auth", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: formData.email, type: "signup" }),
+      });
+      const data = await res.text();
+      if (data === "duplicate") setEmailStatus("이미 존재하는 이메일입니다.");
+      else {
+        setAuthKeySent(data);
+        setIsCodeSent(true);
+        setTimeLeft(300);
+        setEmailStatus("인증 메일이 전송되었습니다.");
+      }
+    } catch (err) {
+      console.error(err);
+      setEmailStatus("이메일 인증 실패");
+    }
+  };
+
+  const verifyAuthKeyHandler = async () => {
+    try {
+      const res = await fetch("http://localhost:8080/api/users/email/verify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: formData.email, authKey: userInputKey }),
+      });
+      if (res.ok) {
+        alert("이메일 인증 완료!");
+        setIsVerified(true);
+        setEmailReadOnly(true);
+        setEmailStatus("");
+      } else {
+        alert("인증 실패");
+      }
+    } catch (e) {
+      console.error(e);
+      alert("서버 오류");
+    }
   };
 
   const submitHandler = async (e) => {
     e.preventDefault();
+    const url = isSignup ? "http://localhost:8080/api/users" : "http://localhost:8080/api/users/login";
 
-    const MOCK_BASE = "https://bf0e0938-d57a-4186-b3dd-dd00539ac6ed.mock.pstmn.io";
-
-
-    // API endpoint 설정
-    const url = isSignup
-      ? `${MOCK_BASE}/api/users`
-      : `${MOCK_BASE}/api/users/login`;
-
-    // 요청 데이터 구성
-    const payload = isSignup
-      ? { ...formData, type: "signup" }
-      : { email: formData.email, password: formData.password };
+    if (isSignup) {
+      if (!isVerified) return alert("이메일 인증 먼저 하세요.");
+      if (formData.password !== repassword) return alert("비밀번호 불일치");
+    }
 
     try {
-      const response = await fetch(url, {
+      const res = await fetch(url, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(isSignup ? formData : {
+          email: formData.email,
+          password: formData.password,
+        }),
       });
 
-      if (response.ok) {
-        const result = await response.json();
-        console.log(isSignup ? "✅ 회원가입 성공" : "✅ 로그인 성공", result);
+      if (res.ok) {
+        const result = await res.json();
         alert(isSignup ? "회원가입 성공!" : `로그인 성공! 환영합니다, ${result.nickname}님`);
-
-        if (!isSignup) {
-          closeLogin?.(); // 로그인 성공 시 모달 닫기 등 처리
-        }
+        if (!isSignup) closeLogin?.();
       } else {
-        const errorText = await response.text();
-        console.error("❌ 요청 실패:", errorText);
-        alert(isSignup ? "회원가입 실패" : "로그인 실패");
+        const err = await res.text();
+        alert(`실패: ${err}`);
       }
     } catch (err) {
-      console.error("🚨 서버 오류 발생:", err);
-      alert("서버 오류가 발생했습니다. 관리자에게 문의하세요.");
+      console.error(err);
+      alert("서버 오류");
     }
   };
 
-  const handleGoogleLogin = () => {
-    window.location.href = "https://accounts.google.com/o/oauth2/v2/auth";
-  };
-
-  const handleKakaoLogin = () => {
-    window.location.href = "https://kauth.kakao.com/oauth/authorize";
-  };
-
-  const handleNaverLogin = () => {
-    window.location.href = "https://nid.naver.com/oauth2.0/authorize";
-  };
-
   return (
-    <div
-      className="mx-auto px-3"
-      style={{
-        width: "100%",
-        maxWidth: "450px",
-        textAlign: "center",
-        padding: "2.5rem 2rem",
-        minHeight: "580px",
-        boxSizing: "border-box",
-      }}
-    >
+    <div className="mx-auto px-3" style={{ width: "100%", maxWidth: "450px", textAlign: "center", padding: "2.5rem 2rem", minHeight: "580px" }}>
       <div className="d-flex justify-content-center align-items-center mb-3" style={{ fontWeight: 600, fontSize: "1.5rem" }}>
         <span style={{ color: "#333" }}>ON</span>
         <img src="/onda-favicon.png" alt="ONDA 로고" style={{ height: "52px" }} />
@@ -97,89 +127,33 @@ function Login({ closeLogin }) {
       </div>
 
       <Form onSubmit={submitHandler}>
-        {!isSignup ? (
+        <Form.Control type="email" name="email" placeholder="이메일" className="mb-3" value={formData.email} onChange={changeHandler} required readOnly={emailReadOnly} />
+
+        {isSignup && !isVerified && (
           <>
-            <Form.Control
-              type="email"
-              name="email"
-              placeholder="이메일"
-              className="mb-3"
-              value={formData.email}
-              onChange={changeHandler}
-              required
-            />
-            <Form.Control
-              type="password"
-              name="password"
-              placeholder="비밀번호"
-              className="mb-3"
-              value={formData.password}
-              onChange={changeHandler}
-              required
-            />
-            <div className="d-flex justify-content-between align-items-center mb-4 px-1">
-              <Form.Check
-                type="checkbox"
-                name="remember"
-                checked={formData.remember}
-                onChange={changeHandler}
-                id="rememberCheck"
-                label={<span style={{ fontSize: "0.85rem" }}>로그인 유지하기</span>}
-              />
-              <a href="#" className="text-muted text-decoration-none" style={{ fontSize: "0.85rem" }}>
-                비밀번호 찾기
-              </a>
-            </div>
+            <Button onClick={sendEmailHandler} className="mb-2" size="sm">인증코드 요청</Button>
+            {isCodeSent && (
+              <>
+                <Form.Control type="text" placeholder="인증코드 입력" value={userInputKey} onChange={(e) => setUserInputKey(e.target.value)} className="mb-2" />
+                <Button onClick={verifyAuthKeyHandler} size="sm">인증하기</Button>
+                <div className="text-danger mt-2">유효 시간: {formatTime(timeLeft)}</div>
+              </>
+            )}
+            {emailStatus && <div className="text-danger mt-2">{emailStatus}</div>}
           </>
-        ) : (
+        )}
+
+        <Form.Control type="password" name="password" placeholder="비밀번호" className="mb-3" value={formData.password} onChange={changeHandler} required />
+        {isSignup && (
           <>
-            <Form.Control
-              type="email"
-              name="email"
-              placeholder="이메일"
-              className="mb-3"
-              value={formData.email}
-              onChange={changeHandler}
-              required
-            />
-            <Form.Control
-              type="password"
-              name="password"
-              placeholder="비밀번호"
-              className="mb-3"
-              value={formData.password}
-              onChange={changeHandler}
-              required
-            />
-            <Form.Control
-              type="text"
-              name="nickname"
-              placeholder="닉네임"
-              className="mb-3"
-              value={formData.nickname}
-              onChange={changeHandler}
-              required
-            />
-            <Form.Select
-              name="gender"
-              className="mb-3"
-              value={formData.gender}
-              onChange={changeHandler}
-              required
-            >
+            <Form.Control type="password" name="repassword" placeholder="비밀번호 재입력" className="mb-3" value={repassword} onChange={changeHandler} required />
+            <Form.Control type="text" name="nickname" placeholder="닉네임" className="mb-3" value={formData.nickname} onChange={changeHandler} required />
+            <Form.Select name="gender" className="mb-3" value={formData.gender} onChange={changeHandler} required>
               <option value="">성별 선택</option>
               <option value="male">남자</option>
               <option value="female">여자</option>
             </Form.Select>
-            <Form.Control
-              type="date"
-              name="birthday"
-              placeholder="생년월일"
-              className="mb-3"
-              value={formData.birthday}
-              onChange={changeHandler}
-              required
-            />
+            <Form.Control type="date" name="birthday" className="mb-3" value={formData.birthday} onChange={changeHandler} required />
           </>
         )}
 
@@ -190,13 +164,13 @@ function Login({ closeLogin }) {
 
       {!isSignup && (
         <div className="mb-4">
-          <Button onClick={handleGoogleLogin} className="w-100 mb-3 d-flex align-items-center justify-content-center" variant="light">
+          <Button onClick={() => window.location.href = "https://accounts.google.com/o/oauth2/v2/auth"} className="w-100 mb-3 d-flex align-items-center justify-content-center" variant="light">
             <FaGoogle className="me-2" /> 구글 계정으로 로그인
           </Button>
-          <Button onClick={handleKakaoLogin} className="w-100 mb-3 d-flex align-items-center justify-content-center" style={{ backgroundColor: "#FEE500", color: "#000", fontWeight: "bold" }}>
+          <Button onClick={() => window.location.href = "https://kauth.kakao.com/oauth/authorize"} className="w-100 mb-3" style={{ backgroundColor: "#FEE500", color: "#000", fontWeight: "bold" }}>
             <SiKakaotalk className="me-2" /> 카카오 계정으로 로그인
           </Button>
-          <Button onClick={handleNaverLogin} className="w-100 d-flex align-items-center justify-content-center" style={{ backgroundColor: "#03C75A", color: "#fff", fontWeight: "bold" }}>
+          <Button onClick={() => window.location.href = "https://nid.naver.com/oauth2.0/authorize"} className="w-100" style={{ backgroundColor: "#03C75A", color: "#fff", fontWeight: "bold" }}>
             <SiNaver className="me-2" /> 네이버 계정으로 로그인
           </Button>
         </div>
@@ -204,9 +178,9 @@ function Login({ closeLogin }) {
 
       <div style={{ fontSize: "0.9rem" }}>
         {isSignup ? (
-          <>이미 계정이 있으신가요? <a href="#" className="fw-semibold" style={{ color: "#5B8DEF" }} onClick={() => setIsSignup(false)}>로그인</a></>
+          <>이미 계정이 있으신가요? <a href="#" className="fw-semibold" style={{ color: "#333" }} onClick={() => setIsSignup(false)}>로그인</a></>
         ) : (
-          <>회원이 아니신가요? <a href="#" className="fw-semibold" style={{ color: "#5B8DEF" }} onClick={() => setIsSignup(true)}>회원가입</a></>
+          <>회원이 아니신가요? <a href="#" className="fw-semibold" style={{ color: "#333" }} onClick={() => setIsSignup(true)}>회원가입</a></>
         )}
       </div>
     </div>
