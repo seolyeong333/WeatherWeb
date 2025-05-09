@@ -14,11 +14,12 @@ function KakaoLoginSuccess() {
     const token = params.get("token");
 
     if (token) {
-      localStorage.setItem("jwt", token);
+      localStorage.setItem("token", token);
       alert("카카오 로그인 성공!");
       navigate("/main"); // 메인 페이지 등으로 이동
     } else {
       alert("토큰 없음. 로그인 실패");
+      navigate("/main"); // 메인 페이지 등으로 이동
     }
   }, [navigate]);
 
