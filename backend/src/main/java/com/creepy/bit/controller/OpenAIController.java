@@ -18,8 +18,11 @@ public class OpenAIController {
     @PostMapping("/ask")
     public ResponseEntity<String> ask(@RequestBody Map<String, String> body) {
         System.out.println("OpenAIController POST ask 호출");
-        String question = body.get("question");
-        String answer = openAIService.ask(question);
+        String location = body.get("location");
+        System.out.println(location);
+        String category = (String) body.getOrDefault("category", "핫플");
+        String answer = openAIService.ask(location, category);
+        System.out.println("OpenAIController "+answer);
         return ResponseEntity.ok(answer);
     }
 }
