@@ -10,7 +10,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 public class KakaoService {
 
     // application.properties에 설정된 카카오 REST API 키
-    @Value("${kakao.rest-api-key}")
+    @Value("${kakaomap.rest-api-key}")
     private String kakaoApiKey;
 
     // HTTP 요청 보낼 때 사용하는 도구 (Spring 기본 제공)
