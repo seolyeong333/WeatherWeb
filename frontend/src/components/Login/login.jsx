@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Form, Button } from "react-bootstrap";
 import { FaGoogle } from "react-icons/fa";
 import { SiKakaotalk, SiNaver } from "react-icons/si";
@@ -127,6 +128,29 @@ function Login({ closeLogin }) {
     }
   };
 
+  const handleGoogleLogin = () => {
+    window.location.href = "https://accounts.google.com/o/oauth2/v2/auth";
+  };
+  
+  // 카카오 로그인
+  //const REST_API_KEY = import.meta.env.VITE_KAKAO_CLIENT_ID;
+  //const REDIRECT_URI = import.meta.env.VITE_KAKAO_REDIRECT_URI;
+
+  const REST_API_KEY = "e6277124451eab83b9d7885e70191688";
+  const REDIRECT_URI = "http://localhost:8080/api/users/login/kakao";
+
+  console.log("🔑 REST_API_KEY =", REST_API_KEY);
+  console.log("🔁 REDIRECT_URI =", REDIRECT_URI);
+ 
+  const handleKakaoLogin = () => {
+    const kakaoAuthUrl = `https://kauth.kakao.com/oauth/authorize?client_id=${REST_API_KEY}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=code`;
+    window.location.href = kakaoAuthUrl;
+  };
+
+  const handleNaverLogin = () => {
+    window.location.href = "https://nid.naver.com/oauth2.0/authorize";
+  };
+
   return (
     <div className="loginModal">
       <div className="logo">
@@ -176,7 +200,7 @@ function Login({ closeLogin }) {
           <Button onClick={() => window.location.href = "https://accounts.google.com/o/oauth2/v2/auth"} className="w-100 mb-3 d-flex align-items-center justify-content-center" variant="light">
             <FaGoogle className="me-2" /> 구글 계정으로 로그인
           </Button>
-          <Button onClick={() => window.location.href = "https://kauth.kakao.com/oauth/authorize"} className="w-100 mb-3" style={{ backgroundColor: "#FEE500", color: "#000", fontWeight: "bold" }}>
+          <Button onClick={handleKakaoLogin} className="w-100 mb-3 d-flex align-items-center justify-content-center" style={{ backgroundColor: "#FEE500", color: "#000", fontWeight: "bold" }}>
             <SiKakaotalk className="me-2" /> 카카오 계정으로 로그인
           </Button>
           <Button onClick={() => window.location.href = "https://nid.naver.com/oauth2.0/authorize"} className="w-100" style={{ backgroundColor: "#03C75A", color: "#fff", fontWeight: "bold" }}>
