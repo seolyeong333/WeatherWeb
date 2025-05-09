@@ -6,10 +6,22 @@ server:
 
 spring:
   datasource:
-    url: jdbc:mysql://localhost:8080/bit?useSSL=false&serverTimezone=Asia/Seoul
+    url: jdbc:mysql://localhost:3306/weatherwebdb?useSSL=false&serverTimezone=Asia/Seoul
     username: bit
     password: bit
     driver-class-name: com.mysql.cj.jdbc.Driver
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: weatherWebCreepy@gmail.com
+    password: aakvmmgnnqzdkkvh
+    properties:
+      mail:
+        smtp:
+          auth: true
+          timeout: 5000
+          starttls:
+            enable: true
 
   mvc:
     pathmatch:
@@ -24,6 +36,11 @@ logging:
     root: INFO
     com.project: DEBUG
 
+openai:
+  api-key:${OPENAI_API_KEY}
+jwt:
+  secret: ThisIsASecretKeyThatIsLongEnoughToBeSecureAndUsedInHS256!
+  
 openweather:
   api:
     key: "4f673522ff69c4d615b1e593ce6fa16b"
