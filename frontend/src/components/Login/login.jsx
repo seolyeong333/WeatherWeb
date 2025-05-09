@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Form, Button } from "react-bootstrap";
 import { FaGoogle } from "react-icons/fa";
 import { SiKakaotalk, SiNaver } from "react-icons/si";
+import "./Login.css"; 
 
 function Login({ closeLogin }) {
   const [isSignup, setIsSignup] = useState(false);
@@ -42,6 +43,7 @@ function Login({ closeLogin }) {
     }
   };
 
+  // E-mail
   const sendEmailHandler = async () => {
     if (!formData.email) return alert("이메일을 입력하세요.");
     try {
@@ -64,6 +66,7 @@ function Login({ closeLogin }) {
     }
   };
 
+  // E-mail verify
   const verifyAuthKeyHandler = async () => {
     try {
       const res = await fetch("http://localhost:8080/api/users/email/verify", {
@@ -85,6 +88,7 @@ function Login({ closeLogin }) {
     }
   };
 
+  // Login/siginup success
   const submitHandler = async (e) => {
     e.preventDefault();
     const url = isSignup ? "http://localhost:8080/api/users" : "http://localhost:8080/api/users/login";
@@ -107,7 +111,12 @@ function Login({ closeLogin }) {
       if (res.ok) {
         const result = await res.json();
         alert(isSignup ? "회원가입 성공!" : `로그인 성공! 환영합니다, ${result.nickname}님`);
-        if (!isSignup) closeLogin?.();
+        if (!isSignup) {
+          const token = result.token; // 백엔드가 내려주는 JSON 필드 이름 맞게 확인
+          console.log(token);
+          console.log(result);
+          localStorage.setItem("token", token);
+          closeLogin?.();}
       } else {
         const err = await res.text();
         alert(`실패: ${err}`);
@@ -119,10 +128,10 @@ function Login({ closeLogin }) {
   };
 
   return (
-    <div className="mx-auto px-3" style={{ width: "100%", maxWidth: "450px", textAlign: "center", padding: "2.5rem 2rem", minHeight: "580px" }}>
-      <div className="d-flex justify-content-center align-items-center mb-3" style={{ fontWeight: 600, fontSize: "1.5rem" }}>
+    <div className="loginModal">
+      <div className="logo">
         <span style={{ color: "#333" }}>ON</span>
-        <img src="/onda-favicon.png" alt="ONDA 로고" style={{ height: "52px" }} />
+        <img src="/onda-favicon.png" alt="ONDA 로고"/>
         <span style={{ color: "#333" }}>DA</span>
       </div>
 
@@ -178,9 +187,9 @@ function Login({ closeLogin }) {
 
       <div style={{ fontSize: "0.9rem" }}>
         {isSignup ? (
-          <>이미 계정이 있으신가요? <a href="#" className="fw-semibold" style={{ color: "#333" }} onClick={() => setIsSignup(false)}>로그인</a></>
+          <>이미 계정이 있으신가요? <a href="#" className="fw-semibold" onClick={() => setIsSignup(false)}>로그인</a></>
         ) : (
-          <>회원이 아니신가요? <a href="#" className="fw-semibold" style={{ color: "#333" }} onClick={() => setIsSignup(true)}>회원가입</a></>
+          <>회원이 아니신가요? <a href="#" className="fw-semibold" onClick={() => setIsSignup(true)}>회원가입</a></>
         )}
       </div>
     </div>
