@@ -3,6 +3,8 @@
 
 import com.creepy.bit.domain.UserRequestDto;
 import com.creepy.bit.domain.NoticeDto;
+import com.creepy.bit.domain.BookMarkDto;
+import com.creepy.bit.domain.OpinionDto;
 
 import org.apache.ibatis.annotations.Mapper;
 
@@ -12,7 +14,6 @@ import java.util.List;
 public interface MainMapper {
 
     // USER
-
     // 로그인 (email + password 확인)
     int login(UserRequestDto userDto);
 
@@ -52,4 +53,36 @@ public interface MainMapper {
 
     // 공지 삭제
     void deleteNotice(int noticeId);
+
+    // BookMark
+    // 내 북마크 조회 
+    List<BookMarkDto> getMyBookMarks(int userId);
+
+    // 북마크 추가
+    void insertBookMark(BookMarkDto dto);
+
+    // 북마크 삭제
+    void deleteBookMark(int bookmarkId);
+
+    // Opinion
+    // 내 한줄평 조회
+    List<OpinionDto> getMyOpinions(int userId);
+
+    // 장소 기준 한줄평 조회
+    List<OpinionDto> getOpinionsByPlaceId(String placeId);
+
+    // 한줄평 작성
+    void insertOpinion(OpinionDto opinionDto);
+
+    // 한줄평 삭제
+    void deleteOpinion(int opinionId);
+    
+    // 좋아요
+    void increaseLikes(int opinionId);
+
+    // 싫어요
+    void increaseDislikes(int opinionId);
+
+
+
 }

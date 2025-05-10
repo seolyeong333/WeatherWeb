@@ -6,12 +6,16 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.List;
+
+import com.creepy.bit.domain.KakaoMapDto;
 import com.creepy.bit.service.KakaoService;
 
 @RestController
 @RequestMapping("/api/kakao")  // 이 컨트롤러의 API는 "/api/kakao"로 시작됨
-@CrossOrigin(origins = "*")    // 프론트엔드(React)에서 요청 가능하게 CORS 허용
 public class KakaoController {
 
     @Autowired
@@ -29,7 +33,17 @@ public class KakaoController {
      */
     @GetMapping("/region")
     public String getRegionName(@RequestParam double lat, @RequestParam double lon) {
+        System.out.println("KakaoController GET /region 호출");
         // 실질적인 API 호출은 KakaoService가 처리
         return kakaoService.getRegionName(lat, lon);
     }
+
+    // 카테고리 기반 장소 검색
+    @GetMapping("/places")
+    public ResponseEntity<List<KakaoMapDto>> getPlaces(@RequestParam double lat, @RequestParam double lon, @RequestParam String category) {
+        System.out.println("KakaoController GET /places 호출");
+        List<KakaoMapDto> result = kakaoService.searchPlacesByCategory(lat, lon, category);
+        return ResponseEntity.ok(result);
+    }
+
 }
