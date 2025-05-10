@@ -13,8 +13,9 @@ public class BookMarkService {
     @Autowired
     private MainMapper mainMapper;
 
-    public void insertBookMark(BookMarkDto bookMarkDto) {
+    public int  insertBookMark(BookMarkDto bookMarkDto) {
         mainMapper.insertBookMark(bookMarkDto);
+        return bookMarkDto.getBookmarkId();
     }
 
     public void deleteBookMark(int bookmarkId) {
