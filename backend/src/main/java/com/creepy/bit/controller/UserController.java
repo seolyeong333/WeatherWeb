@@ -37,7 +37,8 @@ public class UserController {
             String token = jwtUtil.generateToken(
                     String.valueOf(userData.getEmail()),
                     userData.getNickname(),
-                    userData.getAuth()
+                    userData.getAuth(), 
+                    userData.getUserId()
             );
 
             return ResponseEntity.ok(Map.of(

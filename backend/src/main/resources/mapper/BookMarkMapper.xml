@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.creepy.bit.mapper.MainMapper">
+
+    <insert id="insertBookMark" parameterType="com.creepy.bit.domain.BookMarkDto">
+    INSERT INTO bookmarks (userId, placeId, createdAt)
+    VALUES (#{userId}, #{placeId}, NOW())
+    </insert>
+
+
+    <delete id="deleteBookMark" parameterType="int">
+        DELETE FROM bookmarks WHERE bookmarkId = #{bookmarkId}
+    </delete>
+
+    <select id="getMyBookMarks" parameterType="int" resultType="com.creepy.bit.domain.BookMarkDto">
+        SELECT * FROM bookmarks WHERE userId = #{userId} ORDER BY createdAt DESC
+    </select>
+
+</mapper>
