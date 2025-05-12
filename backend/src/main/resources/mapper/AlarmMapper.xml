@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.creepy.bit.mapper.MainMapper">
+
+  <insert id="insertAlarm" parameterType="com.creepy.bit.domain.AlarmDto">
+    INSERT INTO alarms (userId, conditionType, weatherCondition, airCondition, createdAt)
+    VALUES (#{userId}, #{conditionType}, #{weatherCondition}, #{airCondition}, NOW())
+  </insert>
+
+  <select id="selectAlarmsByUserId" resultType="com.creepy.bit.domain.AlarmDto">
+    SELECT * FROM alarms WHERE userId = #{userId}
+  </select>
+
+  <delete id="deleteAlarm" parameterType="int">
+    DELETE FROM alarms WHERE alarmId = #{alarmId}
+  </delete>
+
+  <update id="updateAlarm">
+    UPDATE alarms
+    SET conditionType = #{conditionType},
+        weatherCondition = #{value} 
+    WHERE alarmId = #{alarmId}
+  </update>
+
+</mapper>

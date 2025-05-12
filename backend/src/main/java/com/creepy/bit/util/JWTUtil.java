@@ -85,4 +85,5 @@ public class JWTUtil {
     public String getAuth(String token) {
         return (String) getClaims(token).get("auth");
     }
+    
 }

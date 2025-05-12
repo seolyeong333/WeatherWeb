@@ -1,10 +1,13 @@
 // MyBatis XML 매핑 파일 (.xml)에 연결될 Java 인터페이스
  package com.creepy.bit.mapper;
 
+import com.creepy.bit.domain.AlarmDto;
 import com.creepy.bit.domain.UserRequestDto;
 import com.creepy.bit.domain.NoticeDto;
 import com.creepy.bit.domain.BookMarkDto;
+import com.creepy.bit.domain.ReportDto;
 import com.creepy.bit.domain.OpinionDto;
+import com.creepy.bit.domain.WeatherMessageDto;
 
 import org.apache.ibatis.annotations.Mapper;
 
@@ -84,5 +87,35 @@ public interface MainMapper {
     void increaseDislikes(int opinionId);
 
 
+    // Alarm
+    // 알림 추가 
+    void insertAlarm(AlarmDto alarmDto);
+
+    // 내 알림 목록 
+    List<AlarmDto> selectAlarmsByUserId(int userId);
+
+    // 알림 삭제
+    void deleteAlarm(int alarmId);
+    
+    // 알림 수정
+    void updateAlarm(int alarmId, String conditionType, String value);
+
+    // Report
+    // 신고 
+    void insertReport(ReportDto reportDto);
+
+    // 내 신고 목록 (사용자 기준)
+    List<ReportDto> selectReportsByUserId(int userId);
+
+    // 전체 사용자 신고 목록 (관리자 기준)
+    List<ReportDto> selectAllReports();
+
+    // 신고 자세히 보기 
+    ReportDto selectReportById(int id);
+
+    // 신고 처리상태 변경 
+    int updateReportStatus(int id, String status);
+
+    WeatherMessageDto findByWeatherTypeAndTempRange(String weatherType, double feelsLike);
 
 }

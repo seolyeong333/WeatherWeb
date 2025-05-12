@@ -51,44 +51,61 @@ public class KakaoService {
         return response.getBody();
     }
 
-    public List<KakaoMapDto> searchPlacesByCategory(double lat, double lon, String categoryCode) {
-            String url = "https://dapi.kakao.com/v2/local/search/category.json" +
-                        "?category_group_code=" + categoryCode +
-                        "&x=" + lon + "&y=" + lat + "&radius=2000";
+    public List<KakaoMapDto> searchPlacesByCategory(double lat, double lon, String categoryCode, String keyword) {
+    String url;
 
-            HttpHeaders headers = new HttpHeaders();
-            headers.set("Authorization", "KakaoAK " + kakaoApiKey);
-
-            HttpEntity<Void> entity = new HttpEntity<>(headers);
-
-            ResponseEntity<String> response = restTemplate.exchange(
-                    url, HttpMethod.GET, entity, String.class
-            );
-
-            JSONObject json = new JSONObject(response.getBody());
-            JSONArray documents = json.getJSONArray("documents");
-
-            List<KakaoMapDto> result = new ArrayList<>();
-            for (int i = 0; i < documents.length(); i++) {
-                JSONObject doc = documents.getJSONObject(i);
-                result.add(new KakaoMapDto(
-                    doc.getString("id"),
-                    doc.getString("place_name"),
-                    doc.getString("category_name"),
-                    doc.getString("category_group_code"),
-                    doc.getString("category_group_name"),
-                    doc.optString("phone", ""),
-                    doc.getString("address_name"),
-                    doc.optString("road_address_name", ""),
-                    doc.getString("x"),
-                    doc.getString("y"),
-                    doc.optString("place_url", ""),
-                    doc.optString("distance", "")
-                ));
-            }
-
-        return result;
+    if (keyword != null && !keyword.isBlank()) {
+        // 🔍 키워드 기반 검색
+        url = UriComponentsBuilder
+                .fromHttpUrl("https://dapi.kakao.com/v2/local/search/keyword.json")
+                .queryParam("query", keyword)
+                .queryParam("x", lon)
+                .queryParam("y", lat)
+                .queryParam("radius", 2000)
+                .build()
+                .toUriString();
+    } else {
+        // 📂 카테고리 기반 검색
+        url = UriComponentsBuilder
+                .fromHttpUrl("https://dapi.kakao.com/v2/local/search/category.json")
+                .queryParam("category_group_code", categoryCode)
+                .queryParam("x", lon)
+                .queryParam("y", lat)
+                .queryParam("radius", 2000)
+                .build()
+                .toUriString();
     }
+
+    HttpHeaders headers = new HttpHeaders();
+    headers.set("Authorization", "KakaoAK " + kakaoApiKey);
+    HttpEntity<Void> entity = new HttpEntity<>(headers);
+
+    ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
+    JSONObject json = new JSONObject(response.getBody());
+    JSONArray documents = json.getJSONArray("documents");
+
+    List<KakaoMapDto> result = new ArrayList<>();
+    for (int i = 0; i < documents.length(); i++) {
+        JSONObject doc = documents.getJSONObject(i);
+        result.add(new KakaoMapDto(
+                doc.getString("id"),
+                doc.getString("place_name"),
+                doc.getString("category_name"),
+                doc.optString("category_group_code", ""),
+                doc.optString("category_group_name", ""),
+                doc.optString("phone", ""),
+                doc.getString("address_name"),
+                doc.optString("road_address_name", ""),
+                doc.getString("x"),
+                doc.getString("y"),
+                doc.optString("place_url", ""),
+                doc.optString("distance", "")
+        ));
+    }
+
+    return result;
+}
+
 
 
 }

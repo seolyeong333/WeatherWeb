@@ -52,3 +52,6 @@ kakaomap:
 kakao:
   api_key: "e6277124451eab83b9d7885e70191688"
   redirect_uri: http://localhost:8080/api/users/login/kakao
+
+google:
+  api-key: "AIzaSyCTjxPRBodBLksY88osqePKnyndE4bwarI"

@@ -34,16 +34,17 @@ public class KakaoController {
     @GetMapping("/region")
     public String getRegionName(@RequestParam double lat, @RequestParam double lon) {
         System.out.println("KakaoController GET /region 호출");
-        // 실질적인 API 호출은 KakaoService가 처리
+        // 실질적인 API 호출은 KakaoService가 처리  
         return kakaoService.getRegionName(lat, lon);
     }
 
     // 카테고리 기반 장소 검색
     @GetMapping("/places")
-    public ResponseEntity<List<KakaoMapDto>> getPlaces(@RequestParam double lat, @RequestParam double lon, @RequestParam String category) {
+    public ResponseEntity<List<KakaoMapDto>> getPlaces(@RequestParam double lat, @RequestParam double lon, @RequestParam(required = false) String category,  @RequestParam(required = false) String keyword ) {
         System.out.println("KakaoController GET /places 호출");
-        List<KakaoMapDto> result = kakaoService.searchPlacesByCategory(lat, lon, category);
+        List<KakaoMapDto> result = kakaoService.searchPlacesByCategory(lat, lon, category, keyword);
         return ResponseEntity.ok(result);
     }
+
 
 }

@@ -22,28 +22,22 @@ public class BookMarkController {
     private BookMarkService bookmarkService;
 
     // 북마크 추가
+    @PostMapping
+    public ResponseEntity<Map<String, Object>> insertBookMark( @RequestHeader("Authorization") String token, @RequestBody BookMarkDto bookMarkDto) {
+        System.out.println("BookMarkController /{id} POST 호출");        
+        try {
+            String pureToken = token.replace("Bearer ", "");
+            Integer userId = jwtUtil.getUserId(pureToken); // ✅ JWT에서 userId 추출
 
-@PostMapping
-public ResponseEntity<Map<String, Object>> insertBookMark(
-        @RequestHeader("Authorization") String token,
-        @RequestBody BookMarkDto bookMarkDto) {
-    try {
-        String pureToken = token.replace("Bearer ", "");
-        Integer userId = jwtUtil.getUserId(pureToken); // ✅ JWT에서 userId 추출
+            bookMarkDto.setUserId(userId); // ✅ 강제 주입
+            int savedId = bookmarkService.insertBookMark(bookMarkDto);
 
-        if (userId == null || userId <= 0) {
-            return ResponseEntity.status(401).body(Map.of("error", "로그인 후 사용 가능합니다."));
+            return ResponseEntity.ok(Map.of("bookmarkId", savedId));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().body(Map.of("error", "북마크 추가 실패"));
         }
-
-        bookMarkDto.setUserId(userId); // ✅ 강제 주입
-        int savedId = bookmarkService.insertBookMark(bookMarkDto);
-
-        return ResponseEntity.ok(Map.of("bookmarkId", savedId));
-    } catch (Exception e) {
-        e.printStackTrace();
-        return ResponseEntity.internalServerError().body(Map.of("error", "북마크 추가 실패"));
     }
-}
 
 
 

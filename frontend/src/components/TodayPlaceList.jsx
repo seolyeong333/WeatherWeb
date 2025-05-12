@@ -1,7 +1,10 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "./TodayPlaceList.css";
 
 function TodayPlaceList() {
+  const navigate = useNavigate();
+  const [keyword, setKeyword] = useState("");
   const [places, setPlaces] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [bookmarkedMap, setBookmarkedMap] = useState({}); // { placeId: bookmarkId }
@@ -13,19 +16,42 @@ function TodayPlaceList() {
   };
 
   // 장소 리스트 가져오기
-  const fetchPlaceList = async (category = "AT4") => {  // 카카오맵 API에서 장소리스트 가져왔는데 처음에는 관광명소 가져오는거
+  const fetchPlaceList = async (category = "AT4", keyword = "") => {
     navigator.geolocation.getCurrentPosition(
       async (pos) => {
         const lat = pos.coords.latitude;
         const lon = pos.coords.longitude;
         const categoryCode = categoryCodeMap[category] || "AT4";
-
+  
+        let url = `http://localhost:8080/api/kakao/places?lat=${lat}&lon=${lon}`;
+        if (keyword) {
+          url += `&keyword=${encodeURIComponent(keyword)}`;
+          setSelectedCategory(null);
+        } else {
+          url += `&category=${encodeURIComponent(categoryCode)}`;
+        }
+  
         try {
-          const res = await fetch(
-            `http://localhost:8080/api/kakao/places?lat=${lat}&lon=${lon}&category=${categoryCode}`
+          const res = await fetch(url);
+          let data = await res.json(); // [{ id, placeName, ... }] ← imageUrl 아직 없음
+  
+          // 🔁 각 장소마다 이미지 요청 추가
+          const updated = await Promise.all(
+            data.map(async (place) => {
+              try {
+                const imageRes = await fetch(
+                  `http://localhost:8080/api/google/image?name=${encodeURIComponent(place.placeName)}&lat=${place.y}&lon=${place.x}`
+                );
+                const imageUrl = await imageRes.text();
+                return { ...place, imageUrl };
+              } catch (e) {
+                console.warn("이미지 로딩 실패:", place.placeName);
+                return { ...place, imageUrl: null };
+              }
+            })
           );
-          const data = await res.json();
-          setPlaces(data);
+  
+          setPlaces(updated);
         } catch (err) {
           console.error("장소 요청 실패:", err);
         }
@@ -33,11 +59,17 @@ function TodayPlaceList() {
       (err) => console.error("위치 접근 실패:", err)
     );
   };
+  
+  
 
   // 북마크 목록 가져오기
   const fetchBookmarks = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      console.log("비로그인 상태");
+      return; // 토큰 없으면 아예 실행 안 함
+    }
     try {
-      const token = localStorage.getItem("token");
       const res = await fetch("http://localhost:8080/api/bookmarks", {
         method: "GET",
         headers: {
@@ -126,10 +158,15 @@ function TodayPlaceList() {
   return (
     <div style={{ padding: "2rem" }}>
       <div className="search">
-        <input type="text" placeholder="장소 이름 검색 (미구현)" />
-        <button>🔍</button>
+        <input
+          type="text"
+          placeholder="장소 이름 검색"
+          value={keyword}
+          onChange={(e) => setKeyword(e.target.value)}
+        />
+        <button onClick={() => fetchPlaceList(selectedCategory, keyword)}>🔍</button>
       </div>
-
+  
       <div className="label-wrapper">
         {["음식점", "카페", "관광명소"].map((label) => (
           <button
@@ -144,36 +181,54 @@ function TodayPlaceList() {
           </button>
         ))}
       </div>
+  
+      {places.length === 0 ? (
+        <div className="no-results">검색 결과가 없습니다.</div>
+      ) : (
+        <div className="card-grid">
+          {places.map((place) => {
+            const placeKey = place.id;
+            const isBookmarked = Boolean(bookmarkedMap[placeKey]);
+  
+            return (
+              <div key={placeKey} className="place-card" onClick={() => navigate("/place-detail", { state: { place } })}>
+                {/* 📷 이미지 영역 */}
+                <div className="place-card-image">
+                  <img
+                    src={place.imageUrl || "/no-image.jpg"} // 이미지 없으면 대체 이미지
+                    alt={place.placeName}
+                    onError={(e) => { e.target.src = "/no-image.jpg"; }}
+                  />
+                </div>
 
-      <div className="card-grid">
-        {places.map((place) => {
-          const placeKey = place.id;
-          const isBookmarked = Boolean(bookmarkedMap[placeKey]);
+                {/* 📛 이름 + 북마크 */}
+                <div className="place-card-name">
+                  {place.placeName}
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleBookmark(place);
+                    }}
+                    className="bookmark-button"
+                    title="북마크"
+                  >
+                    {isBookmarked ? "★" : "☆"}
+                  </button>
+                </div>
 
-          return (
-            <div key={placeKey} className="place-card">
-              <div className="place-card-name">
-                {place.placeName}
-                <button
-                  onClick={() => toggleBookmark(place)}
-                  className="bookmark-button"
-                  title="북마크"
-                >
-                  {isBookmarked ? "★" : "☆"}
-                </button>
+                {/* ☎ 전화번호 */}
+                <div className="place-card-footer">
+                  <span>{place.phone || "📞 없음"}</span>
+                </div>
               </div>
-              <div className="place-card-footer">
-                <span>{place.phone || "📞 없음"}</span>
-                <a href={place.placeUrl} target="_blank" rel="noreferrer">
-                  🔗 보기
-                </a>
-              </div>
-            </div>
-          );
-        })}
-      </div>
+
+            );
+          })}
+        </div>
+      )}
     </div>
   );
+  
 }
 
 export default TodayPlaceList;

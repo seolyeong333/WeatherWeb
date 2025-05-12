@@ -5,6 +5,8 @@ import KakaoLoginSuccess from "./pages/KakaoLoginSuccess";
 import MyPage from "./pages/MyPage";
 import TodayPlace from "./pages/TodayPlace";
 import TodayPlaceList from "./components/TodayPlaceList"; 
+import PlaceDetail from "./pages/PlaceDetail";
+import WeatherMessageBox from "./pages/WeatherMessageBox";
 import { WeatherProvider } from "./components/WeatherContext"; // ✅
 
 function App() {
@@ -17,6 +19,10 @@ function App() {
           <Route path="/mypage" element={<MyPage />} />
           <Route path="/today-place" element={<TodayPlace />} />
           <Route path="/today-place-list" element={<TodayPlaceList />} />
+          <Route path="/place-detail" element={<PlaceDetail />} />
+          <Route path="/weathermessage" element={<WeatherMessageBox />} />
+         
+          
         </Routes>
       </BrowserRouter>
     </WeatherProvider>
