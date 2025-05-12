@@ -1,0 +1,168 @@
+/* 전체 래퍼 */
+/*
+.place-detail-wrapper {
+  background-color: #FAF3E0;
+  min-height: 100vh;
+  padding: 2rem;
+  font-family: 'Pretendard', sans-serif;
+  color: #333;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+*/
+
+/* Section 3: 상단 날씨 정보 */
+/*
+.section-3 {
+  background-color: #fff;
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: row;
+  gap: 2rem;
+  align-items: center;
+}
+*/
+
+/* 왼쪽 이미지 영역 (앞으로 확장 가능) */
+.section-3 .image-preview {
+  width: 200px;
+  height: 200px;
+  background-color: #eee;
+  border-radius: 12px;
+  flex-shrink: 0;
+}
+
+/* 오른쪽 날씨 박스 */
+.place-header {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.place-title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #333;
+  text-align: center;
+  margin: 0;
+}
+
+.weather-question {
+  font-size: 1rem;
+  color: #666;
+  text-align: center;
+  margin: 0;
+}
+
+.weather-middle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  font-size: 1.6rem;
+  font-weight: 500;
+}
+
+.weather-icon {
+  font-size: 2rem;
+}
+
+.weather-temp {
+  font-size: 1.6rem;
+  color: #222;
+}
+
+.weather-message {
+  background-color: #f3f3f3;
+  padding: 1rem;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: #444;
+  text-align: center;
+  max-width: 100%;
+}
+
+.recommend-tags {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+}
+
+.recommend-label {
+  font-weight: 600;
+  margin-right: 0.5rem;
+}
+
+.fit-tag {
+  background-color: #f4f4f4;
+  color: #222;
+  padding: 0.4rem 0.8rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  border: none;
+  cursor: default;
+}
+
+/* Section 2: 상세 정보 */
+.section-2 {
+  background-color: #fff;
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.place-subtitle {
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: #333;
+}
+
+.description {
+  font-size: 1rem;
+  color: #555;
+  line-height: 1.6;
+}
+
+.kakao-link {
+  color: #5B8DEF;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.kakao-link:hover {
+  text-decoration: underline;
+}
+
+.opinion-box {
+  background-color: #f0f0f0;
+  padding: 1rem;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  color: #444;
+}
+
+.back-btn {
+  margin-top: 1rem;
+  background-color: #ccc;
+  color: #333;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  width: 100%;
+}
+
+.back-btn:hover {
+  background-color: #bbb;
+}

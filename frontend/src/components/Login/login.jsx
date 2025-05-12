@@ -129,11 +129,17 @@ function Login({ closeLogin, setIsLoggedIn }) {
     }
   };
 
+  // Google
+  const GOOGLE_CLIENT_ID = "461258083904-or440dgo67641d00i882h65fcp22bqr1.apps.googleusercontent.com";
+  const GOOGLE_REDIRECT_URL = "http://localhost:8080/api/users/login/google";
+
   const handleGoogleLogin = () => {
-    window.location.href = "https://accounts.google.com/o/oauth2/v2/auth";
+    const GoogleAuthUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${GOOGLE_CLIENT_ID}&redirect_uri=${encodeURIComponent(GOOGLE_REDIRECT_URL)}`
+      + `&response_type=code&scope=email%20profile&access_type=offline&prompt=consent`;
+    window.location.href = GoogleAuthUrl;
   };
   
-  // 카카오 로그인
+  // Kakao 
   //const REST_API_KEY = import.meta.env.VITE_KAKAO_CLIENT_ID;
   //const REDIRECT_URI = import.meta.env.VITE_KAKAO_REDIRECT_URI;
 
@@ -148,8 +154,13 @@ function Login({ closeLogin, setIsLoggedIn }) {
     window.location.href = kakaoAuthUrl;
   };
 
+  // Naver
+  const NAVER_CLIENT_ID = "gE7Z05siQyzYs9sQZgem";
+  const NAVER_REDIRECT_URL = "http://localhost:8080/api/users/login/naver";
   const handleNaverLogin = () => {
-    window.location.href = "https://nid.naver.com/oauth2.0/authorize";
+    const NaverAuthUrl = `https://nid.naver.com/oauth2.0/authorize?response_type=code`
+      + `&client_id=${NAVER_CLIENT_ID}&redirect_uri=${encodeURIComponent(NAVER_REDIRECT_URL)}&state=RANDOM_STRING`;
+    window.location.href = NaverAuthUrl;
   };
 
   return (
@@ -198,13 +209,13 @@ function Login({ closeLogin, setIsLoggedIn }) {
 
       {!isSignup && (
         <div className="mb-4">
-          <Button onClick={() => window.location.href = "https://accounts.google.com/o/oauth2/v2/auth"} className="w-100 mb-3 d-flex align-items-center justify-content-center" variant="light">
+          <Button onClick={handleGoogleLogin} className="w-100 mb-3 d-flex align-items-center justify-content-center" variant="light">
             <FaGoogle className="me-2" /> 구글 계정으로 로그인
           </Button>
           <Button onClick={handleKakaoLogin} className="w-100 mb-3 d-flex align-items-center justify-content-center" style={{ backgroundColor: "#FEE500", color: "#000", fontWeight: "bold" }}>
             <SiKakaotalk className="me-2" /> 카카오 계정으로 로그인
           </Button>
-          <Button onClick={() => window.location.href = "https://nid.naver.com/oauth2.0/authorize"} className="w-100" style={{ backgroundColor: "#03C75A", color: "#fff", fontWeight: "bold" }}>
+          <Button onClick={handleNaverLogin} className="w-100" style={{ backgroundColor: "#03C75A", color: "#fff", fontWeight: "bold" }}>
             <SiNaver className="me-2" /> 네이버 계정으로 로그인
           </Button>
         </div>
