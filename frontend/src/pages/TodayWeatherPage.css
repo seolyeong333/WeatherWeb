@@ -1,0 +1,224 @@
+/* TodayWeatherPage.css */
+
+.today-weather-page {
+  background-color: #f7f9fc;
+  font-family: 'Noto Sans KR', sans-serif;
+  color: #333;
+  animation: fadein 0.5s ease-in;
+}
+
+.loading {
+  padding: 80px;
+  font-size: 20px;
+  text-align: center;
+}
+
+.header-section {
+  background: url('/forest.jpg') no-repeat center center/cover;
+  height: 360px;
+  position: relative;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.header-overlay {
+  background-color: rgba(0, 0, 0, 0.4);
+  padding: 40px;
+  border-radius: 16px;
+  text-align: center;
+}
+
+.header-title {
+  font-size: 32px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.header-subtext {
+  font-size: 16px;
+  margin: 4px 0;
+}
+
+.search-bar {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.search-bar input {
+  padding: 10px;
+  border: none;
+  border-radius: 20px 0 0 20px;
+  width: 250px;
+  font-size: 14px;
+}
+
+.search-bar button {
+  padding: 10px 16px;
+  background-color: #5B8DEF;
+  color: white;
+  border: none;
+  border-radius: 0 20px 20px 0;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.search-bar button:hover {
+  background-color: #4176db;
+}
+
+.cards-section {
+  padding: 40px 20px;
+  background-color: #f2f4f8;
+  max-width: 1024px;
+  margin: 0 auto;
+}
+
+.cards-title {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+.card-container {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  padding-bottom: 10px;
+}
+
+.weather-card {
+  min-width: 120px;
+  background-color: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+  padding: 12px;
+  text-align: center;
+  flex-shrink: 0;
+  transition: transform 0.2s;
+}
+
+.weather-card:hover {
+  transform: translateY(-5px);
+}
+
+.weather-icon {
+  width: 60px;
+  height: 60px;
+}
+
+.temp {
+  font-size: 18px;
+  font-weight: bold;
+  margin-top: 5px;
+}
+
+.city-name {
+  color: #555;
+  font-size: 14px;
+}
+
+.hourly-section,
+.daily-section,
+.detail-section {
+  max-width: 1024px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  background-color: #ffffff;
+}
+
+.chart-title {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 16px;
+}
+
+.chart-box {
+  background-color: white;
+  padding: 20px;
+  border-radius: 20px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  position: relative;
+}
+
+/* Chart.js specific styling override (for smooth design like in screenshots) */
+.canvas-container canvas {
+  border-radius: 12px !important;
+}
+
+.detail-title {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 16px;
+}
+
+.summary-box {
+  background-color: #f0f6ff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  margin-bottom: 20px;
+  font-size: 16px;
+  color: #333;
+}
+
+.recommendation-box {
+  background-color: #e3f2fd;
+  padding: 20px;
+  border-radius: 12px;
+  border-left: 5px solid #5B8DEF;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  font-size: 16px;
+}
+/* 미세먼지 차트 섹션 - 다른 섹션들과 동일하게 맞춤 */
+.air-section {
+  max-width: 1024px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  background-color: #ffffff;
+}
+
+.air-section .chart-title {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 16px;
+  color: #333;
+}
+
+.air-section .chart-box {
+  background-color: white;
+  padding: 20px;
+  border-radius: 20px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  position: relative;
+}
+
+.header-summary-line {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+}
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 80vh;
+  font-size: 18px;
+  color: #333;
+}
+/* 로딩 시 페이드인 효과 */
+@keyframes fadein {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
