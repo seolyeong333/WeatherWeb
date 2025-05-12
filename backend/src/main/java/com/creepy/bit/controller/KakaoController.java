@@ -11,7 +11,6 @@ import com.creepy.bit.service.KakaoService;
 
 @RestController
 @RequestMapping("/api/kakao")  // 이 컨트롤러의 API는 "/api/kakao"로 시작됨
-@CrossOrigin(origins = "*")    // 프론트엔드(React)에서 요청 가능하게 CORS 허용
 public class KakaoController {
 
     @Autowired

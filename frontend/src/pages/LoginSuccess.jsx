@@ -12,8 +12,8 @@ function LoginSuccess() {
 
     const params = new URLSearchParams(window.location.search);
     const token = params.get("token");  // 카카오용
-    const code = params.get("code");   // 구글&네이버용
-    const state = params.get("state"); // 네이버용
+    // const code = params.get("code");   // 구글&네이버용 - 백엔드에서 token으로 통합하기로 결정.
+    // const state = params.get("state"); // 네이버용
 
     if (token) {
       localStorage.setItem("token", token);

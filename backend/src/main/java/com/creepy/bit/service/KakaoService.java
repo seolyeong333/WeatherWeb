@@ -44,4 +44,5 @@ public class KakaoService {
         // 결과 본문 리턴 (JSON 텍스트)
         return response.getBody();
     }
+
 }
