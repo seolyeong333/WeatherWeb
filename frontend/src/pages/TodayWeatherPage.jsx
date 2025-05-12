@@ -245,8 +245,8 @@ const renderDailyChart = () => {
 
   const maxTemps = weatherData.daily.map((d) => d.temp_max);
   const minTemps = weatherData.daily.map((d) => d.temp_min);
-  const pops = weatherData.daily.map((d) => d.pop);       // 강수 확률 (%)
-  const humidities = weatherData.daily.map((d) => d.humidity); // 습도 (%)
+  const pops = weatherData.daily.map((d) => d.pop);
+  const humidities = weatherData.daily.map((d) => d.humidity);
 
   const data = {
     labels,
@@ -255,38 +255,30 @@ const renderDailyChart = () => {
         label: "최고 기온",
         data: maxTemps,
         backgroundColor: "#FFB74D",
-        borderRadius: 6,
         yAxisID: "y1",
-        barPercentage: 0.4,
-        categoryPercentage: 0.4,
         datalabels: {
+          color: "#FF9800",
           anchor: "end",
           align: "start",
-          color: "#FF9800",
           font: {
             weight: "bold",
-            size: 12,
           },
-          formatter: (v) => `${v.toFixed(1)}°C`,
+          formatter: (value) => `${value.toFixed(1)}°C`,
         },
       },
       {
         label: "최저 기온",
         data: minTemps,
         backgroundColor: "#64B5F6",
-        borderRadius: 6,
         yAxisID: "y1",
-        barPercentage: 0.4,
-        categoryPercentage: 0.4,
         datalabels: {
+          color: "#1976D2",
           anchor: "end",
           align: "start",
-          color: "#1976D2",
           font: {
             weight: "bold",
-            size: 12,
           },
-          formatter: (v) => `${v.toFixed(1)}°C`,
+          formatter: (value) => `${value.toFixed(1)}°C`,
         },
       },
       {
@@ -300,7 +292,6 @@ const renderDailyChart = () => {
         yAxisID: "y2",
         tension: 0.3,
         pointRadius: 3,
-        datalabels: { display: false },
       },
       {
         type: "line",
@@ -312,7 +303,6 @@ const renderDailyChart = () => {
         yAxisID: "y2",
         tension: 0.3,
         pointRadius: 3,
-        datalabels: { display: false },
       },
     ],
   };
@@ -327,13 +317,13 @@ const renderDailyChart = () => {
       tooltip: {
         callbacks: {
           label: (ctx) => {
-            if (ctx.dataset.label.includes("기온")) return `${ctx.dataset.label}: ${ctx.raw.toFixed(2)}°C`;
+            if (ctx.dataset.label.includes("기온")) return `${ctx.dataset.label}: ${ctx.raw.toFixed(1)}°C`;
             return `${ctx.dataset.label}: ${ctx.raw}%`;
           },
         },
       },
       datalabels: {
-        display: false, // 개별 dataset에서 override
+        display: (context) => context.dataset.type !== "line", // 막대에만 표시
       },
     },
     scales: {
@@ -380,7 +370,6 @@ const renderDailyChart = () => {
     </div>
   );
 };
-
 
 
 
