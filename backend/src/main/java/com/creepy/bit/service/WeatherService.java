@@ -1,12 +1,18 @@
 package com.creepy.bit.service;
 
+import com.creepy.bit.domain.WeatherMessageDto;
+import com.creepy.bit.mapper.MainMapper;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 @Service
 public class WeatherService {
+
+    @Autowired
+    private MainMapper mainMapper;
 
     // OpenWeather에서 발급받은 API 키 (yml 또는 properties에 설정돼 있어야 함)
     @Value("${openweather.api.key}")
@@ -62,4 +68,10 @@ public class WeatherService {
 
         return restTemplate.getForObject(url, String.class);
     }
+
+    public WeatherMessageDto getMatchedMessage(String weatherType, double feelsLike) {
+        // DB에서 조건에 맞는 메시지 하나 가져오기
+        return mainMapper.findByWeatherTypeAndTempRange(weatherType, feelsLike);
+    }
+
 }
