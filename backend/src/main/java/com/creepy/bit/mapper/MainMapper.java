@@ -41,6 +41,8 @@ public interface MainMapper {
     // 회원 정보 수정 (비밀번호 + 이메일 수정)
     void modifyUser(UserRequestDto userDto);
 
+    
+
     // Notice
     // 공지 전체 조회
     List<NoticeDto> getAllNotices();
