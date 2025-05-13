@@ -12,6 +12,7 @@ function TodayPlaceMap() {
     const currentInfoRef = useRef(null); 
     useEffect(() => {
       showMarkRef.current = showMark;
+      console.log("kakao 객체:", window.kakao);
     }, [showMark]);
   
     const loadMapAndPlaces = async (category = null) => {
@@ -110,19 +111,17 @@ function TodayPlaceMap() {
     };
 
     return (
-        <div>
-            {/* 지도 영역 */}
-            <main style={{ flex: 1, position: "relative" }}>
-              {/* 지도 */}
-              <div
-                ref={mapRef}
-                style={{
-                  width: "100%",
-                  height: "100%",
-                  borderRadius: "0 0 0 10px",
-                  zIndex: 1,
-                }}
-              />
+      <div style={{ height: "80vh", display: "flex", flexDirection: "column" }}>
+        <main style={{ flex: 1, position: "relative" }}>
+          <div
+            ref={mapRef}
+            style={{
+              width: "100%",
+              height: "100%",
+              borderRadius: "0 0 0 10px",
+              zIndex: 1,
+            }}
+          />
     
              {/* 좌측 상단 카테고리 필터 */}
               <div
