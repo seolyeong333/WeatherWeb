@@ -37,7 +37,7 @@ public class WebConfig implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(jwtAuthInterceptor)
                 .addPathPatterns("/api/**")           // 이 경로 아래 모든 API에 인증 필터
-                .excludePathPatterns("/api/users/login/**", "/api/users", "/api/public/**","/api/ai/**","/api/weather/**","/api/kakao/**","/api/users/email/**","/api/google/**"); // 로그인, 회원가입 등 제외
+                .excludePathPatterns("/api/users/login/**", "/api/users", "/api/public/**","/api/ai/**","/api/weather/**","/api/kakao/**","/api/users/email/**","api/crawl/**","/api/google/**"); // 로그인, 회원가입 등 제외
     }
 }
 
