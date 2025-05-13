@@ -23,8 +23,9 @@ function TodayLook() {
   const [viewType, setViewType] = useState("grid-4"); // "grid-2" 또는 "grid-4" 설정
 
   // 체감온도에 따른 아이콘 출력
-  const [showIcons, setShowIcons] = useState(null); 
-
+  const [showIcons, setShowIcons] = useState({
+    items: "반팔, 반바지, 샌들들"
+  });
   // DB 날씨조건 필터
   const weatherDescriptionMap = {
     "튼구름": "구름 많음",
@@ -73,6 +74,33 @@ useEffect(() => {
       })
     })
   }, []);
+
+  const iconMap = {
+    "반팔": "short-sleeve",
+    "민소매": "sleeveless",
+    "기모 후드": "fleece-hoodie",
+    "패딩": "padded-jacket",
+    "롱패딩": "long-padding",
+    "셔츠": "shirt",
+    "린넨 셔츠": "linen-shirt",
+    "니트": "knit",
+    "가디건": "cardigan",
+    "후드티": "hoodie",
+    "맨투맨": "sweatshirt",
+    "코트": "coat",
+    "청바지": "jeans",
+    "슬랙스": "slacks",
+    "긴바지": "long-pants",
+    "반바지": "shorts",
+    "핫팬츠": "hotpants",
+    "기모 팬츠": "fleece-pants",
+    "머플러": "scarf",
+    "귀마개": "earmuff",
+    "장갑": "gloves",
+    "샌들": "sandals",
+    "방수 부츠": "rain-boots",
+    "우비": "raincoat"
+  };
 
   // 필터 변경 시 이미지 크롤링 요청
   useEffect(() => {
@@ -212,14 +240,21 @@ useEffect(() => {
 
         {showIcons?.items && (
           <div className="feel-temp-container">
-            {showIcons.items.split(",").map((item, index) => (
-              <div className="feel-temp-tab" key={index}>
-                 <img src={`/icons/${item.trim()}.png`} alt={`${item} 아이콘`} 
-                 onError={(e) => (e.target.src = "/icons/default.png")}/>
-              </div>
-                ))}
-            </div>
-            )}
+            {showIcons.items.split(",").map((item, index) => {
+              const trimmed = item.trim();
+              const engName = iconMap[trimmed] || "default";
+              return (
+                <div className="feel-temp-tab" key={index}>
+                  <img
+                    src={`/icons/${engName}.png`}
+                    alt={`${trimmed} 아이콘`}
+                    onError={(e) => (e.target.src = "/icons/default.png")}
+                  />
+                </div>
+              );
+            })}
+          </div>
+        )}
       </section>
 
       <ColorPickerModal
