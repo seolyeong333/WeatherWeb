@@ -1,19 +1,19 @@
-// ✅ src/pages/MyPage.jsx
-// 마이페이지 컴포넌트: 사용자 정보 조회, 한줄평/신고 내역 관리, 날씨 효과 반영
-
 import { useState, useEffect, useContext } from "react";
 import { Tab, Nav, Row, Col, Card, Button } from "react-bootstrap";
 import Header from "../components/Header";
 import { FaUser, FaCommentDots, FaExclamationCircle } from "react-icons/fa";
 import { WeatherContext } from "../components/WeatherContext";
+import PasswordCheckModal from "../components/PasswordCheckModal";
+import ConfirmModal from "../components/ConfirmModal";
+import { useNavigate } from "react-router-dom";
 import "./MyPage.css";
 
 function MyPage() {
-  const [userInfo] = useState({
-    nickname: "홍길동",
-    email: "hong@example.com",
-    joinedAt: "2024-12-15",
-  });
+  const [userInfo, setUserInfo] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [mode, setMode] = useState("");
+  const navigate = useNavigate();
 
   const {
     isRainy,
@@ -22,6 +22,53 @@ function MyPage() {
     isCloudy,
     isThunder,
   } = useContext(WeatherContext);
+
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const res = await fetch("http://localhost:8080/api/users/info", {
+          method: "GET",
+          headers: {
+            "Authorization": `Bearer ${token}`,
+          },
+        });
+
+        if (!res.ok) throw new Error("사용자 정보를 불러오지 못했습니다.");
+        const data = await res.json();
+        setUserInfo(data);
+      } catch (err) {
+        console.error("유저 정보 요청 실패:", err);
+      }
+    };
+
+    fetchUserInfo();
+  }, []);
+
+  const deleteAccount = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const res = await fetch("http://localhost:8080/api/users", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: userInfo.email,
+          password: userInfo.password, // 프론트에서 비밀번호 받은 후 이 필드에 담아야 함
+        }),
+      });
+
+      if (!res.ok) throw new Error("탈퇴 실패");
+
+      localStorage.removeItem("token");
+      alert("탈퇴가 완료되었습니다.");
+      navigate("/main");
+    } catch (err) {
+      console.error("탈퇴 실패:", err);
+      alert("탈퇴 중 오류가 발생했습니다.");
+    }
+  };
 
   useEffect(() => {
     const container = document.getElementById("rain-overlay");
@@ -103,12 +150,38 @@ function MyPage() {
                   <Card className="mypage-card">
                     <Card.Body>
                       <h5 className="fw-semibold mb-3">👤 회원 정보</h5>
-                      <p><strong>닉네임:</strong> {userInfo.nickname}</p>
-                      <p><strong>이메일:</strong> {userInfo.email}</p>
-                      <p><strong>가입일:</strong> {userInfo.joinedAt}</p>
+                      {userInfo ? (
+                        <>
+                          <p><strong>닉네임:</strong> {userInfo.nickname}</p>
+                          <p><strong>이메일:</strong> {userInfo.email}</p>
+                          <p><strong>성별:</strong> {userInfo.gender}</p>
+                          <p><strong>생일:</strong> {userInfo.birthday}</p>
+                          <p><strong>가입일:</strong> {userInfo.createdAt?.substring(0, 10)}</p>
+                        </>
+                      ) : (
+                        <p>회원 정보를 불러오는 중입니다...</p>
+                      )}
                       <div className="mt-3">
-                        <Button variant="primary" className="me-2 px-4">정보 수정</Button>
-                        <Button variant="outline-danger" className="px-4">회원 탈퇴</Button>
+                        <Button
+                          variant="primary"
+                          className="me-2 px-4"
+                          onClick={() => {
+                            setMode("edit");
+                            setShowModal(true);
+                          }}
+                        >
+                          정보 수정
+                        </Button>
+                        <Button
+                          variant="outline-danger"
+                          className="px-4"
+                          onClick={() => {
+                            setMode("delete");
+                            setShowModal(true);
+                          }}
+                        >
+                          회원 탈퇴
+                        </Button>
                       </div>
                     </Card.Body>
                   </Card>
@@ -149,6 +222,30 @@ function MyPage() {
           </Row>
         </Tab.Container>
       </div>
+
+      {/* 비밀번호 확인 모달 */}
+      <PasswordCheckModal
+        show={showModal}
+        onHide={() => setShowModal(false)}
+        mode={mode}
+        onSuccess={() => {
+          setShowModal(false);
+          if (mode === "edit") navigate("/edit");
+          else if (mode === "delete") setShowConfirmModal(true);
+        }}
+        email={userInfo?.email}
+      />
+
+      {/* 정말 탈퇴할지 확인 모달 */}
+      <ConfirmModal
+        show={showConfirmModal}
+        onHide={() => setShowConfirmModal(false)}
+        onConfirm={() => {
+          setShowConfirmModal(false);
+          deleteAccount();
+        }}
+        message="정말로 탈퇴하시겠습니까? 이 작업은 되돌릴 수 없습니다."
+      />
     </>
   );
 }

@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.mail.MessagingException;
+import jakarta.servlet.http.HttpServletRequest;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -52,6 +53,29 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인 실패");
     }
 
+    // 비밀번호 확인 (정보 수정 or 탈퇴 시 사용)
+    @PostMapping("/check-password")
+    public ResponseEntity<String> checkPassword(@RequestBody UserRequestDto userDto, HttpServletRequest request) {
+        System.out.println("UserController POST /check-password 호출");
+
+        // JWT 토큰 검증은 이미 로그인되어 있어야 하므로 생략하거나 로그용으로만 사용
+        String token = request.getHeader("Authorization");
+        if (token == null || !token.startsWith("Bearer ")) {
+            System.out.println("토큰검증실패");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("인증 실패");
+        }
+        System.out.println("email: " + userDto.getEmail());
+        System.out.println("password: " + userDto.getPassword());
+
+        // 그냥 login() 호출해서 이메일+비밀번호 일치 여부 확인
+        if (userService.login(userDto)) {
+            System.out.println("로그인 성공");
+            return ResponseEntity.ok("비밀번호 확인 완료");
+        } else {
+            System.out.println("로그인 실패");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("비밀번호가 일치하지 않습니다.");
+        }
+    }
 
     // 회원가입
     @PostMapping("")
@@ -79,19 +103,35 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
-
     // 회원정보 조회
     @GetMapping("/info")
-    public ResponseEntity<UserRequestDto> getUserInfo(@RequestParam String email) {
+    public ResponseEntity<UserRequestDto> getUserInfo(HttpServletRequest request) {
         System.out.println("UserController GET /info 호출");
-        UserRequestDto user = userService.userData(email); 
+
+        // 1️⃣ 헤더에서 토큰 추출
+        String authHeader = request.getHeader("Authorization");
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        String token = authHeader.substring(7); // "Bearer " 제외
+
+        // 2️⃣ 토큰에서 이메일 추출
+        String email = jwtUtil.getEmail(token);
+        if (email == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        // 3️⃣ 이메일로 사용자 정보 조회
+        UserRequestDto user = userService.userData(email);
 
         if (user != null) {
             return ResponseEntity.ok(user);
         } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); 
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
+
 
     // 비밀번호 찾기 → 인증메일 전송
     @PostMapping("/password/reset")
