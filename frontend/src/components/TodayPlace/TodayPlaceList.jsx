@@ -27,17 +27,31 @@ function TodayPlaceList() {
         if (keyword) {
           url += `&keyword=${encodeURIComponent(keyword)}`;
           setSelectedCategory(null);
-          console.log("키워드 검색");
-        } else { 
+        } else {
           url += `&category=${encodeURIComponent(categoryCode)}`;
-          console.log("카테고리 검색");
         }
   
         try {
           const res = await fetch(url);
-          const data = await res.json();
-          setPlaces(data);
-          console.log(url);
+          let data = await res.json(); // [{ id, placeName, ... }] ← imageUrl 아직 없음
+  
+          // 🔁 각 장소마다 이미지 요청 추가
+          const updated = await Promise.all(
+            data.map(async (place) => {
+              try {
+                const imageRes = await fetch(
+                  `http://localhost:8080/api/google/image?name=${encodeURIComponent(place.placeName)}&lat=${place.y}&lon=${place.x}`
+                );
+                const imageUrl = await imageRes.text();
+                return { ...place, imageUrl };
+              } catch (e) {
+                console.warn("이미지 로딩 실패:", place.placeName);
+                return { ...place, imageUrl: null };
+              }
+            })
+          );
+  
+          setPlaces(updated);
         } catch (err) {
           console.error("장소 요청 실패:", err);
         }
@@ -45,6 +59,7 @@ function TodayPlaceList() {
       (err) => console.error("위치 접근 실패:", err)
     );
   };
+  
   
 
   // 북마크 목록 가져오기
@@ -177,20 +192,36 @@ function TodayPlaceList() {
   
             return (
               <div key={placeKey} className="place-card" onClick={() => navigate("/today-place/place-detail", { state: { place } })}>
+                {/* 📷 이미지 영역 */}
+                <div className="place-card-image">
+                  <img
+                    src={place.imageUrl || "/no-image.jpg"} // 이미지 없으면 대체 이미지
+                    alt={place.placeName}
+                    onError={(e) => { e.target.src = "/no-image.jpg"; }}
+                  />
+                </div>
+
+                {/* 📛 이름 + 북마크 */}
                 <div className="place-card-name">
                   {place.placeName}
                   <button
-                    onClick={() => toggleBookmark(place)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleBookmark(place);
+                    }}
                     className="bookmark-button"
                     title="북마크"
                   >
                     {isBookmarked ? "★" : "☆"}
                   </button>
                 </div>
+
+                {/* ☎ 전화번호 */}
                 <div className="place-card-footer">
                   <span>{place.phone || "📞 없음"}</span>
                 </div>
               </div>
+
             );
           })}
         </div>

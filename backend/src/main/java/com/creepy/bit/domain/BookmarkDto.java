@@ -10,4 +10,4 @@ public class BookMarkDto {
     private int userId;
     private String placeId;
     private String createdAt;
-}
+} 

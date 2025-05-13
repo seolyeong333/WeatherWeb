@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.creepy.bit.mapper.MainMapper">
+
+    <insert id="insertOpinion" parameterType="com.creepy.bit.domain.OpinionDto">
+        INSERT INTO opinions (user_id, place_id, content, is_public, likes, dislikes, created_at)
+        VALUES (#{userId}, #{placeId}, #{content}, #{isPublic}, 0, 0, NOW())
+    </insert>
+
+    <select id="getMyOpinions" parameterType="int" resultType="com.creepy.bit.domain.OpinionDto">
+        SELECT * FROM opinions WHERE user_id = #{userId} ORDER BY created_at DESC
+    </select>
+
+    <select id="getOpinionsByPlaceId" parameterType="string" resultType="com.creepy.bit.domain.OpinionDto">
+        SELECT * FROM opinions
+        WHERE place_id = #{placeId}
+        ORDER BY created_at DESC
+    </select>
+
+    <update id="increaseLikes" parameterType="int">
+        UPDATE opinions SET likes = likes + 1 WHERE opinion_id = #{opinionId}
+    </update>
+
+    <update id="increaseDislikes" parameterType="int">
+        UPDATE opinions SET dislikes = dislikes + 1 WHERE opinion_id = #{opinionId}
+    </update>
+
+    <delete id="deleteOpinion" parameterType="int">
+        DELETE FROM opinions WHERE opinion_id = #{opinionId}
+    </delete>
+
+</mapper>

@@ -6,7 +6,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.List;
+
+import com.creepy.bit.domain.KakaoMapDto;
 import com.creepy.bit.service.KakaoService;
 
 @RestController
@@ -28,7 +33,18 @@ public class KakaoController {
      */
     @GetMapping("/region")
     public String getRegionName(@RequestParam double lat, @RequestParam double lon) {
-        // 실질적인 API 호출은 KakaoService가 처리
+        System.out.println("KakaoController GET /region 호출");
+        // 실질적인 API 호출은 KakaoService가 처리  
         return kakaoService.getRegionName(lat, lon);
     }
+
+    // 카테고리 기반 장소 검색
+    @GetMapping("/places")
+    public ResponseEntity<List<KakaoMapDto>> getPlaces(@RequestParam double lat, @RequestParam double lon, @RequestParam(required = false) String category,  @RequestParam(required = false) String keyword ) {
+        System.out.println("KakaoController GET /places 호출");
+        List<KakaoMapDto> result = kakaoService.searchPlacesByCategory(lat, lon, category, keyword);
+        return ResponseEntity.ok(result);
+    }
+
+
 }
