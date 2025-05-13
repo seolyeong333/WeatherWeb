@@ -104,32 +104,34 @@ function TodayWeatherPage() {
 
   
   const renderHeaderSection = () => {
-  const temp = Math.round(weatherData.current.main.temp);
-  const humidity = weatherData.current.main.humidity;
-  const pop = Math.round((weatherData.hourly?.[0]?.pop || 0) * 100);
-  const description = weatherData.current.weather[0].description;
-  const icon = weatherData.current.weather[0].icon;
-  const emoji = getWeatherEmoji(icon); // ☀️, 🌧️ 등
+    const temp = Math.round(weatherData.current.main.temp);
+    const humidity = weatherData.current.main.humidity;
+    const pop = Math.round((weatherData.hourly?.[0]?.pop || 0) * 100);
 
-  return (
-    <div className="header-section">
-      <div className="header-overlay">
-        
-        <div>
-        <h1 className="header-title">맑음이든 흐림이든, 오늘의 하늘은 당신 편이에요</h1>
-        <br/>
-        {regionName && (
-          <p className="header-subtext">현재 위치: {regionName}</p>
-        )}
-        </div>
-        
-        <div className="header-summary-line">
-          {emoji} {description}, {temp}°C / 습도 {humidity}% / 강수 확률 {pop}%
+    const rawDesc = weatherData.current.weather[0].description;
+    const icon = weatherData.current.weather[0].icon;
+    const emoji = getWeatherEmoji(icon);
+
+    const description = getKoreanWeatherDescription(rawDesc); // ✅ 한글 표현 매핑
+
+    return (
+      <div className="header-section">
+        <div className="header-overlay">
+          <div>
+            <h1 className="header-title">맑음이든 흐림이든, 오늘의 하늘은 당신 편이에요</h1>
+            <br />
+            {regionName && (
+              <p className="header-subtext">현재 위치: {regionName}</p>
+            )}
+          </div>
+          <div className="header-summary-line">
+            {emoji} {description}, {temp}°C / 습도 {humidity}% / 강수 확률 {pop}%
+          </div>
         </div>
       </div>
-    </div>
-  );
-};
+    );
+  };
+
 
   const renderHourlyChart = () => {
     const hourly = weatherData.hourly;

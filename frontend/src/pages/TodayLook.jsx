@@ -8,6 +8,7 @@ import ColorPickerModal from "../components/ColorPickerModal";
 import { COLORS, fancyName, getTodayColor } from "../api/colors";
 import view2col from "../assets/view-2col.png";
 import view4col from "../assets/view-4col.png";
+import { getCurrentWeather} from "../api/weather";
 
 function TodayLook() {
   const navigate = useNavigate();
@@ -23,7 +24,7 @@ function TodayLook() {
   const [viewType, setViewType] = useState("grid-4"); // "grid-2" 또는 "grid-4" 설정
 
   // 체감온도에 따른 아이콘 출력
-  const [showIcons, setShowIcons] = useState(null); 
+  const [showIcons, setShowIcons] = useState({ items: '가디건,반팔' }); 
 
   // DB 날씨조건 필터
   const weatherDescriptionMap = {
