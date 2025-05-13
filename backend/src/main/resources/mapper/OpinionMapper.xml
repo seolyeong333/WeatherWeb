@@ -6,30 +6,30 @@
 <mapper namespace="com.creepy.bit.mapper.MainMapper">
 
     <insert id="insertOpinion" parameterType="com.creepy.bit.domain.OpinionDto">
-        INSERT INTO opinions (user_id, place_id, content, is_public, likes, dislikes, created_at)
+        INSERT INTO opinions (userId, placeId, content, isPublic, likes, dislikes, createdAt)
         VALUES (#{userId}, #{placeId}, #{content}, #{isPublic}, 0, 0, NOW())
     </insert>
 
     <select id="getMyOpinions" parameterType="int" resultType="com.creepy.bit.domain.OpinionDto">
-        SELECT * FROM opinions WHERE user_id = #{userId} ORDER BY created_at DESC
+        SELECT * FROM opinions WHERE userId = #{userId} ORDER BY createdAt DESC
     </select>
 
     <select id="getOpinionsByPlaceId" parameterType="string" resultType="com.creepy.bit.domain.OpinionDto">
         SELECT * FROM opinions
-        WHERE place_id = #{placeId}
-        ORDER BY created_at DESC
+        WHERE placeId = #{placeId}
+        ORDER BY createdAt DESC
     </select>
 
     <update id="increaseLikes" parameterType="int">
-        UPDATE opinions SET likes = likes + 1 WHERE opinion_id = #{opinionId}
+        UPDATE opinions SET likes = likes + 1 WHERE opinionId = #{opinionId}
     </update>
 
     <update id="increaseDislikes" parameterType="int">
-        UPDATE opinions SET dislikes = dislikes + 1 WHERE opinion_id = #{opinionId}
+        UPDATE opinions SET dislikes = dislikes + 1 WHERE opinionId = #{opinionId}
     </update>
 
     <delete id="deleteOpinion" parameterType="int">
-        DELETE FROM opinions WHERE opinion_id = #{opinionId}
+        DELETE FROM opinions WHERE opinionId = #{opinionId}
     </delete>
 
 </mapper>

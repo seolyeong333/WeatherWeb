@@ -6,24 +6,24 @@
 <mapper namespace="com.creepy.bit.mapper.MainMapper">
 
     <insert id="insertReport" parameterType="com.creepy.bit.domain.ReportDto">
-        INSERT INTO reports (user_id, target_type, target_id, reason, status, created_at)
-        VALUES (#{userId}, #{targetType}, #{targetId}, #{reason}, 'PENDING', NOW())
+        INSERT INTO reports (userId, targetType, targetId, reason, status)
+        VALUES (#{userId}, #{targetType}, #{targetId}, #{reason}, 'PENDING')
     </insert>
 
     <select id="selectReportsByUserId" parameterType="int" resultType="com.creepy.bit.domain.ReportDto">
-        SELECT * FROM reports WHERE user_id = #{userId} ORDER BY created_at DESC
+        SELECT * FROM reports WHERE userId = #{userId} ORDER BY createdAt DESC
     </select>
 
     <select id="selectAllReports" resultType="com.creepy.bit.domain.ReportDto">
-        SELECT * FROM reports ORDER BY created_at DESC
+        SELECT * FROM reports ORDER BY createdAt DESC
     </select>
 
     <select id="selectReportById" parameterType="int" resultType="com.creepy.bit.domain.ReportDto">
-        SELECT * FROM reports WHERE report_id = #{id}
+        SELECT * FROM reports WHERE reportId = #{id}
     </select>
 
     <update id="updateReportStatus">
-        UPDATE reports SET status = #{status} WHERE report_id = #{id}
+        UPDATE reports SET status = #{status} WHERE reportId = #{id}
     </update>
 
 </mapper>

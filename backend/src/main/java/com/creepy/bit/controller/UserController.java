@@ -163,6 +163,7 @@ public class UserController {
     @DeleteMapping("")
     public ResponseEntity<String> deleteUser(@RequestBody UserRequestDto userDto) {
         System.out.println("UserController DELETE 호출");
+        System.out.println(userDto.getEmail());
         if (userService.login(userDto)) {
             userService.deleteUser(userDto.getEmail());
             return ResponseEntity.ok("탈퇴 완료");

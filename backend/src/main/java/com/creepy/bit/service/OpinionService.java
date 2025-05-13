@@ -24,7 +24,7 @@ public class OpinionService {
     }
 
 
-    // 한줄평 리스트
+    // 내 한줄평 리스트
     public List<OpinionDto> getMyOpinions(int userId) {
         return mainMapper.getMyOpinions(userId);
     }

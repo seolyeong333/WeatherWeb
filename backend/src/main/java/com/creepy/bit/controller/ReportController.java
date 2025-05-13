@@ -23,6 +23,7 @@ public class ReportController {
     @PostMapping
     public ResponseEntity<String> submitReport(@RequestHeader("Authorization") String token,
                                                @RequestBody ReportDto reportDto) {
+        System.out.println("ReportController POST 호출");
         try {
             String pureToken = token.replace("Bearer ", "");
             int userId = jwtUtil.getUserId(pureToken); // JWT에서 사용자 ID 추출
@@ -38,6 +39,7 @@ public class ReportController {
     // 🔸 2. 신고 목록 조회 (사용자: 쿼리 파라미터로 userId 전달)
     @GetMapping(params = "userId")
     public ResponseEntity<List<ReportDto>> getUserReports(@RequestParam int userId) {
+        System.out.println("ReportController GET 호출");
         List<ReportDto> list = reportService.getReportsByUserId(userId);
         return ResponseEntity.ok(list);
     }
@@ -45,6 +47,7 @@ public class ReportController {
     // 🔸 3. 신고 목록 조회 (관리자: 전체)
     @GetMapping
     public ResponseEntity<List<ReportDto>> getAllReports() {
+        System.out.println("ReportController GET 호출");
         List<ReportDto> list = reportService.getAllReports();
         return ResponseEntity.ok(list);
     }
@@ -52,6 +55,7 @@ public class ReportController {
     // 🔸 4. 신고 자세히 보기
     @GetMapping("/{id}")
     public ResponseEntity<ReportDto> getReportDetail(@PathVariable int id) {
+        System.out.println("ReportController /{id} GET 호출");
         ReportDto report = reportService.getReportById(id);
         if (report != null) {
             return ResponseEntity.ok(report);
@@ -64,6 +68,7 @@ public class ReportController {
     @PatchMapping("/{id}")
     public ResponseEntity<String> updateReportStatus(@PathVariable int id,
                                                      @RequestBody Map<String, String> body) {
+        System.out.println("ReportController /{id} PATCH 호출");
         String status = body.get("status");
         boolean success = reportService.updateReportStatus(id, status);
         if (success) {
