@@ -36,6 +36,18 @@ public class KakaoController {
         return kakaoService.getRegionName(lat, lon);
     }
 
+    // 장소 ID 기반 단일 장소 검색
+    @GetMapping("/place")
+    public ResponseEntity<KakaoMapDto> getPlaceById(@RequestParam("placeId") String placeId) {
+        KakaoMapDto dto = kakaoService.getPlaceById(placeId);
+        if (dto != null) {
+            return ResponseEntity.ok(dto);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+
     // 카테고리 기반 장소 검색
     @GetMapping("/places")
     public ResponseEntity<List<KakaoMapDto>> getPlaces(@RequestParam double lat, @RequestParam double lon, @RequestParam(required = false) String category,  @RequestParam(required = false) String keyword ) {
