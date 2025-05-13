@@ -64,7 +64,7 @@ function TodayPlace() {
           {/* 콘텐츠 */}
           <main style={{ flex: 1, padding: "2rem", backgroundColor: "#fff" }}>
             <Routes>
-              <Route index element={<Navigate to="list" replace />} />
+              <Route index element={<Navigate to="/today-place/list" replace />} />
               <Route path="/list" element={<TodayPlaceList />} />
               <Route path="/map" element={<TodayPlaceMap />} />
               <Route path="place-detail" element={<PlaceDetail/>} />

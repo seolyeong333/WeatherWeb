@@ -15,6 +15,7 @@ import jakarta.mail.MessagingException;
 
 import java.util.HashMap;
 import java.util.Map;
+
 import java.time.Duration;
 import java.time.LocalDateTime;
 
@@ -37,7 +38,8 @@ public class UserController {
             String token = jwtUtil.generateToken(
                     String.valueOf(userData.getEmail()),
                     userData.getNickname(),
-                    userData.getAuth()
+                    userData.getAuth(), 
+                    userData.getUserId()
             );
 
             return ResponseEntity.ok(Map.of(

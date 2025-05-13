@@ -10,4 +10,4 @@ public class BookmarkDto {
     private int userId;
     private String placeId;
     private String createdAt;
-}
+} 
