@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.creepy.bit.mapper.MainMapper">
+
+
+   <select id="login" resultType="int">
+    SELECT COUNT(*) FROM users WHERE email = #{email} AND password = #{password}
+    </select>
+
+    <insert id="insertUser" >
+        INSERT INTO users (email, password, nickname, gender, birthday)
+		VALUES (#{email}, #{password}, #{nickname}, #{gender}, #{birthday})
+    </insert>
+
+	<select id="userData" parameterType="string" resultType="com.creepy.bit.domain.UserRequestDto">
+		SELECT * FROM users WHERE email = #{email}
+	</select>
+
+	<select id="checkEmail" parameterType="string" resultType="int">
+		SELECT COUNT(*) FROM users WHERE email = #{email}
+	</select>
+
+	<select id="checkNickname" parameterType="string" resultType="int">
+		SELECT COUNT(*) FROM users WHERE nickname = #{nickname}
+	</select>
+
+	<update id="changePasswd" parameterType="com.creepy.bit.domain.UserRequestDto">
+		UPDATE users
+		SET password = #{password}
+		WHERE email = #{email}
+	</update>
+
+	<delete id="deleteUser" parameterType="string">
+		DELETE FROM users WHERE email = #{email}
+	</delete>
+
+	<update id="modifyUser" parameterType="com.creepy.bit.domain.UserRequestDto">
+		UPDATE users SET password = #{password}, nickname = #{nickname}, gender = #{gender}, birthday = #{birthday} WHERE email = #{email}
+	</update>
+ 
+</mapper>
