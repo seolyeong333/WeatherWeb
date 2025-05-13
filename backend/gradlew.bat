@@ -57,6 +57,8 @@ goto fail
 set JAVA_HOME=%JAVA_HOME:"=%
 set JAVA_EXE=%JAVA_HOME%/bin/java.exe
 
+
+
 if exist "%JAVA_EXE%" goto execute
 
 echo. 1>&2

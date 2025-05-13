@@ -22,6 +22,57 @@ function TodayLook() {
   const [type, setType] = useState("상의"); // 필터: 종류
   const [viewType, setViewType] = useState("grid-4"); // "grid-2" 또는 "grid-4" 설정
 
+  // 체감온도에 따른 아이콘 출력
+  const [showIcons, setShowIcons] = useState(null); 
+
+  // DB 날씨조건 필터
+  const weatherDescriptionMap = {
+    "튼구름": "구름 많음",
+    "맑음": "맑음",
+    "비": "비",
+    "눈": "눈",
+    "실 비": "이슬비",
+    "소나기": "소나기",
+    "천둥번개": "뇌우",
+    "연무": "흐림",
+    "흐림": "흐림",
+    "온흐림": "흐림",
+    "박무": "흐림"
+  };
+
+  function getKoreanWeatherDescription(desc) {
+    return weatherDescriptionMap[desc] || "기타";
+  }
+
+  const normalizeWeatherType = (rawType) => {
+    if (["맑음"].includes(rawType)) return "맑음";
+    if (["눈"].includes(rawType)) return "눈";
+    if (["소나기", "이슬비", "뇌우"].includes(rawType)) return "비";
+    if (["박무", "연무", "구름 많음"].includes(rawType)) return "흐림";
+    if (["기타"].includes(rawType)) return "기타";
+    return rawType;
+  };
+
+useEffect(() => {
+  navigator.geolocation.getCurrentPosition(async (position) => {
+      const { latitude, longitude } = position.coords;
+
+      getCurrentWeather(latitude, longitude).then((res) => {
+              setCurrent(res.data);
+      const rawDesc = res.data.weather[0].description;
+      const desc = overrideWeather || getKoreanWeatherDescription(rawDesc);
+      const weatherType = normalizeWeatherType(desc);
+      const feeling = res.data.main.feels_like;
+
+      fetch(`/api/fashion/recommend?weather=${weatherType}&feeling=${feeling}`)
+        .then((res) => res.json())
+        .then((data) => {
+          console.log("추천 아이템:", data.items);
+          setShowIcons(data); // { items: '가디건,반팔' }
+        });
+      })
+    })
+  }, []);
 
   // 필터 변경 시 이미지 크롤링 요청
   useEffect(() => {
@@ -158,6 +209,17 @@ function TodayLook() {
             ))}
           </div>
         )}
+
+        {showIcons?.items && (
+          <div className="feel-temp-container">
+            {showIcons.items.split(",").map((item, index) => (
+              <div className="feel-temp-tab" key={index}>
+                 <img src={`/icons/${item.trim()}.png`} alt={`${item} 아이콘`} 
+                 onError={(e) => (e.target.src = "/icons/default.png")}/>
+              </div>
+                ))}
+            </div>
+            )}
       </section>
 
       <ColorPickerModal
