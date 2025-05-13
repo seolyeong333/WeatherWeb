@@ -13,6 +13,58 @@
   max-width: 900px;
   margin: 2rem auto;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  position: relative; /* 기준 컨테이너 설정 */
+  z-index: 20 !important;
+}
+
+/* 내부 콘텐츠를 z-index 더 높게 */
+.today-look-content {
+  position: relative;
+  z-index: 30;
+}
+
+/* 아이콘 버튼 스타일 */
+.feel-temp-container {
+  position: absolute;
+  top: 7%;
+  right: -48px;
+  z-index: 10;
+}
+
+.feel-temp-tab {
+  position: absolute;  /* fixed → absolute로 변경 */
+  right: 0; /* 오른쪽 바깥쪽으로 반쯤 튀어나오게 */
+  width: 47px;
+  height: 60px;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-left: none;
+  border-radius: 0 8px 8px 0;
+  box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s ease;
+  cursor: pointer;
+}
+
+.feel-temp-tab:nth-child(1) {
+  top: 0;
+}
+.feel-temp-tab:nth-child(2) {
+  top: 65px;
+}
+.feel-temp-tab:nth-child(3) {
+  top: 130px;
+}
+
+.feel-temp-tab:hover {
+  transform: translateX(6px);
+}
+
+.feel-temp-tab img {
+  width: 30px;
+  height: auto;
 }
 
 /* 상단 영역 (색 박스 + 버튼 + 설명) */

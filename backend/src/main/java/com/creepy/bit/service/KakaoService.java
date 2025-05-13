@@ -1,16 +1,20 @@
 package com.creepy.bit.service;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.http.*;
-import org.springframework.web.util.UriComponentsBuilder;
-import java.util.List;
-import java.util.ArrayList;
+import com.creepy.bit.domain.KakaoMapDto;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
-import com.creepy.bit.domain.KakaoMapDto;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class KakaoService {

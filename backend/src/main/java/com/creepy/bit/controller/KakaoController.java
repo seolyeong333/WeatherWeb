@@ -1,18 +1,16 @@
 package com.creepy.bit.controller;
 
+import com.creepy.bit.domain.KakaoMapDto;
+import com.creepy.bit.service.KakaoService;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
-
-import com.creepy.bit.domain.KakaoMapDto;
-import com.creepy.bit.service.KakaoService;
 
 @RestController
 @RequestMapping("/api/kakao")  // 이 컨트롤러의 API는 "/api/kakao"로 시작됨
