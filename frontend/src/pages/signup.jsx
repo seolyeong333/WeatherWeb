@@ -1,8 +1,13 @@
 import { useState } from "react";
 import {useNavigate} from "react-router-dom";
 
+<<<<<<< HEAD
+function Signup() {   // json 형식입니당.
+  const [form, setForm] = useState({
+=======
 function Signup() {   // json 형식
   const [formData, setForm] = useState({
+>>>>>>> 21fdd1b446477a404d743e8717afa9508680f783
     userId: "",
     email: "",
     password: "",
@@ -12,7 +17,11 @@ function Signup() {   // json 형식
 
   const changeHandler = (e) => {    
     setForm({
+<<<<<<< HEAD
+      ...form,
+=======
       ...formData,
+>>>>>>> 21fdd1b446477a404d743e8717afa9508680f783
       [e.target.name]: e.target.value
     });
   };
@@ -26,7 +35,11 @@ function Signup() {   // json 형식
         headers: {
           "Content-Type": "application/json"
         },
+<<<<<<< HEAD
+        body: JSON.stringify(form)
+=======
         body: JSON.stringify(formData)
+>>>>>>> 21fdd1b446477a404d743e8717afa9508680f783
       });
 
       if (response.ok) {
@@ -45,11 +58,19 @@ function Signup() {   // json 형식
     <div style={{ margin: "100px", textAlign: "center" }}>
       <h2>회원가입</h2>
       <form onSubmit={submitHandler}>
+<<<<<<< HEAD
+        <input type="text"name="userId" placeholder="아이디" value={form.userId} onChange={changeHandler} required/><br/><br/>
+        <input type="text"name="email" placeholder="이메일" value={form.email} onChange={changeHandler} required/><br/><br/> 
+        <input type="password" name="password" placeholder="비밀번호" value={form.password} onChange={changeHandler} required/><br/><br/>
+        <input type="text" name="nickname" placeholder="닉네임" value={form.nickname} onChange={changeHandler} required/><br/><br/>
+        <select name="gender" value={form.gender} onChange={changeHandler} required>
+=======
         <input type="text"name="userId" placeholder="아이디" value={formData.userId} onChange={changeHandler} required/><br/><br/>
         <input type="text"name="email" placeholder="이메일" value={formData.email} onChange={changeHandler} required/><br/><br/> 
         <input type="password" name="password" placeholder="비밀번호" value={formData.password} onChange={changeHandler} required/><br/><br/>
         <input type="text" name="nickname" placeholder="닉네임" value={formData.nickname} onChange={changeHandler} required/><br/><br/>
         <select name="gender" value={formData.gender} onChange={changeHandler} required>
+>>>>>>> 21fdd1b446477a404d743e8717afa9508680f783
           <option value="">성별 선택</option>
           <option value="male">남자</option>
           <option value="female">여자</option>
