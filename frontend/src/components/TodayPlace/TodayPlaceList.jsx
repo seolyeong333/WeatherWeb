@@ -1,11 +1,14 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Lottie from "lottie-react";
+import loadingAnimation from "../../assets/loading.json"; // 애니메이션 파일
 import "./TodayPlaceList.css";
 
 function TodayPlaceList() {
   const navigate = useNavigate();
   const [keyword, setKeyword] = useState("");
   const [places, setPlaces] = useState([]);
+  const [loading, setLoading] = useState(false); // 🔵 로딩 상태 추가
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [bookmarkedMap, setBookmarkedMap] = useState({}); // { placeId: bookmarkId }
 
@@ -17,12 +20,13 @@ function TodayPlaceList() {
 
   // 장소 리스트 가져오기
   const fetchPlaceList = async (category = "AT4", keyword = "") => {
+    setLoading(true); // 🔵 로딩 시작
     navigator.geolocation.getCurrentPosition(
       async (pos) => {
         const lat = pos.coords.latitude;
         const lon = pos.coords.longitude;
         const categoryCode = categoryCodeMap[category] || "AT4";
-  
+
         let url = `http://localhost:8080/api/kakao/places?lat=${lat}&lon=${lon}`;
         if (keyword) {
           url += `&keyword=${encodeURIComponent(keyword)}`;
@@ -30,12 +34,11 @@ function TodayPlaceList() {
         } else {
           url += `&category=${encodeURIComponent(categoryCode)}`;
         }
-  
+
         try {
           const res = await fetch(url);
-          let data = await res.json(); // [{ id, placeName, ... }] ← imageUrl 아직 없음
-  
-          // 🔁 각 장소마다 이미지 요청 추가
+          let data = await res.json();
+
           const updated = await Promise.all(
             data.map(async (place) => {
               try {
@@ -50,36 +53,39 @@ function TodayPlaceList() {
               }
             })
           );
-  
+
           setPlaces(updated);
         } catch (err) {
           console.error("장소 요청 실패:", err);
+        } finally {
+          setLoading(false); // 🟢 로딩 종료
         }
       },
-      (err) => console.error("위치 접근 실패:", err)
+      (err) => {
+        console.error("위치 접근 실패:", err);
+        setLoading(false);
+      }
     );
   };
-  
-  
 
   // 북마크 목록 가져오기
   const fetchBookmarks = async () => {
     const token = localStorage.getItem("token");
     if (!token) {
       console.log("비로그인 상태");
-      return; // 토큰 없으면 아예 실행 안 함
+      return;
     }
     try {
       const res = await fetch("http://localhost:8080/api/bookmarks", {
         method: "GET",
         headers: {
-          Authorization: `Bearer ${token}`, // 로그인 할때만 가능해서 토큰 넘겨버림
+          Authorization: `Bearer ${token}`,
         },
       });
 
       if (!res.ok) throw new Error("북마크 가져오기 실패");
 
-      const bookmarks = await res.json();   // 내 북마크 목록 json으로 받아와서 체크함
+      const bookmarks = await res.json();
       const map = {};
       bookmarks.forEach((b) => {
         map[b.placeId] = b.bookmarkId;
@@ -100,17 +106,15 @@ function TodayPlaceList() {
     fetchPlaceList(category);
   };
 
-  // 북마크 토글
   const toggleBookmark = async (place) => {
     const token = localStorage.getItem("token");
-    const placeKey = place.id; 
+    const placeKey = place.id;
     const bookmarkId = bookmarkedMap[placeKey];
 
-
-    if (!token) {              // 로그인 안하면 북마크 못하게 막기. 
+    if (!token) {
       alert("로그인 후 이용 가능한 기능입니다.");
       return;
-    } else if (bookmarkId) {   // 북마크 아이디가 내가 가져온 리스트에 존재하면 북마크 삭제 
+    } else if (bookmarkId) {
       try {
         const res = await fetch(`http://localhost:8080/api/bookmarks/${bookmarkId}`, {
           method: "DELETE",
@@ -130,7 +134,7 @@ function TodayPlaceList() {
       } catch (err) {
         console.error("❌ 삭제 에러:", err);
       }
-    } else {    // 북마크 아이디가 내가 가져온 리스트에 존재하지 않으면 북마크 추가 
+    } else {
       try {
         const res = await fetch("http://localhost:8080/api/bookmarks", {
           method: "POST",
@@ -142,10 +146,10 @@ function TodayPlaceList() {
         });
 
         if (res.ok) {
-          const saved = await res.json(); // { bookmarkId: ... }
+          const saved = await res.json();
           setBookmarkedMap((prev) => ({ ...prev, [placeKey]: saved.bookmarkId }));
           console.log("✅ 북마크 추가됨:", saved.bookmarkId);
-          await fetchBookmarks(); 
+          await fetchBookmarks();
         } else {
           console.error("❌ 북마크 추가 실패");
         }
@@ -166,7 +170,7 @@ function TodayPlaceList() {
         />
         <button onClick={() => fetchPlaceList(selectedCategory, keyword)}>🔍</button>
       </div>
-  
+
       <div className="label-wrapper">
         {["음식점", "카페", "관광명소"].map((label) => (
           <button
@@ -181,27 +185,29 @@ function TodayPlaceList() {
           </button>
         ))}
       </div>
-  
-      {places.length === 0 ? (
+
+      {loading ? (
+        <div className="loading-container">
+          <Lottie animationData={loadingAnimation} loop={true} style={{ width: 200, height: 200 }} />
+          <p>ONDA의 추천 장소 정보를 불러오는 중입니다...</p>
+        </div>
+      ) : places.length === 0 ? (
         <div className="no-results">검색 결과가 없습니다.</div>
       ) : (
         <div className="card-grid">
           {places.map((place) => {
             const placeKey = place.id;
             const isBookmarked = Boolean(bookmarkedMap[placeKey]);
-  
+
             return (
               <div key={placeKey} className="place-card" onClick={() => navigate("/today-place/place-detail", { state: { place } })}>
-                {/* 📷 이미지 영역 */}
                 <div className="place-card-image">
                   <img
-                    src={place.imageUrl || "/no-image.jpg"} // 이미지 없으면 대체 이미지
+                    src={place.imageUrl || "/no-image.jpg"}
                     alt={place.placeName}
                     onError={(e) => { e.target.src = "/no-image.jpg"; }}
                   />
                 </div>
-
-                {/* 📛 이름 + 북마크 */}
                 <div className="place-card-name">
                   {place.placeName}
                   <button
@@ -215,20 +221,16 @@ function TodayPlaceList() {
                     {isBookmarked ? "★" : "☆"}
                   </button>
                 </div>
-
-                {/* ☎ 전화번호 */}
                 <div className="place-card-footer">
                   <span>{place.phone || "📞 없음"}</span>
                 </div>
               </div>
-
             );
           })}
         </div>
       )}
     </div>
   );
-  
 }
 
 export default TodayPlaceList;

@@ -113,6 +113,11 @@
   padding: 2px;
 }
 
+.loading-container {
+  text-align: center;
+  padding: 2rem;
+  color: #666;
+}
 .no-results {
   text-align: center;
   font-size: 1.2rem;
