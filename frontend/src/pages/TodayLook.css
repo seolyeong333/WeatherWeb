@@ -1,0 +1,184 @@
+/* 전체 페이지 배경 및 여백 */
+.today-look-wrapper {
+  background-color: #FAF3E0;
+  min-height: 100vh;
+  padding-bottom: 2rem;
+}
+
+/* 메인 콘텐츠 박스 스타일 */
+.today-look-section {
+  background-color: #fff;
+  border-radius: 12px;
+  padding: 1.5rem;
+  max-width: 900px;
+  margin: 2rem auto;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* 상단 영역 (색 박스 + 버튼 + 설명) */
+.today-look-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+/* 색상 네모 박스 스타일 */
+.color-box {
+  width: 50px;
+  height: 50px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+/* 네모 아래 텍스트 스타일 */
+.color-label {
+  margin-top: 0.3rem;
+  font-size: 0.8rem;
+  color: #555;
+  text-align: center;
+}
+
+/* 색상 선택 버튼 스타일 */
+.color-select-btn {
+  margin-top: 0.3rem;
+  font-size: 0.8rem;
+  padding: 4px 10px;
+  border: none;
+  border-radius: 6px;
+  background-color: #DDE7FF;
+  color: #2B4B8B;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+/* 색상 선택 버튼 hover 효과 */
+.color-select-btn:hover {
+  background-color: #C7D8FF;
+}
+
+/* 타로 페이지 이동 버튼 스타일 */
+.tarot-btn {
+  background-color: #FFA53B;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-weight: bold;
+  color: #fff;
+  cursor: pointer;
+  margin-top: 1rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
+}
+
+/* 타로 버튼 hover 효과 */
+.tarot-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+/* 필터 + 보기전환 아이콘 묶는 바 */
+.filter-and-toggle {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+/* 성별/종류 필터 버튼 묶음 */
+.filter-group {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+/* 필터 버튼 기본 스타일 */
+.filter-group button {
+  margin-left: 0.5rem;
+  border: none;
+  border-radius: 5px;
+  padding: 4px 10px;
+}
+
+/* 성별 버튼 활성/비활성 스타일 */
+.gender-btn-active {
+  background-color: #90CAF9;
+}
+.gender-btn-inactive {
+  background-color: #e0e0e0;
+}
+
+/* 종류 버튼 활성/비활성 스타일 */
+.type-btn-active {
+  background-color: #FFCC80;
+}
+.type-btn-inactive {
+  background-color: #e0e0e0;
+}
+
+/* 이미지 격자 레이아웃 */
+.image-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+  animation: fadein 1s ease-in;
+}
+
+/* 각 이미지 스타일 */
+.image-grid img {
+  width: 100%;
+  object-fit: cover;
+  border-radius: 10px;
+  transition: opacity 0.5s;
+  opacity: 1;
+}
+
+/* 로딩 시 페이드인 효과 */
+@keyframes fadein {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+/* 색 박스 + 텍스트 수직 정렬 및 너비 통일 */
+.color-box-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px; /* 네모랑 텍스트 간격 */
+  min-width: 60px; /* 두 박스 넓이 맞추려고 최소 너비 설정 */
+}
+/* 4열 보기 - 이미지 높이 고정 */
+.image-grid.grid-4 img {
+  height: 240px;
+}
+
+/* 2열 보기 (두 열 고정 + 이미지 크게) */
+.image-grid.grid-2 {
+  grid-template-columns: repeat(2, 1fr); /* ✅ 정확히 2열로 고정 */
+}
+/* 2열 보기 - 이미지 높이 2배로 */
+.image-grid.grid-2 img {
+  height: 480px; /* ✅ 2열일 때 더 큼 */
+}
+.view-toggle button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  margin-left: 0.5rem;
+}
+
+.view-toggle img {
+  width: 24px;
+  height: 24px;
+  opacity: 0.6;
+}
+
+.view-toggle .view-active img {
+  opacity: 1;
+  border: 1px solid #999;
+  border-radius: 4px;
+}
