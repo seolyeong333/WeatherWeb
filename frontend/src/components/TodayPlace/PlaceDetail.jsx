@@ -2,56 +2,72 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { getCurrentWeather } from "../../api/weather";
 import "./PlaceDetail.css";
 import { useState, useEffect } from "react";
+import axios from "axios";
+
+// ✅ 날씨 영어 → 한글 매핑
+const weatherDescriptionMap = {
+  "튼구름": "구름 많음",
+  "맑음": "맑음",
+  "비": "비",
+  "눈": "눈",
+  "실 비": "이슬비",
+  "소나기": "소나기",
+  "천둥번개": "뇌우",
+  "연무": "흐림",
+  "흐림": "흐림",
+  "온흐림": "흐림",
+  "박무": "흐림"
+};
+
+function getKoreanWeatherDescription(desc) {
+  return weatherDescriptionMap[desc] || "기타";
+}
 
 function PlaceDetail() {
   const { state } = useLocation();
   const place = state?.place;
-  const latitude = place.y;
-  const longitude = place.x;
+  const latitude = place?.y;
+  const longitude = place?.x;
 
   const navigate = useNavigate();
 
   const [weather, setWeather] = useState({
-      temp: 0,          // 현재 온도
-      feels_like: 0     // 체감 온도
+    temp: 0,
+    feeling: 0,
   });
-  const [message, setMessage] = useState("오늘은 구름이 끼고, 비가 올 가능성은 대체로 없어서 야외를 추천해요. 비가 자주 오는 날씨라면 실내 장소는 어떨까요?");
-  const [fitList, setFitList] = useState([
-              "더현대 서울",
-              "코엑스",
-              "뮤지엄",
-              "수원 스파플렉스",
-              "롯데월드"
-            ]);
+  const [message, setMessage] = useState("로딩 중...");
+  const [fitList, setFitList] = useState([]);
 
   useEffect(() => {
     if (!place) return;
 
-     // 위치의 현 날씨
     getCurrentWeather(latitude, longitude).then((res) => {
       const data = res.data;
-      console.log("현재 날씨:", data);
-
       const temp = data.main.temp;
       const feeling = data.main.feels_like;
-      const weatherType = data.weather[0].description;
+      const rawDesc = data.weather[0].description;
+      const weatherType = getKoreanWeatherDescription(rawDesc); // ✅ 변환
 
       setWeather({
         temp,
-        feeling
+        feeling,
       });
 
-      // DB 문구 가져오기
-      axios.get(`/api/weather/message`, {
-        params: {
-          weatherType,
-          feeling
-        }
-      })
-      .then((res) => {
-        setMessage(res.data.message);
-        setFitList(res.data.weatherFit.split(",") || []);
-      });
+      axios
+        .get("http://localhost:8080/api/weather/message", {
+          params: {
+            weatherType,
+            feelsLike: feeling,
+          },
+        })
+        .then((res) => {
+          setMessage(res.data.message || "추천 메시지를 불러오지 못했습니다.");
+          setFitList(res.data.weatherFit?.split(",") || []);
+        })
+        .catch((err) => {
+          console.error("메시지 불러오기 실패:", err);
+          setMessage("추천 메시지를 불러오지 못했습니다.");
+        });
     });
   }, [place]);
 
@@ -65,7 +81,7 @@ function PlaceDetail() {
         <div className="place-header">
           <p className="weather-question">오늘 "{place.placeName}"의 날씨는?</p>
 
-        <div className="weather-middle">
+          <div className="weather-middle">
             <div className="weather-icon">🌤️</div>
             <div className="weather-temp">{weather.temp}℃</div>
           </div>
@@ -76,7 +92,9 @@ function PlaceDetail() {
             <div className="recommend-tags">
               <span className="recommend-label">웨더핏 추천:</span>
               {fitList.map((name) => (
-                <button className="fit-tag" key={name}>{name}</button>
+                <button className="fit-tag" key={name}>
+                  {name}
+                </button>
               ))}
             </div>
           )}
@@ -103,7 +121,6 @@ function PlaceDetail() {
 
         <div className="opinion-box">
           <p>여러분들의 의견을 남겨주세요.</p>
-          {/* 댓글 입력창 또는 리스트는 추후 추가 */}
         </div>
 
         <button className="back-btn" onClick={() => navigate(-1)}>
