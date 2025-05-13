@@ -3,6 +3,7 @@ package com.creepy.bit.controller;
 import com.creepy.bit.service.WeatherService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import com.creepy.bit.domain.WeatherMessageDto;
 
 @RestController
 @RequestMapping("/api/weather")  // 모든 날씨 관련 API는 이 경로(/api/weather)로 시작
@@ -44,4 +45,22 @@ public class WeatherController {
         System.out.println("WeatherController GET /forecast 호출");
         return weatherService.getForecast(lat, lon);
     }
+
+       @GetMapping("/message")
+    public WeatherMessageDto getMessage(@RequestParam String weatherType, @RequestParam double feelsLike) {
+        System.out.println("WeatherController GET /message 요청");
+        System.out.println(weatherType + " " +feelsLike);
+        WeatherMessageDto result = weatherService.getMatchedMessage(weatherType, feelsLike);
+        
+        if (result == null) {
+            WeatherMessageDto fallback = new WeatherMessageDto();
+            fallback.setMessage("추천 메시지를 찾을 수 없습니다.");
+            return fallback;
+        }
+        return result;
+    }
+
+
+
+
 }

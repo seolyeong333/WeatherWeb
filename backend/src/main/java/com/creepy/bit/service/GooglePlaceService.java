@@ -19,7 +19,7 @@ public class GooglePlaceService {
     private static final String DEFAULT_IMAGE_URL = "https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg";
 
     public String getPlaceImageUrl(String placeName, double lat, double lon) {
-        System.out.println("GooglePlaceService 호출");
+        System.out.println("GooglePlaceService 호출"+googleApiKey);
         try {
             // 1️⃣ Text Search API로 place_id + photo_reference 검색
             String searchUrl = UriComponentsBuilder
