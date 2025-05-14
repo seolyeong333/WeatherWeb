@@ -47,6 +47,17 @@ public class MailService {
         mailSender.send(message);
     }
     
+    public void sendGeneralMail(String to, String subject, String htmlContent) throws MessagingException {
+        MimeMessage message = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+
+        helper.setFrom("WeatherWeb@gmail.com");
+        helper.setTo(to);
+        helper.setSubject(subject);
+        helper.setText(htmlContent, true); // HTML 여부 true 설정
+
+        mailSender.send(message);
+    }
 
     
 }

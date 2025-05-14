@@ -8,7 +8,7 @@ function LoginSuccess() {
   useEffect(() => {
 
     if (hasRun.current) return;
-    hasRun.current = true; // ✅ 딱 한 번만 실행되게 제어
+    hasRun.current = true; 
 
     const params = new URLSearchParams(window.location.search);
     const token = params.get("token");  // 카카오용

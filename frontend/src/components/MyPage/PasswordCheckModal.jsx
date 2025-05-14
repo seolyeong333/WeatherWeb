@@ -43,7 +43,7 @@ function PasswordCheckModal({ show, onHide, mode, onSuccess,email }) {
     <Modal show={show} onHide={handleClose} centered>
       <Modal.Header closeButton>
         <Modal.Title>
-          {mode === "edit" ? "비밀번호 확인" : "회원 탈퇴 전 확인"}
+          비밀번호 확인
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>

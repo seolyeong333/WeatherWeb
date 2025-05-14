@@ -9,8 +9,8 @@
     </select>
 
     <insert id="insertUser" >
-        INSERT INTO users (email, password, nickname, gender, birthday)
-		VALUES (#{email}, #{password}, #{nickname}, #{gender}, #{birthday})
+        INSERT INTO users (email, password, nickname, gender, birthday, provider)
+		VALUES (#{email}, #{password}, #{nickname}, #{gender}, #{birthday}, #{provider})
     </insert>
 
 	<select id="userData" parameterType="string" resultType="com.creepy.bit.domain.UserRequestDto">

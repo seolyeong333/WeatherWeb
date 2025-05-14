@@ -8,6 +8,7 @@ import PasswordCheckModal from "../components/MyPage/PasswordCheckModal";
 import ConfirmModal from "../components/MyPage/ConfirmModal";
 import WeatherOverlay from "../components/MyPage/WeatherOverlay";
 import UserInfoTab from "../components/MyPage/UserInfoTab";
+import ChangePasswordTab from "../components/MyPage/ChangePasswordTab";
 import OpinionTab from "../components/MyPage/OpinionTab";
 import ReportTab from "../components/MyPage/ReportTab";
 import EditUserInfo from "../components/MyPage/EditUserInfo";
@@ -111,6 +112,14 @@ function MyPage() {
                 setShowEditComponent={() => setActiveTab("info")}
               />
             )}
+            {activeTab === "password" && (
+              <ChangePasswordTab
+                userInfo={userInfo}
+                setActiveTab={setActiveTab}
+                fetchUserInfo={fetchUserInfo} 
+                setShowEditComponent={() => setActiveTab("info")}
+              />
+            )}
             {activeTab === "opinions" && <OpinionTab userInfo={userInfo} />}
             {activeTab === "reports" && <ReportTab userInfo={userInfo} />}
             {activeTab === "alarms" &&   <>
@@ -130,6 +139,7 @@ function MyPage() {
           setShowModal(false);
           if (mode === "edit") setActiveTab("edit");
           else if (mode === "delete") setShowConfirmModal(true);
+          else if (mode === "password") setActiveTab("password"); 
         }}
         email={userInfo?.email}
       />
