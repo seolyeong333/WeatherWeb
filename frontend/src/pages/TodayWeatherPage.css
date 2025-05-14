@@ -240,6 +240,11 @@
   border-radius: 16px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
   padding: 1rem;
+  
+}
+.chart-item.full-width {
+  flex: 1 1 100%;
+  max-width: 100%;
 }
 /* 주간예보 카드 전용 스타일 */
 .forecast-section {
@@ -248,5 +253,9 @@
   padding: var(--card-padding);
   border: 1px solid #cbd6ee;
   box-shadow: 0 4px 12px rgba(91, 141, 239, 0.1);
+  box-sizing: border-box;
+}
+.map-wrapper {
+  padding: 0 1rem; /* 좌우 여백 확보 */
   box-sizing: border-box;
 }

@@ -542,14 +542,18 @@ const renderDailyChart = () => {
         {/* ✅ 2열 차트 레이아웃 */}
         <div className="chart-grid">
           <div className="chart-item">{renderHourlyChart()}</div>
-          <div className="chart-item"><MapSection /></div>
+          <div className="chart-item">
+            <h2 className="chart-title">ㅤ지역별 날씨</h2>
+            <MapSection />
+          </div>
           <div className="chart-item">{renderDailyChart()}</div>
           <div className="chart-item">{renderAirPollutionChart()}</div>
+          {/* ✅ 아래 전체 가로폭을 차지하도록 */}
+          <div className="chart-item full-width">
+            <WeeklyForecast />
+          </div>
         </div>
-        {/* 📆 주간 예보 */}
-        <section className="forecast-section box-shadow">
-          <WeeklyForecast />
-        </section>
+          
     </div>
   );
 }
