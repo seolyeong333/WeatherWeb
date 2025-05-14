@@ -19,6 +19,7 @@ public class AlarmController {
     // 알림 추가
     @PostMapping
     public ResponseEntity<String> addAlarm(@RequestBody AlarmDto alarmDto) {
+        System.out.println("AlarmController POST 호출");
         try {
             alarmService.insertAlarm(alarmDto);
             return ResponseEntity.ok("알림 설정 완료");
@@ -31,6 +32,7 @@ public class AlarmController {
     // 알림 목록 조회 (userId 기반)
     @GetMapping
     public ResponseEntity<List<AlarmDto>> getAlarms(@RequestParam int userId) {
+        System.out.println("AlarmController GET 호출");
         try {
             List<AlarmDto> alarms = alarmService.getAlarmsByUser(userId);
             return ResponseEntity.ok(alarms);
@@ -43,6 +45,7 @@ public class AlarmController {
     // 알림 삭제
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteAlarm(@PathVariable("id") int alarmId) {
+        System.out.println("AlarmController DELETE /{id} 호출");
         try {
             alarmService.deleteAlarm(alarmId);
             return ResponseEntity.ok("알림 삭제 완료");
@@ -57,6 +60,7 @@ public class AlarmController {
     public ResponseEntity<String> updateAlarm(
             @PathVariable("id") int alarmId,
             @RequestBody Map<String, String> updateData) {
+        System.out.println("AlarmController PATCH /{id} 호출");
         try {
             String conditionType = updateData.get("conditionType");
             String value = updateData.get("value");

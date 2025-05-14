@@ -55,5 +55,8 @@
 	WHERE email = #{email}
 	</update>
 
+	<select id="findEmailByUserId" resultType="string">
+		SELECT email FROM users WHERE userId = #{userId}
+	</select>
  
 </mapper>

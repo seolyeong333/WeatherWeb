@@ -55,5 +55,8 @@ public class UserService {
         mainMapper.modifyUser(userDto);
     }
 
+    public String getEmailByUserId(int userId) {
+        return mainMapper.findEmailByUserId(userId);
+    }
 
 }
