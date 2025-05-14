@@ -8,6 +8,7 @@ import PasswordCheckModal from "../components/MyPage/PasswordCheckModal";
 import ConfirmModal from "../components/MyPage/ConfirmModal";
 import WeatherOverlay from "../components/MyPage/WeatherOverlay";
 import UserInfoTab from "../components/MyPage/UserInfoTab";
+import BookmarkTab from "../components/MyPage/BookmarkTab";
 import OpinionTab from "../components/MyPage/OpinionTab";
 import ReportTab from "../components/MyPage/ReportTab";
 import EditUserInfo from "../components/MyPage/EditUserInfo";
@@ -84,6 +85,9 @@ function MyPage() {
                 <Nav.Link eventKey="info"><FaUser /> 내 정보</Nav.Link>
               </Nav.Item>
               <Nav.Item>
+                <Nav.Link eventKey="bookmark"><FaUser /> 북마크 목록 </Nav.Link>
+              </Nav.Item>
+              <Nav.Item>
                 <Nav.Link eventKey="opinions"><FaCommentDots /> 한줄평 관리</Nav.Link>
               </Nav.Item>
               <Nav.Item>
@@ -111,6 +115,7 @@ function MyPage() {
                 setShowEditComponent={() => setActiveTab("info")}
               />
             )}
+            {activeTab === "bookmark" && <BookmarkTab userInfo={userInfo} />}
             {activeTab === "opinions" && <OpinionTab userInfo={userInfo} />}
             {activeTab === "reports" && <ReportTab userInfo={userInfo} />}
             {activeTab === "alarms" &&   <>

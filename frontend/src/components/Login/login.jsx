@@ -16,6 +16,8 @@ function Login({ closeLogin, setIsLoggedIn }) {
     remember: false,
   });
 
+  // 회원가입도 closeSignUp 만들어야 함
+  
   const [repassword, setRepassword] = useState("");
   const [authKeySent, setAuthKeySent] = useState("");
   const [userInputKey, setUserInputKey] = useState("");

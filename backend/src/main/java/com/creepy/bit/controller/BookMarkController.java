@@ -1,8 +1,10 @@
 package com.creepy.bit.controller;
 
 import com.creepy.bit.domain.BookMarkDto;
+import com.creepy.bit.domain.KakaoMapDto;
 import com.creepy.bit.util.JWTUtil;
 import com.creepy.bit.service.BookMarkService;
+import com.creepy.bit.service.KakaoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,6 +22,9 @@ public class BookMarkController {
 
     @Autowired
     private BookMarkService bookmarkService;
+
+    @Autowired
+    private KakaoService kakaoService;
 
     // 북마크 추가
     @PostMapping
@@ -66,7 +71,14 @@ public class BookMarkController {
         int userId = jwtUtil.getUserId(pureToken);
 
         List<BookMarkDto> list = bookmarkService.getMyBookMarks(userId);
+        // Place ID를 기준으로 place name, pic
         return ResponseEntity.ok(list);
+    }
+
+    @GetMapping("/place-detail")
+    public ResponseEntity<KakaoMapDto> getPlaceDetail(@RequestParam String placeId) {
+        KakaoMapDto place = kakaoService.getPlaceByIds(placeId);
+        return ResponseEntity.ok(place);
     }
 
 }
