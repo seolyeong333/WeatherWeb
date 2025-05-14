@@ -24,7 +24,7 @@ function TodayLook() {
 
   // 체감온도에 따른 아이콘 출력
   const [showIcons, setShowIcons] = useState({
-    items: "반팔, 반바지, 샌들들"
+    items: "반팔, 반바지, 샌들"
   });
   // DB 날씨조건 필터
   const weatherDescriptionMap = {

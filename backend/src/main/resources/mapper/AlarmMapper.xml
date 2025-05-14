@@ -14,6 +14,11 @@
     SELECT * FROM alarms WHERE userId = #{userId}
   </select>
 
+  <select id="selectAll" resultType="com.creepy.bit.domain.AlarmDto">
+    SELECT * FROM alarms
+  </select>
+
+
   <delete id="deleteAlarm" parameterType="int">
     DELETE FROM alarms WHERE alarmId = #{alarmId}
   </delete>
