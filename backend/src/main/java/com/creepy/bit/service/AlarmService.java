@@ -20,6 +20,10 @@ public class AlarmService {
     public List<AlarmDto> getAlarmsByUser(int userId) {
         return mainMapper.selectAlarmsByUserId(userId);
     }
+    
+    public List<AlarmDto> getAllAlarms() {
+    return mainMapper.selectAll();
+    }
 
     public void deleteAlarm(int alarmId) {
         mainMapper.deleteAlarm(alarmId);

@@ -1,9 +1,11 @@
 // src/components/MyPage/OpinionTab.jsx
 import { Card } from "react-bootstrap";
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 function OpinionTab({ userInfo }) {
   const [opinions, setOpinions] = useState([]);
+  const navigate = useNavigate(); // ✅ 페이지 이동용 hook
 
   useEffect(() => {
     if (!userInfo?.userId) return;
@@ -20,6 +22,11 @@ function OpinionTab({ userInfo }) {
       .catch((err) => console.error("한줄평 불러오기 실패", err));
   }, [userInfo]);
 
+  // 🔸 클릭 시 placeId를 넘기며 상세페이지로 이동
+  const handleOpinionClick = (placeId) => {
+    navigate("/today-place/place-detail", { state: { placeId } }); // 🔗 이동 시 state로 전달
+  };
+
   return (
     <Card className="mypage-card">
       <Card.Body>
@@ -29,7 +36,9 @@ function OpinionTab({ userInfo }) {
             {opinions.map((opinion) => (
               <li
                 key={opinion.opinionId}
+                onClick={() => handleOpinionClick(opinion.placeId)} // ✅ 클릭 시 이동
                 className="list-group-item d-flex flex-column align-items-start"
+                style={{ cursor: "pointer" }}
               >
                 <div>
                   <strong>📍 장소 ID:</strong> {opinion.placeId}

@@ -11,6 +11,9 @@ import UserInfoTab from "../components/MyPage/UserInfoTab";
 import OpinionTab from "../components/MyPage/OpinionTab";
 import ReportTab from "../components/MyPage/ReportTab";
 import EditUserInfo from "../components/MyPage/EditUserInfo";
+import AlarmTab from "../components/MyPage/AlarmTab";
+import AlarmListTab from "../components/MyPage/AlarmListTab";
+import { FaBell } from "react-icons/fa";
 import { FaUser, FaCommentDots, FaExclamationCircle } from "react-icons/fa";
 import "./MyPage.css";
 
@@ -86,6 +89,9 @@ function MyPage() {
               <Nav.Item>
                 <Nav.Link eventKey="reports"><FaExclamationCircle /> 신고 내역</Nav.Link>
               </Nav.Item>
+              <Nav.Item>
+                <Nav.Link eventKey="alarms"><FaBell /> 알림 설정</Nav.Link>
+              </Nav.Item>
             </Nav>
           </Col>
 
@@ -107,6 +113,11 @@ function MyPage() {
             )}
             {activeTab === "opinions" && <OpinionTab userInfo={userInfo} />}
             {activeTab === "reports" && <ReportTab userInfo={userInfo} />}
+            {activeTab === "alarms" &&   <>
+              <AlarmTab userInfo={userInfo} />
+              <AlarmListTab userId={userInfo?.userId} />
+            </>
+            }
           </Col>
         </Row>
       </div>
