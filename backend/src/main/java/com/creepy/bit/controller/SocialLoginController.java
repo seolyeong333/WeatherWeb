@@ -14,8 +14,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import jakarta.servlet.http.HttpServletResponse;
+
 import java.io.IOException;
 import java.util.Map;
+import java.time.LocalDate;
 
 @RestController
 @RequestMapping("/api/users/login")
@@ -36,11 +38,13 @@ public class SocialLoginController {
 
     @GetMapping("/kakao")
     public void kakaoLogin(@RequestParam("code") String code, HttpServletResponse response) throws IOException {
+        System.out.println("SocialLoginController /kakao GET 호출");
         try {
             Map<String, Object> userInfo = kakaoService.kakaoLogin(code);
+            System.out.println("🔍 카카오 응답 전체: " + userInfo);
             Map<String, Object> kakaoAccount = (Map<String, Object>) userInfo.get("kakao_account");
-            String email = (String) kakaoAccount.get("email");
             Map<String, Object> profile = (Map<String, Object>) kakaoAccount.get("profile");
+            String email = (String) kakaoAccount.get("email");
             String nickname = (String) profile.get("nickname");
 
             // ✅ 자동 회원가입 (최초 로그인 시)
@@ -80,17 +84,19 @@ public class SocialLoginController {
 
     @GetMapping("/google")
     public void googleLogin(@RequestParam("code") String code, HttpServletResponse response) throws IOException {
+                System.out.println("SocialLoginController /google GET 호출");
         try {
             Map<String, Object> userInfo = googleService.googleLogin(code);
+            System.out.println("🔍 구글 응답 전체: " + userInfo);
             String email = (String) userInfo.get("email");
-            String name = (String) userInfo.get("name");
+            String nickname = (String) userInfo.get("name");
 
             // ✅ 자동 회원가입 (최초 로그인 시)
             if (userService.checkEmail(email) == 0) {
                 UserRequestDto newUser = new UserRequestDto();
                 newUser.setEmail(email);
                 newUser.setPassword("1234");
-                newUser.setNickname(name); // 구글 이름 사용
+                newUser.setNickname(nickname); // 구글 이름 사용
                 newUser.setProvider("google");
                 newUser.setAuth("USER");
                 newUser.setGender(null);      // 또는 기본값 "unknown" 등
@@ -112,7 +118,7 @@ public class SocialLoginController {
             String redirectUrl = "http://localhost:5173/googleloginsuccess?token=" + jwt;
             response.sendRedirect(redirectUrl);
 
-            System.out.println("✅ 구글 로그인 성공: " + email + " / " + name);
+            System.out.println("✅ 구글 로그인 성공: " + email + " / " + nickname);
         } catch (Exception e) {
             e.printStackTrace();
             response.sendError(500, "구글 로그인 실패");
@@ -121,21 +127,67 @@ public class SocialLoginController {
 
 
     @GetMapping("/naver")
-    public void naverLogin(@RequestParam("code") String code,
-                           @RequestParam("state") String state,
-                           HttpServletResponse response) throws IOException {
+    public void naverLogin(@RequestParam("code") String code, @RequestParam("state") String state, HttpServletResponse response) throws IOException {
+        System.out.println("SocialLoginController /naver GET 호출");
         try {
             Map<String, Object> userInfo = naverService.naverLogin(code, state);
+            System.out.println("🔍 네이버 응답 전체: " + userInfo);
+
             String email = (String) userInfo.get("email");
-            String nickname = (String) userInfo.get("nickname");
+            String nickname = (String) userInfo.get("name");
+            String genderRaw = (String) userInfo.get("gender");      // "M" 또는 "F"
+            String birthyear = (String) userInfo.get("birthyear");  // e.g., 2001
+            String birthday = (String) userInfo.get("birthday");    // e.g., 01-02
 
-            String jwt = jwtUtil.generateSocialToken(email, nickname);
+            String gender = null;
+            if ("M".equals(genderRaw)) gender = "male";
+            else if ("F".equals(genderRaw)) gender = "female";
+            
+            // ✅ 생일 변환
+            LocalDate fullBirthday = null;
+            try {
+                if (birthyear != null && birthday != null) {
+                    String fullBirthdayStr = birthyear + "-" + birthday; // e.g., 2001-01-02
+                    fullBirthday = LocalDate.parse(fullBirthdayStr);
+                }
+            } catch (Exception e) {
+                System.out.println("❗ 생일 변환 실패: " + e.getMessage());
+            }
+
+            // ✅ 자동 회원가입 (최초 로그인 시)
+            if (userService.checkEmail(email) == 0) {
+                UserRequestDto newUser = new UserRequestDto();
+                newUser.setEmail(email);
+                newUser.setPassword("1234"); // 더미 패스워드
+                newUser.setNickname(nickname);
+                newUser.setProvider("naver");
+                newUser.setAuth("USER");
+                newUser.setGender(gender != null ? gender.toLowerCase() : null); // M → male, F → female 등 변환 가능
+                newUser.setBirthday(fullBirthday);
+                userService.signup(newUser);
+                System.out.println("🎉 자동 회원가입 완료: " + email);
+            }
+
+            // ✅ JWT 발급
+            UserRequestDto userData = userService.userData(email);
+            String jwt = jwtUtil.generateToken(
+                    userData.getEmail(),
+                    userData.getNickname(),
+                    userData.getAuth(),
+                    userData.getUserId()
+            );
+
+            // ✅ 리디렉션
             String redirectUrl = "http://localhost:5173/naverloginsuccess?token=" + jwt;
-
             response.sendRedirect(redirectUrl);
+
+            System.out.println("✅ 네이버 로그인 성공: " + email + " / " + nickname);
+
         } catch (Exception e) {
             e.printStackTrace();
             response.sendError(500, "네이버 로그인 실패");
         }
     }
+
+
 }

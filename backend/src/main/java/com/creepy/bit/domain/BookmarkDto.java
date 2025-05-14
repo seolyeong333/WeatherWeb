@@ -9,5 +9,6 @@ public class BookMarkDto {
     private int bookmarkId;
     private int userId;
     private String placeId;
+    private String placeName;
     private String createdAt;
 } 

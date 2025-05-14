@@ -37,10 +37,10 @@ function PlaceDetail() {
   useEffect(() => {
     if (place) return; // 이미 place가 있으면 fetch 안함
 
-    const placeId = state?.placeId;
-    if (!placeId) return;
+    const placeName = state?.placeName;
+    if (!placeName) return;
 
-    fetch(`http://localhost:8080/api/kakao/place?placeId=${placeId}`)
+    fetch(`http://localhost:8080/api/kakao/place?placeName=${placeName}`)
       .then((res) => res.json())
       .then(setPlace)
       .catch((err) => {
@@ -94,6 +94,7 @@ function PlaceDetail() {
         },
         body: JSON.stringify({
           placeId: place.id,
+          placeName: place.placeName,
           content: opinion,
           isPublic: true,
         }),
