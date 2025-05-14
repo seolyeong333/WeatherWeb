@@ -55,6 +55,49 @@ public class KakaoService {
         return response.getBody();
     }
 
+    public KakaoMapDto getPlaceById(String placeId) {
+    String url = "https://dapi.kakao.com/v2/local/search/keyword.json?query=" + placeId;
+
+    HttpHeaders headers = new HttpHeaders();
+    headers.set("Authorization", "KakaoAK " + kakaoApiKey);
+
+    HttpEntity<String> entity = new HttpEntity<>(headers);
+
+    ResponseEntity<String> response = restTemplate.exchange(
+        url,
+        HttpMethod.GET,
+        entity,
+        String.class
+    );
+
+    JSONObject json = new JSONObject(response.getBody());
+    JSONArray documents = json.getJSONArray("documents");
+
+    if (documents.length() == 0) {
+        return null; // 장소 없음
+    }
+
+    JSONObject obj = documents.getJSONObject(0); // 첫 번째 장소 정보
+
+    // 모든 필드를 추출해서 생성자에 넘겨줌
+    return new KakaoMapDto(
+        obj.getString("id"),
+        obj.getString("place_name"),
+        obj.optString("category_name", ""),
+        obj.optString("category_group_code", ""),
+        obj.optString("category_group_name", ""),
+        obj.optString("phone", ""),
+        obj.optString("address_name", ""),
+        obj.optString("road_address_name", ""),
+        obj.getString("x"),
+        obj.getString("y"),
+        obj.optString("place_url", ""),
+        obj.optString("distance", "")
+    );
+}
+
+
+
     public List<KakaoMapDto> searchPlacesByCategory(double lat, double lon, String categoryCode, String keyword) {
     String url;
 

@@ -41,7 +41,8 @@ public interface MainMapper {
     // 회원 정보 수정 (비밀번호 + 이메일 수정)
     void modifyUser(UserRequestDto userDto);
 
-    
+    // Id로 이메일 찾기
+    String findEmailByUserId(int userId);
 
     // Notice
     // 공지 전체 조회
@@ -95,6 +96,9 @@ public interface MainMapper {
 
     // 내 알림 목록 
     List<AlarmDto> selectAlarmsByUserId(int userId);
+
+    // 전체 알림 목록
+    List<AlarmDto> selectAll();
 
     // 알림 삭제
     void deleteAlarm(int alarmId);
