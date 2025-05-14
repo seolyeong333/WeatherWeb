@@ -6,6 +6,8 @@ import axios from "axios";
 import Lottie from "lottie-react";
 import loadingAnimation from "../assets/loading.json"; // 경로는 프로젝트 구조에 맞게 조정
 import { getKoreanWeatherDescription } from "../api/weatherMapping";
+import MapSection from "../components/MapSection"; // 경로는 위치에 따라 조정
+import WeeklyForecast from "../components/WeeklyForecast"; // 경로는 위치에 따라 조정
 
 
 import {
@@ -111,8 +113,27 @@ function TodayWeatherPage() {
     const rawDesc = weatherData.current.weather[0].description;
     const icon = weatherData.current.weather[0].icon;
     const emoji = getWeatherEmoji(icon);
-
     const description = getKoreanWeatherDescription(rawDesc); // ✅ 한글 표현 매핑
+
+    // ✅ 미세먼지 수치
+    const pm10 = weatherData.pollution?.[0]?.components.pm10;
+    const pm25 = weatherData.pollution?.[0]?.components.pm2_5;
+
+    // ✅ 등급 판단 함수
+    const getLevel = (value, type) => {
+      if (type === "pm10") {
+        if (value <= 30) return { label: "좋음", color: "#4CAF50" };
+        if (value <= 80) return { label: "보통", color: "#FFD600" };
+        return { label: "나쁨", color: "#F44336" };
+      } else {
+        if (value <= 15) return { label: "좋음", color: "#4CAF50" };
+        if (value <= 35) return { label: "보통", color: "#FFD600" };
+        return { label: "나쁨", color: "#F44336" };
+      }
+    };
+
+    const pm10Level = pm10 ? getLevel(pm10, "pm10") : null;
+    const pm25Level = pm25 ? getLevel(pm25, "pm25") : null;
 
     return (
       <div className="header-section">
@@ -124,13 +145,23 @@ function TodayWeatherPage() {
               <p className="header-subtext">현재 위치: {regionName}</p>
             )}
           </div>
+
           <div className="header-summary-line">
             {emoji} {description}, {temp}°C / 습도 {humidity}% / 강수 확률 {pop}%
           </div>
+
+          {/* ✅ 미세먼지 텍스트 추가 */}
+          {pm10Level && pm25Level && (
+            <div className="dust-text-line" style={{ marginTop: "0.5rem", fontSize: "14px" }}>
+              미세먼지 (PM10): <span style={{ color: pm10Level.color }}>{pm10Level.label}</span> /
+              초미세먼지 (PM2.5): <span style={{ color: pm25Level.color }}>{pm25Level.label}</span>
+            </div>
+          )}
         </div>
       </div>
     );
   };
+
 
 
   const renderHourlyChart = () => {
@@ -189,6 +220,7 @@ function TodayWeatherPage() {
 
     const options = {
       responsive: true,
+      
       interaction: {
         mode: "index",
         intersect: false,
@@ -505,11 +537,19 @@ const renderDailyChart = () => {
   return (
     <div className="today-weather-page">
       <Header />
-      {renderHeaderSection()}
-      {renderHourlyChart()}
-      {renderDailyChart()}
-      {renderAirPollutionChart()}
-      {renderDetailSection()}
+        {renderHeaderSection()}
+        {renderDetailSection()}
+        {/* ✅ 2열 차트 레이아웃 */}
+        <div className="chart-grid">
+          <div className="chart-item">{renderHourlyChart()}</div>
+          <div className="chart-item"><MapSection /></div>
+          <div className="chart-item">{renderDailyChart()}</div>
+          <div className="chart-item">{renderAirPollutionChart()}</div>
+        </div>
+        {/* 📆 주간 예보 */}
+        <section className="forecast-section box-shadow">
+          <WeeklyForecast />
+        </section>
     </div>
   );
 }

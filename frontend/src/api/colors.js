@@ -36,5 +36,12 @@ export function getTodayColor() {
   const today = new Date().toISOString().split("T")[0]; // YYYY-MM-DD
   let hash = 0;
   for (let i = 0; i < today.length; i++) hash += today.charCodeAt(i);
-  return COLORS[hash % COLORS.length]; // 날짜 기반 고정된 색상 인덱스
+
+
+  // 실버, 골드를 제외한 색상 배열
+  const filteredColors = COLORS.filter(
+    color => color.name !== "실버" && color.name !== "골드"
+  );
+
+  return filteredColors[hash % filteredColors.length];
 }
