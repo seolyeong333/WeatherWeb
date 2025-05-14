@@ -1,22 +1,14 @@
+// 상단 import 추가
 import { useLocation, useNavigate } from "react-router-dom";
 import { getCurrentWeather } from "../../api/weather";
 import "./PlaceDetail.css";
 import { useState, useEffect } from "react";
 import axios from "axios";
 
-// 날씨 영어 → 한글 매핑
 const weatherDescriptionMap = {
-  "튼구름": "구름 많음",
-  "맑음": "맑음",
-  "비": "비",
-  "눈": "눈",
-  "실 비": "이슬비",
-  "소나기": "소나기",
-  "천둥번개": "뇌우",
-  "연무": "흐림",
-  "흐림": "흐림",
-  "온흐림": "흐림",
-  "박무": "흐림",
+  "튼구름": "구름 많음", "맑음": "맑음", "비": "비", "눈": "눈",
+  "실 비": "이슬비", "소나기": "소나기", "천둥번개": "뇌우",
+  "연무": "흐림", "흐림": "흐림", "온흐림": "흐림", "박무": "흐림"
 };
 
 function getKoreanWeatherDescription(desc) {
@@ -32,28 +24,33 @@ function PlaceDetail() {
   const [message, setMessage] = useState("로딩 중...");
   const [fitList, setFitList] = useState([]);
   const [opinion, setOpinion] = useState("");
+  const [opinions, setOpinions] = useState([]);
 
-  // 📌 placeId만 전달된 경우, 백엔드에서 장소 상세 정보 fetch
+  const fetchOpinions = async () => {
+    if (!place?.id) return;
+    const res = await fetch(`http://localhost:8080/api/opinions/place?placeId=${place.id}`);
+    const data = await res.json();
+    setOpinions(data);
+  };
+
+  // 장소 정보 fetch
   useEffect(() => {
-    if (place) return; // 이미 place가 있으면 fetch 안함
-
+    if (place) return;
     const placeName = state?.placeName;
     if (!placeName) return;
 
-    fetch(`http://localhost:8080/api/kakao/place?placeName=${placeName}`)
+    fetch(`http://localhost:8080/api/kakao/place?placeName=${encodeURIComponent(placeName)}`)
       .then((res) => res.json())
       .then(setPlace)
       .catch((err) => {
-        console.error("장소 정보 불러오기 실패", err);
-        alert("장소 정보를 불러오지 못했습니다.");
+        console.error("장소 정보 실패", err);
         navigate("/main");
       });
   }, [state, place]);
 
-  // 📌 날씨 및 메시지 로딩
+  // 날씨, 메시지
   useEffect(() => {
     if (!place?.x || !place?.y) return;
-
     getCurrentWeather(place.y, place.x).then((res) => {
       const data = res.data;
       const temp = data.main.temp;
@@ -63,19 +60,22 @@ function PlaceDetail() {
 
       setWeather({ temp, feeling });
 
-      axios
-        .get("http://localhost:8080/api/weather/message", {
-          params: { weatherType, feelsLike: feeling },
-        })
-        .then((res) => {
-          setMessage(res.data.message || "추천 메시지를 불러오지 못했습니다.");
-          setFitList(res.data.weatherFit?.split(",") || []);
-        })
-        .catch((err) => {
-          console.error("메시지 불러오기 실패:", err);
-          setMessage("추천 메시지를 불러오지 못했습니다.");
-        });
+      axios.get("http://localhost:8080/api/weather/message", {
+        params: { weatherType, feelsLike: feeling }
+      })
+      .then((res) => {
+        setMessage(res.data.message || "추천 메시지를 불러오지 못했습니다.");
+        setFitList(res.data.weatherFit?.split(",") || []);
+      })
+      .catch((err) => {
+        console.error("메시지 실패:", err);
+        setMessage("추천 메시지를 불러오지 못했습니다.");
+      });
     });
+  }, [place]);
+
+  useEffect(() => {
+    fetchOpinions();
   }, [place]);
 
   const handleOpinionSubmit = async () => {
@@ -102,11 +102,36 @@ function PlaceDetail() {
 
       if (!res.ok) throw new Error("작성 실패");
 
-      alert("한줄평이 등록되었습니다!");
-      setOpinion(""); // 입력값 초기화
+      alert("등록 완료!");
+      setOpinion("");
+      await fetchOpinions();
     } catch (err) {
-      console.error("의견 등록 실패:", err);
-      alert("등록 중 오류가 발생했습니다.");
+      console.error("등록 실패:", err);
+      alert("등록 중 오류 발생");
+    }
+  };
+
+  // 👍 / 👎 처리 함수
+  const handleLikeDislike = async (id, type) => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        alert("로그인이 필요합니다.");
+        return;
+      }
+      const res = await fetch(`http://localhost:8080/api/opinions/${id}/${type}`, {
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${token}`, // ✅ 토큰 포함
+        },
+      });
+      if (res.ok) {
+        await fetchOpinions(); // 갱신
+      } else {
+        alert(`${type === "like" ? "좋아요" : "싫어요"} 실패`);
+      }
+    } catch (err) {
+      console.error(`${type} 실패`, err);
     }
   };
 
@@ -114,7 +139,6 @@ function PlaceDetail() {
 
   return (
     <div className="place-detail-wrapper">
-      {/* Section 3: 상단 추천 + 날씨 */}
       <h2 className="place-title">{place.placeName}</h2>
       <section className="section-3">
         <div className="place-header">
@@ -129,32 +153,50 @@ function PlaceDetail() {
             <div className="recommend-tags">
               <span className="recommend-label">웨더핏 추천:</span>
               {fitList.map((name) => (
-                <button className="fit-tag" key={name}>
-                  {name}
-                </button>
+                <button className="fit-tag" key={name}>{name}</button>
               ))}
             </div>
           )}
         </div>
       </section>
 
-      {/* Section 2: 장소 상세 */}
       <section className="section-2">
         <h3 className="place-subtitle">{place.placeName}</h3>
         <p className="description">
           📍 {place.addressName} <br />
           📞 {place.phone || "전화번호 없음"}
         </p>
-        <a
-          className="kakao-link-button"
-          href={place.placeUrl}
-          target="_blank"
-          rel="noreferrer"
-        >
+        <a className="kakao-link-button" href={place.placeUrl} target="_blank" rel="noreferrer">
           🔗 카카오맵에서 보기
         </a>
 
-        <div className="opinion-box">
+        {/* 한줄평 목록 */}
+        <div className="opinion-list mt-4">
+          <h4>💬 한줄평</h4>
+          {opinions.length === 0 ? (
+            <p className="text-muted">등록된 한줄평이 없습니다.</p>
+          ) : (
+            <ul className="list-group">
+              {opinions.map((op) => (
+                <li key={op.opinionId} className="list-group-item">
+                  <div>
+                    <strong>{op.content}</strong>
+                  </div>
+                  <div className="d-flex gap-3 mt-1 small text-muted align-items-center">
+                    <span>👍 {op.likes}</span>
+                    <span>👎 {op.dislikes}</span>
+                    <span>🕒 {op.createdAt?.substring(0, 16)}</span>
+                    <button className="btn btn-sm btn-outline-success" onClick={() => handleLikeDislike(op.opinionId, "like")}>👍</button>
+                    <button className="btn btn-sm btn-outline-danger" onClick={() => handleLikeDislike(op.opinionId, "dislike")}>👎</button>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+
+        {/* 한줄평 작성 */}
+        <div className="opinion-box mt-4">
           <p>여러분들의 의견을 남겨주세요.</p>
           <textarea
             className="form-control mt-2"
@@ -172,7 +214,7 @@ function PlaceDetail() {
           </button>
         </div>
 
-        <button className="back-btn" onClick={() => navigate(-1)}>
+        <button className="back-btn mt-4" onClick={() => navigate(-1)}>
           ← 뒤로가기
         </button>
       </section>
