@@ -9,6 +9,7 @@ public class OpinionDto {
     private int opinionId;
     private int userId;
     private String placeId;
+    private String placeName;
     private String content;
     private boolean isPublic;
     private int likes;

@@ -22,9 +22,9 @@ function OpinionTab({ userInfo }) {
       .catch((err) => console.error("한줄평 불러오기 실패", err));
   }, [userInfo]);
 
-  // 🔸 클릭 시 placeId를 넘기며 상세페이지로 이동
-  const handleOpinionClick = (placeId) => {
-    navigate("/today-place/place-detail", { state: { placeId } }); // 🔗 이동 시 state로 전달
+  // 🔸 클릭 시 placeName를 넘기며 상세페이지로 이동
+  const handleOpinionClick = (placeName) => {
+    navigate("/today-place/place-detail", { state: { placeName } }); // 🔗 이동 시 state로 전달
   };
 
   return (
@@ -36,12 +36,12 @@ function OpinionTab({ userInfo }) {
             {opinions.map((opinion) => (
               <li
                 key={opinion.opinionId}
-                onClick={() => handleOpinionClick(opinion.placeId)} // ✅ 클릭 시 이동
+                onClick={() => handleOpinionClick(opinion.placeName)} // ✅ 클릭 시 이동
                 className="list-group-item d-flex flex-column align-items-start"
                 style={{ cursor: "pointer" }}
               >
                 <div>
-                  <strong>📍 장소 ID:</strong> {opinion.placeId}
+                  <strong>📍 장소 이름:</strong> {opinion.placeName}
                 </div>
                 <div>
                   <strong>💬 내용:</strong> {opinion.content}

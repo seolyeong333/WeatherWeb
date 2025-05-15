@@ -64,7 +64,10 @@ public class KakaoLoginService {
 
         ObjectMapper mapper = new ObjectMapper();
         try (InputStream is = conn.getInputStream()) {
-            return mapper.readValue(is, Map.class);
+            Map<String, Object> result = mapper.readValue(is, Map.class);
+            System.out.println("📦 카카오 유저 정보: " + result);
+            return result;
+   
         }
     }
 

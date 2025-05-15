@@ -142,7 +142,10 @@ function TodayPlaceList() {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify({ placeId: placeKey }),
+          body: JSON.stringify({ 
+          placeId: placeKey,
+          placeName: place.placeName,
+           }),
         });
 
         if (res.ok) {

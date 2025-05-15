@@ -39,8 +39,6 @@ public class BookMarkController {
         }
     }
 
-
-
     // 북마크 삭제
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteBookMark(@PathVariable int id) {
@@ -64,9 +62,12 @@ public class BookMarkController {
 
         // JWT에서 userId 추출
         int userId = jwtUtil.getUserId(pureToken);
-
+        System.out.println(userId);
         List<BookMarkDto> list = bookmarkService.getMyBookMarks(userId);
+        System.out.println(list);
         return ResponseEntity.ok(list);
     }
+
+
 
 }

@@ -14,6 +14,7 @@ function Login({ closeLogin, setIsLoggedIn }) {
     gender: "",
     birthday: "",
     remember: false,
+    provider: "local",
   });
 
   const [repassword, setRepassword] = useState("");
