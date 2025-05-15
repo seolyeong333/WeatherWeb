@@ -197,7 +197,9 @@ function MapSection() {
         ref={mapContainer}
         className="w-100"
         style={{ height: "400px", borderRadius: "10px" }}
-      ></div>
+      >
+        
+      </div>
     </div>
   );
 }
