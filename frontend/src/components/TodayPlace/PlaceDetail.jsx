@@ -150,8 +150,9 @@ function PlaceDetail() {
           content: reason,
         }),
       });
+      const message = await res.text();
       if (res.ok) alert("신고가 접수되었습니다.");
-      else alert("신고 실패");
+      else alert(message);
     } catch {
       alert("신고 중 오류 발생");
     }
@@ -180,7 +181,15 @@ function PlaceDetail() {
             <div className="recommend-tags">
               <span className="recommend-label">웨더핏 추천:</span>
               {fitList.map((name) => (
-                <button className="fit-tag" key={name}>{name}</button>
+                <button
+                  className="fit-tag"
+                  key={name}
+                  onClick={() => {
+                    console.log("✅ 웨더핏 버튼 클릭:", name);
+                    navigate(`/today-place/list?keyword=${encodeURIComponent(name)}`)}}
+                >
+                  {name}
+                </button>
               ))}
             </div>
           )}

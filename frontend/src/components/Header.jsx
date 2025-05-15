@@ -1,43 +1,18 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Navbar, Nav, Button } from "react-bootstrap";
 import { FaBars } from "react-icons/fa";
 import { motion } from "framer-motion";
 import Login from "./Login/login.jsx";
-
-// ✅ JWT 디코딩 함수 (Base64 디코딩)
-function parseJwt(token) {
-  try {
-    const base64Url = token.split('.')[1];
-    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-    const payload = decodeURIComponent(atob(base64).split('').map(function (c) {
-      return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-    }).join(''));
-    return JSON.parse(payload);
-  } catch (e) {
-    return null;
-  }
-}
+import { isLoggedIn as checkLogin, getUserAuth } from "../api/jwt";
 
 function Header() {
   const navigate = useNavigate();
-  const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem("token"));
-  const [isAdmin, setIsAdmin] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(checkLogin());
   const [menuOpen, setMenuOpen] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
 
-  // 🔹 로그인 시 JWT에서 관리자 여부 판단
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      const decoded = parseJwt(token);
-      if (decoded?.auth === "ADMIN") {
-        setIsAdmin(true);
-      } else {
-        setIsAdmin(false);
-      }
-    }
-  }, [isLoggedIn]);
+  const isAdmin = getUserAuth() === "ADMIN"; // 🔹 권한 판단
 
   const toggleMenu = () => setMenuOpen(prev => !prev);
   const closeMenu = () => setMenuOpen(false);
@@ -46,8 +21,7 @@ function Header() {
 
   const handleLogout = () => {
     localStorage.removeItem("token");
-    setIsLoggedIn(false);
-    setIsAdmin(false);
+    setIsLoggedIn(false); // 로그인 상태만 갱신하면 됨
     navigate("/main");
   };
 
@@ -74,7 +48,7 @@ function Header() {
             <Nav.Link href="/today-place">오늘의 장소</Nav.Link>
             <Nav.Link href="/today-look">오늘의 코디</Nav.Link>
             <Nav.Link href="/today-tarot">오늘의 운세</Nav.Link>
-            <Nav.Link href="/noticelist">공지사항</Nav.Link>
+            <Nav.Link href="/notice">공지사항</Nav.Link>
             {isLoggedIn && (
               <Nav.Link href={isAdmin ? "/admin" : "/mypage"}>
                 {isAdmin ? "관리자페이지" : "마이페이지"}
