@@ -1,5 +1,7 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
+import Header from "../components/Header";
+import "./notice.css"; // ✅ 스타일 적용
 
 function NoticeEdit() {
   const { id } = useParams();
@@ -7,7 +9,7 @@ function NoticeEdit() {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
 
-  // 기존 데이터 불러오기
+  // 기존 공지 불러오기
   useEffect(() => {
     const fetchNotice = async () => {
       try {
@@ -22,7 +24,6 @@ function NoticeEdit() {
     fetchNotice();
   }, [id]);
 
-  // 수정 요청
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -45,34 +46,38 @@ function NoticeEdit() {
   };
 
   return (
-    <div style={{ padding: "20px", maxWidth: "800px", margin: "auto" }}>
-      <h2>공지 수정</h2>
-      <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          placeholder="제목"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          style={{ width: "100%", padding: "10px", marginBottom: "10px" }}
-        />
-        <textarea
-          placeholder="내용"
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-          style={{ width: "100%", height: "200px", padding: "10px" }}
-        />
-        <button type="submit" style={{
-          marginTop: "10px",
-          padding: "10px 20px",
-          backgroundColor: "#5B8DEF",
-          color: "#fff",
-          border: "none",
-          borderRadius: "4px",
-          cursor: "pointer"
-        }}>
-          수정 완료
-        </button>
-      </form>
+    <div>
+      <Header />
+      <section className="notice-section">
+        <div className="notice-content-box">
+          <h2 className="notice-title">공지 수정</h2>
+          <form onSubmit={handleSubmit} className="notice-form">
+            <input
+              type="text"
+              placeholder="제목 입력"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              className="notice-input"
+            />
+            <textarea
+              placeholder="내용 입력"
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+              className="notice-textarea"
+            />
+            <button type="submit" className="notice-btn blue">
+              수정 완료
+            </button>
+            <button
+              type="button"
+              className="notice-btn gray"
+              onClick={() => navigate(`/notice/${id}`)}
+            >
+              취소
+            </button>
+          </form>
+        </div>
+      </section>
     </div>
   );
 }

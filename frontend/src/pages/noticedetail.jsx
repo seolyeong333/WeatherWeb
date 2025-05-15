@@ -1,5 +1,7 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
+import Header from "../components/Header"; // 헤더 포함
+import "./notice.css"; // ✅ 감성 테마 스타일 적용
 
 function NoticeDetail() {
   const { id } = useParams();
@@ -29,7 +31,7 @@ function NoticeDetail() {
 
       if (res.ok) {
         alert("삭제되었습니다.");
-        navigate("/noticelist"); // 공지 목록으로 이동
+        navigate("/noticelist");
       } else {
         alert("삭제에 실패했습니다.");
       }
@@ -42,56 +44,37 @@ function NoticeDetail() {
   if (!notice) return <div>로딩 중...</div>;
 
   return (
-    <div style={{ padding: "20px", maxWidth: "800px", margin: "auto" }}>
-      <h2>{notice.title}</h2>
-      <p style={{ color: "#888" }}>{new Date(notice.createdAt).toLocaleString()}</p>
-      <hr />
-      <p>{notice.content}</p>
+    <div>
+      <Header />
+      <section className="notice-section">
+        <div className="notice-content-box">
+          <h2 className="notice-title">{notice.title}</h2>
+          <p className="notice-date">
+            {new Date(notice.createdAt).toLocaleString("ko-KR", {
+              year: "numeric",
+              month: "2-digit",
+              day: "2-digit",
+              hour: "2-digit",
+              minute: "2-digit",
+              hour12: false,
+            })}
+          </p>
+          <hr />
+          <p className="notice-content">{notice.content}</p>
 
-      <div style={{ marginTop: "30px" }}>
-        <button
-          onClick={() => navigate("/noticelist")}
-          style={{
-            marginRight: "10px",
-            padding: "8px 16px",
-            border: "1px solid #ccc",
-            borderRadius: "4px",
-            cursor: "pointer"
-          }}
-        >
-          목록으로
-        </button>
-
-        <button
-            onClick={() => navigate(`/notice/edit/${id}`)}  // 수정 페이지로 이동
-            style={{
-                marginRight: "10px",
-                padding: "8px 16px",
-                backgroundColor: "#5B8DEF",
-                color: "#fff",
-                border: "none",
-                borderRadius: "4px",
-                cursor: "pointer"
-            }}
-            >
-            수정
-        </button>
-
-
-        <button
-          onClick={handleDelete}
-          style={{
-            padding: "8px 16px",
-            backgroundColor: "#ff4d4f",
-            color: "#fff",
-            border: "none",
-            borderRadius: "4px",
-            cursor: "pointer"
-          }}
-        >
-          삭제
-        </button>
-      </div>
+          <div className="notice-btn-group">
+            <button className="notice-btn gray" onClick={() => navigate("/noticelist")}>
+              목록으로
+            </button>
+            <button className="notice-btn blue" onClick={() => navigate(`/notice/edit/${id}`)}>
+              수정
+            </button>
+            <button className="notice-btn red" onClick={handleDelete}>
+              삭제
+            </button>
+          </div>
+        </div>
+      </section>
     </div>
   );
 }

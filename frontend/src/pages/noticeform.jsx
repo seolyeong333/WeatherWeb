@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Header from "../components/Header";
+import "./notice.css"; // ✅ 감성 스타일 적용
 
 function NoticeForm() {
   const navigate = useNavigate();
@@ -37,34 +39,40 @@ function NoticeForm() {
   };
 
   return (
-    <div style={{ maxWidth: "600px", margin: "auto", padding: "20px" }}>
-      <h2>공지 등록</h2>
-      <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          placeholder="제목 입력"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          style={{ width: "100%", padding: "8px", marginBottom: "10px" }}
-        />
-        <textarea
-          placeholder="내용 입력"
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-          style={{ width: "100%", height: "200px", padding: "8px", marginBottom: "10px" }}
-        />
-        <button type="submit" style={{ width: "100%", padding: "10px" }}>
-          등록하기
-        </button>
-        <button onClick={() => navigate("/noticelist")} style={{ width: "100%", padding: "10px" }}>
-          목록
-        </button>
-      </form>
+    <div className="notice-wrapper">
+      <Header />
+      <section className="notice-section">
+        <h2>공지 등록</h2>
+        <form className="notice-form" onSubmit={handleSubmit}>
+          <input
+            type="text"
+            placeholder="제목 입력"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            className="notice-input"
+          />
+          <textarea
+            placeholder="내용 입력"
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
+            className="notice-textarea"
+          />
+          <button type="submit" className="notice-submit-btn">
+            등록하기
+          </button>
+          <button
+            type="button"
+            onClick={() => navigate("/noticelist")}
+            className="notice-cancel-btn"
+          >
+            목록
+          </button>
+        </form>
 
-      {message && <p style={{ marginTop: "15px", color: "blue" }}>{message}</p>}
+        {message && <p className="notice-message">{message}</p>}
+      </section>
     </div>
   );
 }
-
 
 export default NoticeForm;
