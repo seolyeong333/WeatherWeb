@@ -26,4 +26,9 @@
         UPDATE reports SET status = #{status} WHERE reportId = #{id}
     </update>
 
+    <select id="countDuplicateReports" resultType="int">
+    SELECT COUNT(*) FROM reports WHERE targetId = #{targetId}
+    AND content = #{content} AND userId = ${userId} AND status = 'PENDING'
+    </select>
+
 </mapper>

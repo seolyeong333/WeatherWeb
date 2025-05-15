@@ -22,19 +22,27 @@ public class ReportController {
     // 🔸 1. 신고하기 (사용자)
     @PostMapping
     public ResponseEntity<String> submitReport(@RequestHeader("Authorization") String token,
-                                               @RequestBody ReportDto reportDto) {
+                                            @RequestBody ReportDto reportDto) {
         System.out.println("ReportController POST 호출");
         try {
             String pureToken = token.replace("Bearer ", "");
-            int userId = jwtUtil.getUserId(pureToken); // JWT에서 사용자 ID 추출
-            reportDto.setUserId(userId); // 강제 주입
+            int userId = jwtUtil.getUserId(pureToken);
+            reportDto.setUserId(userId);
+
+            // ✅ 중복 신고 확인
+            if (reportService.isDuplicateReport(reportDto)) {
+                return ResponseEntity.status(409).body("이미 동일한 내용의 신고가 접수되어 있습니다.");
+            }
+
             reportService.insertReport(reportDto);
             return ResponseEntity.ok("신고 접수 완료");
+
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.internalServerError().body("신고 접수 실패");
         }
     }
+
 
     // 🔸 2. 신고 목록 조회 (사용자: 쿼리 파라미터로 userId 전달)
     @GetMapping(params = "userId")

@@ -122,6 +122,9 @@ public interface MainMapper {
     // 신고 처리상태 변경 
     int updateReportStatus(int id, String status);
 
+    //  신고 중복상태 확인
+    int countDuplicateReports(ReportDto reportDto);
+
     WeatherMessageDto findByWeatherTypeAndTempRange(String weatherType, double feelsLike);
 
 }
