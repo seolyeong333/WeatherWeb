@@ -8,6 +8,7 @@ import ColorPickerModal from "../components/ColorPickerModal";
 import { COLORS, fancyName, getTodayColor } from "../api/colors";
 import view2col from "../assets/view-2col.png";
 import view4col from "../assets/view-4col.png";
+import { getCurrentWeather} from "../api/weather";
 
 function TodayLook() {
   const navigate = useNavigate();
@@ -101,10 +102,7 @@ useEffect(() => {
     "방수 부츠": "rain-boots",
     "우비": "raincoat"
   };
-
-  // 아이콘 설명 출력
-  const [activeIndex, setActiveIndex] = useState(null);
-
+  
   // 필터 변경 시 이미지 크롤링 요청
   useEffect(() => {
     setLoading(true);
