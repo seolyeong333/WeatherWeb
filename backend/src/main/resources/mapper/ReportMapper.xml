@@ -6,8 +6,8 @@
 <mapper namespace="com.creepy.bit.mapper.MainMapper">
 
     <insert id="insertReport" parameterType="com.creepy.bit.domain.ReportDto">
-        INSERT INTO reports (userId, targetType, targetId, reason, status)
-        VALUES (#{userId}, #{targetType}, #{targetId}, #{reason}, 'PENDING')
+        INSERT INTO reports (userId, targetType, targetId, content, status)
+        VALUES (#{userId}, #{targetType}, #{targetId}, #{content}, 'PENDING')
     </insert>
 
     <select id="selectReportsByUserId" parameterType="int" resultType="com.creepy.bit.domain.ReportDto">

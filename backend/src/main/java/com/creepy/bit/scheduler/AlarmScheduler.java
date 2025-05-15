@@ -31,7 +31,7 @@ public class AlarmScheduler {
     private MailService mailService;
 
     @Autowired
-    private UserService userService; // ✅ 사용자 이메일 조회용
+    private UserService userService; 
 
     @Async
     @EventListener(ApplicationReadyEvent.class)
@@ -105,16 +105,21 @@ public class AlarmScheduler {
                 }
 
                 String subject = "[날씨 알림] 설정하신 조건에 맞는 날씨가 도착했어요!";
-                String content = "현재 날씨: " + currentWeather + "<br>"
-                               + "현재 공기질: " + currentAir + "<br><br>"
-                               + "설정한 조건과 일치하여 알림을 보냅니다 :)";
+                String content = """
+                    <div style='font-family: Arial, sans-serif; padding: 20px;'>
+                        <h2 style='color:#5B8DEF;'>🌤️ 날씨 알림 도착!</h2>
+                        <p>현재 날씨는 <strong>%s</strong>, 공기질은 <strong>%s</strong>입니다.</p>
+                        <p>회원님이 설정한 조건과 일치하여 알려드립니다 ☺️</p>
+                    </div>
+                """.formatted(currentWeather, currentAir);
 
                 try {
-                    mailService.sendAuthMail(to, content);  // ✅ 내용은 HTML 형식
+                    mailService.sendGeneralMail(to, subject, content);  // 🔁 일반 메시지 전송용 메서드로 변경
                     System.out.println("📨 이메일 전송 완료 → " + to);
                 } catch (MessagingException e) {
                     System.out.println("❌ 이메일 전송 실패: " + e.getMessage());
                 }
+
 
             } else {
                 System.out.println("❌ [알림 미발송] 조건 불일치");

@@ -50,7 +50,6 @@ public class OpinionController {
         }
     }
 
-
     // 🔹 장소(placeId) 기반 한줄평 전체 조회
     @GetMapping("/place")
     public ResponseEntity<List<OpinionDto>> getOpinionsByPlace(@RequestParam String placeId) {
@@ -58,8 +57,6 @@ public class OpinionController {
         List<OpinionDto> list = opinionService.getOpinionsByPlaceId(placeId);
         return ResponseEntity.ok(list);
     }
-
-
 
     // 🔹 한줄평 목록 조회 (userId 기반)
     @GetMapping

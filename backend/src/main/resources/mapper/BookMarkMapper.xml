@@ -6,8 +6,8 @@
 <mapper namespace="com.creepy.bit.mapper.MainMapper">
 
     <insert id="insertBookMark" parameterType="com.creepy.bit.domain.BookMarkDto">
-    INSERT INTO bookmarks (userId, placeId, createdAt)
-    VALUES (#{userId}, #{placeId}, NOW())
+    INSERT INTO bookmarks (userId, placeId, placeName, createdAt)
+    VALUES (#{userId}, #{placeId}, #{placeName}, NOW())
     </insert>
 
 

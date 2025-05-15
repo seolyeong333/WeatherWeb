@@ -191,7 +191,7 @@ function MapSection() {
         >
           오늘오후
         </button>
-      </div>
+        </div>
 
       <div
         ref={mapContainer}

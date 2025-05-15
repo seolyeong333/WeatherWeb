@@ -2,6 +2,7 @@
 import { Button, Card } from "react-bootstrap";
 
 function UserInfoTab({ userInfo, setMode, setShowModal }) {
+
   return (
     <Card className="mypage-card">
       <Card.Body>
@@ -16,10 +17,16 @@ function UserInfoTab({ userInfo, setMode, setShowModal }) {
           </>
         ) : <p>회원 정보를 불러오는 중입니다...</p>}
         <div className="mt-3">
-          <Button variant="primary" className="me-2 px-4" onClick={() => {
+        <Button variant="secondary" className="px-4" onClick={() => {
+          setMode("password"); // 모드 지정
+          setShowModal(true);  // 비밀번호 확인 모달 열기
+        }} >
+        비밀번호 변경
+      </Button>
+        <Button variant="primary" className="me-2 px-4" onClick={() => {
             setMode("edit");
             setShowModal(true);
-          }}>
+        }}>
             정보 수정
           </Button>
           <Button variant="outline-danger" className="px-4" onClick={() => {

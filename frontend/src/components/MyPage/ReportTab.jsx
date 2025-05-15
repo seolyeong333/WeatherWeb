@@ -34,7 +34,7 @@ function ReportTab({ userInfo }) {
               >
                 <div><strong>📄 신고자 고유 아이디:</strong> {report.userId}</div>
                 <div><strong>📝 내용:</strong> {report.content}</div>
-                <div><strong>❗ 신고 대상 고유 아이디:</strong> {report.targetId}</div>
+                <div><strong>❗ 신고 대상:</strong> {report.targetType}</div>
                 <div><strong>🕒 작성일:</strong> {report.createdAt?.substring(0, 16)}</div>
                 <div><strong>📌 상태:</strong> {report.status}</div>
               </li>
