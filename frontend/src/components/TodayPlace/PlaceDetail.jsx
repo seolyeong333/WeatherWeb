@@ -1,9 +1,9 @@
-// 상단 import 추가
 import { useLocation, useNavigate } from "react-router-dom";
 import { getCurrentWeather } from "../../api/weather";
 import "./PlaceDetail.css";
 import { useState, useEffect } from "react";
 import axios from "axios";
+import ReportModal from "../../components/ReportModal"; // ✅ 모달 컴포넌트 import
 
 const weatherDescriptionMap = {
   "튼구름": "구름 많음", "맑음": "맑음", "비": "비", "눈": "눈",
@@ -25,6 +25,8 @@ function PlaceDetail() {
   const [fitList, setFitList] = useState([]);
   const [opinion, setOpinion] = useState("");
   const [opinions, setOpinions] = useState([]);
+  const [showReportModal, setShowReportModal] = useState(false);
+  const [reportTargetId, setReportTargetId] = useState(null);
 
   const fetchOpinions = async () => {
     if (!place?.id) return;
@@ -33,7 +35,6 @@ function PlaceDetail() {
     setOpinions(data);
   };
 
-  // 장소 정보 fetch
   useEffect(() => {
     if (place) return;
     const placeName = state?.placeName;
@@ -48,7 +49,6 @@ function PlaceDetail() {
       });
   }, [state, place]);
 
-  // 날씨, 메시지
   useEffect(() => {
     if (!place?.x || !place?.y) return;
     getCurrentWeather(place.y, place.x).then((res) => {
@@ -63,14 +63,14 @@ function PlaceDetail() {
       axios.get("http://localhost:8080/api/weather/message", {
         params: { weatherType, feelsLike: feeling }
       })
-      .then((res) => {
-        setMessage(res.data.message || "추천 메시지를 불러오지 못했습니다.");
-        setFitList(res.data.weatherFit?.split(",") || []);
-      })
-      .catch((err) => {
-        console.error("메시지 실패:", err);
-        setMessage("추천 메시지를 불러오지 못했습니다.");
-      });
+        .then((res) => {
+          setMessage(res.data.message || "추천 메시지를 불러오지 못했습니다.");
+          setFitList(res.data.weatherFit?.split(",") || []);
+        })
+        .catch((err) => {
+          console.error("메시지 실패:", err);
+          setMessage("추천 메시지를 불러오지 못했습니다.");
+        });
     });
   }, [place]);
 
@@ -81,10 +81,7 @@ function PlaceDetail() {
   const handleOpinionSubmit = async () => {
     try {
       const token = localStorage.getItem("token");
-      if (!token) {
-        alert("로그인이 필요합니다.");
-        return;
-      }
+      if (!token) return alert("로그인이 필요합니다.");
 
       const res = await fetch("http://localhost:8080/api/opinions", {
         method: "POST",
@@ -101,7 +98,6 @@ function PlaceDetail() {
       });
 
       if (!res.ok) throw new Error("작성 실패");
-
       alert("등록 완료!");
       setOpinion("");
       await fetchOpinions();
@@ -111,27 +107,51 @@ function PlaceDetail() {
     }
   };
 
-  // 👍 / 👎 처리 함수
   const handleLikeDislike = async (id, type) => {
     try {
       const token = localStorage.getItem("token");
-      if (!token) {
-        alert("로그인이 필요합니다.");
-        return;
-      }
+      if (!token) return alert("로그인이 필요합니다.");
+
       const res = await fetch(`http://localhost:8080/api/opinions/${id}/${type}`, {
         method: "PATCH",
-        headers: {
-          Authorization: `Bearer ${token}`, // ✅ 토큰 포함
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
-      if (res.ok) {
-        await fetchOpinions(); // 갱신
-      } else {
-        alert(`${type === "like" ? "좋아요" : "싫어요"} 실패`);
-      }
+      if (res.ok) await fetchOpinions();
+      else alert(`${type === "like" ? "좋아요" : "싫어요"} 실패`);
     } catch (err) {
       console.error(`${type} 실패`, err);
+    }
+  };
+
+  const openReportModal = (id) => {
+    setReportTargetId(id);
+    setShowReportModal(true);
+  };
+
+  const handleReport = async (reason) => {
+    setShowReportModal(false);
+    const token = localStorage.getItem("token");
+    if (!token) return alert("로그인이 필요합니다.");
+
+    try {
+      const res = await fetch("http://localhost:8080/api/reports", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          targetType: "opinion",
+          targetId: reportTargetId,
+          content: reason,
+        }),
+      });
+
+      if (res.ok) alert("신고가 접수되었습니다.");
+      else alert("신고에 실패했습니다.");
+    } catch (err) {
+      console.error("신고 실패:", err);
+      alert("신고 중 오류 발생");
     }
   };
 
@@ -140,6 +160,8 @@ function PlaceDetail() {
   return (
     <div className="place-detail-wrapper">
       <h2 className="place-title">{place.placeName}</h2>
+
+      {/* 날씨 */}
       <section className="section-3">
         <div className="place-header">
           <p className="weather-question">오늘 "{place.placeName}"의 날씨는?</p>
@@ -160,6 +182,7 @@ function PlaceDetail() {
         </div>
       </section>
 
+      {/* 상세정보 및 한줄평 */}
       <section className="section-2">
         <h3 className="place-subtitle">{place.placeName}</h3>
         <p className="description">
@@ -170,7 +193,6 @@ function PlaceDetail() {
           🔗 카카오맵에서 보기
         </a>
 
-        {/* 한줄평 목록 */}
         <div className="opinion-list mt-4">
           <h4>💬 한줄평</h4>
           {opinions.length === 0 ? (
@@ -179,15 +201,14 @@ function PlaceDetail() {
             <ul className="list-group">
               {opinions.map((op) => (
                 <li key={op.opinionId} className="list-group-item">
-                  <div>
-                    <strong>{op.content}</strong>
-                  </div>
-                  <div className="d-flex gap-3 mt-1 small text-muted align-items-center">
+                  <div><strong>{op.content}</strong></div>
+                  <div className="d-flex gap-2 mt-1 small text-muted align-items-center">
                     <span>👍 {op.likes}</span>
                     <span>👎 {op.dislikes}</span>
                     <span>🕒 {op.createdAt?.substring(0, 16)}</span>
                     <button className="btn btn-sm btn-outline-success" onClick={() => handleLikeDislike(op.opinionId, "like")}>👍</button>
                     <button className="btn btn-sm btn-outline-danger" onClick={() => handleLikeDislike(op.opinionId, "dislike")}>👎</button>
+                    <button className="btn btn-sm btn-outline-warning" onClick={() => openReportModal(op.opinionId)}>🚨</button>
                   </div>
                 </li>
               ))}
@@ -195,7 +216,6 @@ function PlaceDetail() {
           )}
         </div>
 
-        {/* 한줄평 작성 */}
         <div className="opinion-box mt-4">
           <p>여러분들의 의견을 남겨주세요.</p>
           <textarea
@@ -218,6 +238,13 @@ function PlaceDetail() {
           ← 뒤로가기
         </button>
       </section>
+
+      {/* 🚨 신고 모달 */}
+      <ReportModal
+        show={showReportModal}
+        onHide={() => setShowReportModal(false)}
+        onSelect={handleReport}
+      />
     </div>
   );
 }
