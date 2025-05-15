@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { Form, Button } from "react-bootstrap";
 import { FaGoogle } from "react-icons/fa";
 import { SiKakaotalk, SiNaver } from "react-icons/si";
@@ -120,7 +119,7 @@ function Login({ closeLogin, setIsLoggedIn }) {
           closeLogin?.();}
       } else {
         const err = await res.text();
-        alert(`실패: ${err}`);
+        alert(err);
       }
     } catch (err) {
       console.error(err);

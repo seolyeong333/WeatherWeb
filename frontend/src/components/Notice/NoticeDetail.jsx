@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import "./notice.css";
+import { getUserAuth } from "../../api/jwt";
 
 
 function NoticeDetail({ id, onBack, onEdit }) {
   const [notice, setNotice] = useState(null);
-
+  const isAdmin = getUserAuth() === "ADMIN";
   useEffect(() => {
     fetch(`http://localhost:8080/api/notices/${id}`)
       .then(res => res.json())
@@ -35,8 +36,9 @@ function NoticeDetail({ id, onBack, onEdit }) {
         <p className="notice-content">{notice.content}</p>
         <div className="notice-btn-group">
           <button className="notice-btn gray" onClick={onBack}>목록으로</button>
-          <button className="notice-btn blue" onClick={() => onEdit(id)}>수정</button>
-          <button className="notice-btn red" onClick={handleDelete}>삭제</button>
+          {(isAdmin && <button className="notice-btn blue" onClick={() => onEdit(id)}>수정</button>
+          )}
+          {(isAdmin && <button className="notice-btn red" onClick={handleDelete}>삭제</button> )}
         </div>
       </div>
     </section>
