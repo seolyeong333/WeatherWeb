@@ -1,12 +1,14 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import Header from "../components/Header";
+import "./notice.css"; // ✅ 스타일 적용
 
 function NoticeList() {
   const navigate = useNavigate();
   const [notices, setNotices] = useState([]);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [totalElements, setTotalElements] = useState(0); // 전체 게시글 수
+  const [totalElements, setTotalElements] = useState(0);
   const pageSize = 10;
 
   const fetchNotices = async () => {
@@ -26,78 +28,59 @@ function NoticeList() {
   }, [page]);
 
   return (
-    <div style={{ padding: "20px", maxWidth: "800px", margin: "auto" }}>
-      <h2>공지사항</h2>
-      <table style={{ width: "100%", borderCollapse: "collapse", marginTop: "20px" }}>
-        <thead>
-          <tr>
-            <th style={{ borderBottom: "1px solid #ccc", padding: "8px" }}>번호</th>
-            <th style={{ borderBottom: "1px solid #ccc", padding: "8px" }}>제목</th>
-            <th style={{ borderBottom: "1px solid #ccc", padding: "8px" }}>작성일자</th>
-          </tr>
-        </thead>
-        <tbody>
-          {notices.length === 0 ? (
+    <div className="notice-wrapper">
+      <Header />
+      <section className="notice-section">
+        <h2>공지사항</h2>
+        <table className="notice-table">
+          <thead>
             <tr>
-              <td colSpan="3" style={{ textAlign: "center", padding: "20px" }}>등록된 공지가 없습니다.</td>
+              <th>번호</th>
+              <th>제목</th>
+              <th>작성일자</th>
             </tr>
-          ) : (
-            notices.map((notice, index) => (
-              <tr key={notice.noticeId} onClick={() => navigate(`/notice/${notice.noticeId}`)} style={{ cursor: "pointer" }}>
-                <td style={{ padding: "8px", textAlign: "center" }}>
-                  {totalElements - ((page - 1) * pageSize + index)}
-                </td>
-                <td style={{ padding: "8px" }}>{notice.title}</td>
-                <td style={{ padding: "8px", textAlign: "center" }}>
-                  {new Date(notice.createdAt).toLocaleString("ko-KR", {
-                    year: "numeric",
-                    month: "2-digit",
-                    day: "2-digit",
-                    hour: "2-digit",
-                    minute: "2-digit",
-                    hour12: false 
-                  })}
-                </td>
+          </thead>
+          <tbody>
+            {notices.length === 0 ? (
+              <tr>
+                <td colSpan="3" className="notice-empty">등록된 공지가 없습니다.</td>
               </tr>
-            ))
-          )}
-        </tbody>
-      </table>
+            ) : (
+              notices.map((notice, index) => (
+                <tr key={notice.noticeId} onClick={() => navigate(`/notice/${notice.noticeId}`)}>
+                  <td>{totalElements - ((page - 1) * pageSize + index)}</td>
+                  <td>{notice.title}</td>
+                  <td>
+                    {new Date(notice.createdAt).toLocaleString("ko-KR", {
+                      year: "numeric",
+                      month: "2-digit",
+                      day: "2-digit",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                      hour12: false,
+                    })}
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
 
-      {/* 페이지네이션 버튼 */}
-      <div style={{ marginTop: "20px", textAlign: "center" }}>
-        {Array.from({ length: totalPages }, (_, i) => i + 1).map((num) => (
-          <button
-            key={num}
-            onClick={() => setPage(num)}
-            disabled={num === page}
-            style={{
-              margin: "0 5px",
-              padding: "5px 10px",
-              backgroundColor: num === page ? "#5B8DEF" : "#eee",
-              color: num === page ? "#fff" : "#000",
-              border: "none",
-              borderRadius: "4px",
-              cursor: "pointer"
-            }}
-          >
-            {num}
+        <div className="notice-pagination">
+          {Array.from({ length: totalPages }, (_, i) => i + 1).map((num) => (
+            <button
+              key={num}
+              onClick={() => setPage(num)}
+              className={`notice-page-btn ${page === num ? "active" : ""}`}
+            >
+              {num}
+            </button>
+          ))}
+          <button className="notice-write-btn" onClick={() => navigate("/noticeform")}>
+            공지 작성
           </button>
-        ))}
-        <button
-  onClick={() => navigate("/noticeform")}
-  style={{
-    padding: "8px 16px",
-    backgroundColor: "#5B8DEF",
-    color: "#fff",
-    border: "none",
-    borderRadius: "4px",
-    cursor: "pointer"
-  }}
->
-  공지 작성
-</button>
-      </div>
+        </div>
+      </section>
     </div>
   );
 }
