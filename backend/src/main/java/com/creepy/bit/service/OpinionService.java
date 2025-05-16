@@ -23,7 +23,6 @@ public class OpinionService {
     return mainMapper.getOpinionsByPlaceId(placeId);
     }
 
-
     // 내 한줄평 리스트
     public List<OpinionDto> getMyOpinions(int userId) {
         return mainMapper.getMyOpinions(userId);

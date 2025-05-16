@@ -19,5 +19,5 @@
         FROM tarot_card_colors
         WHERE cardId = #{cardId}
     </select>
-
+    
 </mapper>

@@ -131,7 +131,7 @@ public interface MainMapper {
     WeatherMessageDto findByWeatherTypeAndTempRange(String weatherType, double feelsLike);
 
     // 운세 페이지
-    List<TarotCardDto> getCardsByIds(@Param("categoryId") int categoryId, @Param("cardIds") List<Integer> cardIds);
+    List<TarotCardDto> getCardsByIds(int categoryId, List<Integer> cardIds);
 
-    List<TarotColorDto> getColorsByCardId(@Param("cardId") int cardId);
+    List<TarotColorDto> getColorsByCardId(int cardId);
 }
