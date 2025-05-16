@@ -1,4 +1,3 @@
-// src/pages/NoticePage.jsx
 import { useState } from "react";
 import Header from "../components/Header";
 import NoticeList from "../components/Notice/NoticeList";

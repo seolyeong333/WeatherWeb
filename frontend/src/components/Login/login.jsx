@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { Form, Button } from "react-bootstrap";
 import { FaGoogle } from "react-icons/fa";
 import { SiKakaotalk, SiNaver } from "react-icons/si";
@@ -120,7 +119,7 @@ function Login({ closeLogin, setIsLoggedIn }) {
           closeLogin?.();}
       } else {
         const err = await res.text();
-        alert(`실패: ${err}`);
+        alert(err);
       }
     } catch (err) {
       console.error(err);
@@ -194,7 +193,16 @@ function Login({ closeLogin, setIsLoggedIn }) {
               <option value="male">남자</option>
               <option value="female">여자</option>
             </Form.Select>
-            <Form.Control type="date" name="birthday" className="mb-3" value={formData.birthday} onChange={changeHandler} required />
+            <Form.Control
+              type="date"
+              name="birthday"
+              className="mb-3"
+              value={formData.birthday}
+              onChange={changeHandler}
+              required
+              min="1900-01-01"
+              max="2025-12-31"
+            />
           </>
         )}
 

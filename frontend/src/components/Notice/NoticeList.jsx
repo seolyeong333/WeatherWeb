@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import "./notice.css";
-
+import { getUserAuth } from "../../api/jwt"; // 🔹 관리자 확인용
 
 function NoticeList({ onView, onCreate }) {
   const [notices, setNotices] = useState([]);
@@ -8,6 +8,8 @@ function NoticeList({ onView, onCreate }) {
   const [totalPages, setTotalPages] = useState(1);
   const [totalElements, setTotalElements] = useState(0);
   const pageSize = 10;
+
+  const isAdmin = getUserAuth() === "ADMIN"; // 🔹 관리자 여부 판단
 
   useEffect(() => {
     fetch(`http://localhost:8080/api/notices?page=${page - 1}&size=${pageSize}`)
@@ -55,7 +57,10 @@ function NoticeList({ onView, onCreate }) {
             {num}
           </button>
         ))}
-        <button className="notice-write-btn" onClick={onCreate}>공지 작성</button>
+
+        {isAdmin && (
+          <button className="notice-write-btn" onClick={onCreate}>공지 작성</button>
+        )}
       </div>
     </section>
   );

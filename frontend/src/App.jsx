@@ -10,6 +10,7 @@ import { WeatherProvider } from "./components/WeatherContext";
 import TodayLook from "./pages/TodayLook";
 import TodayWeatherPage from "./pages/TodayWeatherPage";
 import NoticePage from "./pages/NoticePage"; 
+import SocialSignup from "./pages/SocialSignup";
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
           <Route path="/today-tarot" element={<TodayTarot />} />
           <Route path="/today-weather" element={<TodayWeatherPage />} />
           <Route path="/notice" element={<NoticePage />} />
+          <Route path="/socialsignup" element={<SocialSignup />} />
         </Routes>
       </BrowserRouter>
     </WeatherProvider>
