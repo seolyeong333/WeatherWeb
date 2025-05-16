@@ -23,6 +23,12 @@ public class OpenAIController {
         String answer = openAIService.askPlace(location, category);
         return ResponseEntity.ok(answer);
     }
-
+    // 타로 요청
+    @PostMapping("/tarot")
+    public ResponseEntity<String> askTarot(@RequestBody Map<String, Object> body) {
+        List<String> selectedCards = (List<String>) body.get("cards");
+        String answer = openAIService.askTarot(selectedCards);
+        return ResponseEntity.ok(answer);
+    }
 
 }
