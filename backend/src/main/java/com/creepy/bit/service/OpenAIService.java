@@ -31,16 +31,32 @@ public class OpenAIService {
     }
 
     // 타로 결과 해석용
-    public String askTarot(List<String> selectedCards) {
-        String joined = String.join(", ", selectedCards);
-        String prompt = String.format(
-            "당신은 감성적인 타로 마스터야. 사용자가 뽑은 카드 3장은 다음과 같아: %s\n" +
-            "이 카드들의 의미를 종합해서 오늘 하루를 위한 짧고 감성적인 운세 메시지를 만들어줘. 한국어로 답변해줘.",
-            joined
-        );
+    public String askTarot(List<Map<String, Object>> selectedCardsInfo) {
+    StringBuilder builder = new StringBuilder();
+    builder.append("당신은 감성적인 타로 마스터야.\n");
+    builder.append("사용자가 뽑은 카드 3장은 다음과 같아:\n");
 
-        return callOpenAI(prompt);
+    for (Map<String, Object> card : selectedCardsInfo) {
+        String name = (String) card.get("cardName");
+        String desc = (String) card.get("description");
+        List<Map<String, String>> colors = (List<Map<String, String>>) card.get("colors");
+
+        builder.append(String.format("「%s」 - %s\n", name, desc));
+
+        if (colors != null && !colors.isEmpty()) {
+            String colorList = colors.stream()
+                .map(color -> color.get("colorName"))
+                .reduce((a, b) -> a + ", " + b)
+                .orElse("");
+            builder.append(String.format(" 👉 연관된 색상: %s\n", colorList));
+        }
     }
+
+    builder.append("\n이 카드들을 종합해서 오늘 하루를 위한 감성적이고 통합적인 운세 메시지를 한 문단으로 한국어로 써줘.");
+
+    return callOpenAI(builder.toString());
+}
+
 
     // GPT 호출 공통 로직 분리
    private String callOpenAI(String prompt) {

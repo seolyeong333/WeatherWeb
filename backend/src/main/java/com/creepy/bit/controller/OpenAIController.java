@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -23,11 +24,12 @@ public class OpenAIController {
         String answer = openAIService.askPlace(location, category);
         return ResponseEntity.ok(answer);
     }
+    
     // 타로 요청
     @PostMapping("/tarot")
     public ResponseEntity<String> askTarot(@RequestBody Map<String, Object> body) {
-        List<String> selectedCards = (List<String>) body.get("cards");
-        String answer = openAIService.askTarot(selectedCards);
+        List<Map<String, Object>> cards = (List<Map<String, Object>>) body.get("cards");
+        String answer = openAIService.askTarot(cards);
         return ResponseEntity.ok(answer);
     }
 
