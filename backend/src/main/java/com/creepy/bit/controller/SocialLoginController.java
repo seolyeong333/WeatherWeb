@@ -50,10 +50,11 @@ public class SocialLoginController {
 
             // ✅ 자동 회원가입 (최초 로그인 시)
             if (userService.checkEmail(email) == 0) {
-                String redirectUrl = "http://localhost:5173/socialsignup"
-                                + "?email=" + URLEncoder.encode(email, "UTF-8")
-                                + "&nickname=" + URLEncoder.encode(nickname, "UTF-8")
-                                + "&provider=kakao";
+                String redirectUrl = "http://localhost:5173/main"
+                    + "?mode=socialSignup"
+                    + "&email=" + URLEncoder.encode(email, "UTF-8")
+                    + "&nickname=" + URLEncoder.encode(nickname, "UTF-8")
+                    + "&provider=kakao";
                 response.sendRedirect(redirectUrl);
                 return;
 
@@ -91,10 +92,11 @@ public class SocialLoginController {
             // ✅ 자동 회원가입 (최초 로그인 시)
             if (userService.checkEmail(email) == 0) {
                 // 최초 로그인 → 추가 정보 입력 페이지로 리디렉션
-                String redirectUrl = "http://localhost:5173/socialsignup"
-                    + "?email=" + URLEncoder.encode(email, "UTF-8")
-                    + "&nickname=" + URLEncoder.encode(nickname, "UTF-8")
-                    + "&provider=google";
+                String redirectUrl = "http://localhost:5173/main"
+                + "?mode=socialSignup"
+                + "&email=" + URLEncoder.encode(email, "UTF-8")
+                + "&nickname=" + URLEncoder.encode(nickname, "UTF-8")
+                + "&provider=google";
                 response.sendRedirect(redirectUrl);
                 return;
             }
@@ -151,10 +153,11 @@ public class SocialLoginController {
 
             // ✅ 자동 회원가입 (최초 로그인 시)
             if (userService.checkEmail(email) == 0) {
-                String redirectUrl = "http://localhost:5173/socialsignup"
-                    + "?email=" + URLEncoder.encode(email, "UTF-8")
-                    + "&nickname=" + URLEncoder.encode(nickname, "UTF-8")
-                    + "&provider=naver";
+                String redirectUrl = "http://localhost:5173/main"
+                + "?mode=socialSignup"
+                + "&email=" + URLEncoder.encode(email, "UTF-8")
+                + "&nickname=" + URLEncoder.encode(nickname, "UTF-8")
+                + "&provider=naver";
                 response.sendRedirect(redirectUrl);
                 return;
             }

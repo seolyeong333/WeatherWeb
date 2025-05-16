@@ -42,3 +42,23 @@ button.btn {
   padding: 16px 20px;            /* 여백 넉넉하게 */
   font-size: 15px;               /* 약간 큰 글자 */
 }
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  background: rgba(0, 0, 0, 0.5);
+  width: 100%;
+  height: 100%;
+  display: flex;                /* 중앙 정렬을 위해 추가 */
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-content {
+  padding: 0;           /* 내부 여백 제거 */
+  background: transparent;
+  box-shadow: none;
+  border: none;
+}
