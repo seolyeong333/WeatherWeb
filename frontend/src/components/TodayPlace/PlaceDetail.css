@@ -167,3 +167,44 @@
 .back-btn:hover {
   background-color: #bbb;
 }
+.place-title {
+  display: flex;
+  align-items: center;
+  font-size: 1.8rem;
+  font-weight: bold;
+  gap: 0.4rem; /* 별이랑 이름 사이 여백 조정 */
+}
+
+.bookmark-button-inline {
+  font-size: 2rem; 
+  color: gold;      
+  border: none;
+  background: none;
+  cursor: pointer;
+  padding: 0;
+  margin: 0;
+}
+/* 배경 오버레이 */
+.modal-backdrop.show {
+  background-color: rgba(0, 0, 0, 0.25); /* 더 부드러운 느낌 */
+}
+
+/* 모달 창 자체 */
+.modal-content {
+  border-radius: 16px;
+  background-color: #ffffff;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  padding: 1.5rem;
+}
+
+/* 신고 사유 리스트 */
+.list-group-item {
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.list-group-item.active {
+  background-color: #5B8DEF;
+  border-color: #5B8DEF;
+  color: white;
+}

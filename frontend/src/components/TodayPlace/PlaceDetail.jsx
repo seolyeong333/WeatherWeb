@@ -8,9 +8,12 @@ import OpinionForm from "../../components/PlaceDetail/OpinionForm";
 import OpinionList from "../../components/PlaceDetail/OpinionList";
 import "./PlaceDetail.css";
 
+const opinionReasons = ["욕설", "광고", "도배", "개인정보 노출", "기타"];
+const placeReasons = ["정보 오류", "부적절한 장소", "폐업/이전", "기타"];
+
 const weatherDescriptionMap = {
   "튼구름": "구름 많음", "맑음": "맑음", "비": "비", "눈": "눈",
-  "실 비": "이슬비", "소나기": "소나기", "천둥번개": "뇌우",
+  "강한 비": "비", "실 비": "이슬비", "소나기": "소나기", "천둥번개": "뇌우",
   "연무": "흐림", "흐림": "흐림", "온흐림": "흐림", "박무": "흐림"
 };
 
@@ -18,13 +21,9 @@ function getKoreanWeatherDescription(desc) {
   return weatherDescriptionMap[desc] || "기타";
 }
 
-const opinionReasons = ["욕설", "광고", "도배", "개인정보 노출", "기타"];
-const placeReasons = ["정보 오류", "부적절한 장소", "폐업/이전", "기타"];
-
 function PlaceDetail() {
   const { state } = useLocation();
   const navigate = useNavigate();
-
   const [place, setPlace] = useState(state?.place || null);
   const [weather, setWeather] = useState({ temp: 0, feeling: 0 });
   const [message, setMessage] = useState("로딩 중...");
@@ -34,19 +33,24 @@ function PlaceDetail() {
   const [showReportModal, setShowReportModal] = useState(false);
   const [reportTargetId, setReportTargetId] = useState(null);
   const [currentReportType, setCurrentReportType] = useState("opinion");
+  const [isBookmarked, setIsBookmarked] = useState(false);
+  const [bookmarkId, setBookmarkId] = useState(null);
 
   const fetchOpinions = async () => {
     if (!place?.id) return;
-    const res = await fetch(`http://localhost:8080/api/opinions/place?placeId=${place.id}`);
-    const data = await res.json();
-    setOpinions(data);
+    try {
+      const res = await fetch(`http://localhost:8080/api/opinions/place?placeId=${place.id}`);
+      const data = await res.json();
+      setOpinions(data);
+    } catch (err) {
+      console.error("한줄평 로드 실패:", err);
+    }
   };
 
   useEffect(() => {
     if (place) return;
     const placeName = state?.placeName;
     if (!placeName) return;
-
     fetch(`http://localhost:8080/api/kakao/place?placeName=${encodeURIComponent(placeName)}`)
       .then(res => res.json())
       .then(setPlace)
@@ -62,7 +66,6 @@ function PlaceDetail() {
     getCurrentWeather(place.y, place.x).then(res => {
       const data = res.data;
       const weatherType = getKoreanWeatherDescription(data.weather[0].description);
-
       setWeather({ temp: data.main.temp, feeling: data.main.feels_like });
 
       axios.get("http://localhost:8080/api/weather/message", {
@@ -76,11 +79,61 @@ function PlaceDetail() {
     });
   }, [place]);
 
-  const handleOpinionSubmit = async () => {
+  const refreshBookmark = async () => {
+    const token = localStorage.getItem("token");
+    if (!token || !place?.id) return;
     try {
-      const token = localStorage.getItem("token");
-      if (!token) return alert("로그인이 필요합니다.");
+      const res = await fetch("http://localhost:8080/api/bookmarks", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      const found = data.find(b => b.placeId === place.id);
+      if (found) {
+        setIsBookmarked(true);
+        setBookmarkId(found.bookmarkId);
+      } else {
+        setIsBookmarked(false);
+        setBookmarkId(null);
+      }
+    } catch (err) {
+      console.error("🔁 북마크 동기화 실패:", err);
+    }
+  };
 
+  useEffect(() => {
+    refreshBookmark();
+  }, [place]);
+
+  const toggleBookmark = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) return alert("로그인이 필요합니다.");
+    try {
+      if (isBookmarked && bookmarkId) {
+        const res = await fetch(`http://localhost:8080/api/bookmarks/${bookmarkId}`, {
+          method: "DELETE",
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (res.ok) await refreshBookmark();
+      } else {
+        const res = await fetch("http://localhost:8080/api/bookmarks", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ placeId: place.id, placeName: place.placeName }),
+        });
+        if (res.ok) await refreshBookmark();
+      }
+    } catch {
+      alert("북마크 처리 중 오류 발생");
+    }
+  };
+
+  const handleOpinionSubmit = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) return alert("로그인이 필요합니다.");
+    try {
       const res = await fetch("http://localhost:8080/api/opinions", {
         method: "POST",
         headers: {
@@ -94,7 +147,6 @@ function PlaceDetail() {
           isPublic: true,
         }),
       });
-
       if (!res.ok) throw new Error();
       alert("등록 완료!");
       setOpinion("");
@@ -105,17 +157,16 @@ function PlaceDetail() {
   };
 
   const handleLikeDislike = async (id, type) => {
+    const token = localStorage.getItem("token");
+    if (!token) return alert("로그인이 필요합니다.");
     try {
-      const token = localStorage.getItem("token");
-      if (!token) return alert("로그인이 필요합니다.");
-
       const res = await fetch(`http://localhost:8080/api/opinions/${id}/${type}`, {
         method: "PATCH",
         headers: { Authorization: `Bearer ${token}` },
       });
       if (res.ok) fetchOpinions();
       else alert(`${type === "like" ? "좋아요" : "싫어요"} 실패`);
-    } catch (err) {
+    } catch {
       alert("처리 실패");
     }
   };
@@ -136,7 +187,6 @@ function PlaceDetail() {
     setShowReportModal(false);
     const token = localStorage.getItem("token");
     if (!token) return alert("로그인이 필요합니다.");
-
     try {
       const res = await fetch("http://localhost:8080/api/reports", {
         method: "POST",
@@ -163,7 +213,11 @@ function PlaceDetail() {
   return (
     <div className="place-detail-wrapper">
       <div className="d-flex justify-content-between align-items-center">
-        <h2 className="place-title">{place.placeName}</h2>
+      <h2 className="place-title"> {place.placeName}
+  <button onClick={toggleBookmark} className="bookmark-button-inline" >
+    {isBookmarked ? "★" : "☆"} </button>
+</h2>
+
         <button className="btn btn-outline-danger" onClick={openPlaceReportModal}>
           🚨 장소 신고
         </button>
@@ -184,9 +238,7 @@ function PlaceDetail() {
                 <button
                   className="fit-tag"
                   key={name}
-                  onClick={() => {
-                    console.log("✅ 웨더핏 버튼 클릭:", name);
-                    navigate(`/today-place/list?keyword=${encodeURIComponent(name)}`)}}
+                  onClick={() => navigate(`/today-place/list?keyword=${encodeURIComponent(name)}`)}
                 >
                   {name}
                 </button>
