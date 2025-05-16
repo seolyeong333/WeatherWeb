@@ -1,0 +1,211 @@
+/* 공지사항 전체 래퍼 섹션 */
+.notice-section {
+  background-color: #fff;
+  border-radius: 12px;
+  padding: 1.5rem;
+  max-width: 900px;
+  margin: 2rem auto;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  position: relative;
+  z-index: 20 !important;
+  font-family: 'Pretendard', 'Apple SD Gothic Neo', sans-serif;
+}
+
+/* 제목 스타일 */
+.notice-section h2 {
+  font-size: 1.8rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  color: #222;
+}
+
+/* 테이블 스타일 */
+.notice-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+
+.notice-table th,
+.notice-table td {
+  border-bottom: 1px solid #e0e0e0;
+  padding: 10px 12px;
+  text-align: center;
+  font-size: 0.95rem;
+}
+
+.notice-table th {
+  background-color: #f5f6fa;
+  font-weight: 600;
+  color: #444;
+}
+
+.notice-table tr:hover {
+  background-color: #f8f9fb;
+  cursor: pointer;
+}
+
+/* 빈 상태 메시지 */
+.notice-empty {
+  text-align: center;
+  padding: 2rem;
+  color: #888;
+  font-size: 1rem;
+}
+
+/* 페이지네이션 버튼 */
+.notice-pagination {
+  margin-top: 2rem;
+  text-align: center;
+}
+
+.notice-page-btn {
+  padding: 6px 12px;
+  margin: 0 4px;
+  border: none;
+  border-radius: 6px;
+  background-color: #eee;
+  color: #444;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.notice-page-btn.active {
+  background-color: #5B8DEF;
+  color: #fff;
+  font-weight: bold;
+}
+
+.notice-page-btn:hover:not(.active) {
+  background-color: #ddd;
+}
+
+/* 작성 버튼 */
+.notice-write-btn {
+  padding: 8px 16px;
+  background-color: #5B8DEF;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  margin-left: 10px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.notice-write-btn:hover {
+  background-color: #4477cc;
+}
+/* 공지 등록/수정 폼 스타일 */
+.notice-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 1rem;
+}
+
+.notice-input,
+.notice-textarea {
+  width: 100%;
+  padding: 10px 14px;
+  border: 2px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-family: inherit;
+  box-sizing: border-box;
+  background-color: #ffffff;
+  color: #333; /* ✅ 글자색 추가 */
+}
+
+.notice-textarea {
+  height: 200px;
+  resize: vertical;
+  background-color: #ffffff;
+}
+
+.notice-submit-btn {
+  background-color: #5B8DEF;
+  color: white;
+  padding: 10px;
+  font-weight: bold;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.notice-submit-btn:hover {
+  background-color: #3b6fc8;
+}
+
+.notice-cancel-btn {
+  background-color: #ddd;
+  color: #333;
+  padding: 10px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.notice-cancel-btn:hover {
+  background-color: #bbb;
+}
+
+.notice-message {
+  margin-top: 15px;
+  color: #1a73e8;
+  font-weight: 500;
+}
+.notice-content-box {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.notice-title {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #333;
+}
+
+.notice-date {
+  color: #888;
+  font-size: 0.9rem;
+}
+
+.notice-content {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #444;
+  white-space: pre-wrap;
+}
+
+.notice-btn-group {
+  margin-top: 2rem;
+  display: flex;
+  gap: 10px;
+}
+
+.notice-btn {
+  padding: 10px 18px;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 0.95rem;
+}
+
+.notice-btn.gray {
+  background-color: #e0e0e0;
+  color: #333;
+}
+
+.notice-btn.blue {
+  background-color: #5B8DEF;
+  color: #fff;
+}
+
+.notice-btn.red {
+  background-color: #ff4d4f;
+  color: #fff;
+}

@@ -8,11 +8,12 @@ import ColorPickerModal from "../components/ColorPickerModal";
 import { COLORS, fancyName, getTodayColor } from "../api/colors";
 import view2col from "../assets/view-2col.png";
 import view4col from "../assets/view-4col.png";
+import { getCurrentWeather} from "../api/weather";
 
 function TodayLook() {
   const navigate = useNavigate();
   const todayColor = getTodayColor(); // 오늘 날짜로 고정된 색상 하나 추출
-
+  const [current, setCurrent] = useState(null);
   const [lookImages, setLookImages] = useState([]); // 받아온 코디 이미지 목록
   const [loading, setLoading] = useState(true); // 로딩 상태
   const [showModal, setShowModal] = useState(false); // 색상 선택 모달 표시 여부
@@ -24,7 +25,7 @@ function TodayLook() {
 
   // 체감온도에 따른 아이콘 출력
   const [showIcons, setShowIcons] = useState({
-    items: "반팔, 반바지, 샌들들"
+    items: "반팔, 반바지, 샌들"
   });
   // DB 날씨조건 필터
   const weatherDescriptionMap = {
@@ -61,18 +62,28 @@ useEffect(() => {
       getCurrentWeather(latitude, longitude).then((res) => {
               setCurrent(res.data);
       const rawDesc = res.data.weather[0].description;
-      const desc = overrideWeather || getKoreanWeatherDescription(rawDesc);
+      const desc = getKoreanWeatherDescription(rawDesc);
       const weatherType = normalizeWeatherType(desc);
       const feeling = res.data.main.feels_like;
 
-      fetch(`/api/fashion/recommend?weather=${weatherType}&feeling=${feeling}`)
+      const token = localStorage.getItem("token");
+
+      fetch(`/api/fashion/recommend?weather=${weatherType}&feeling=${feeling}`, {
+        headers: {
+          "Authorization": `Bearer ${token}`,
+        },
+      })
         .then((res) => res.json())
         .then((data) => {
           console.log("추천 아이템:", data.items);
-          setShowIcons(data); // { items: '가디건,반팔' }
+          try {
+            setShowIcons(data); // { items: '가디건,반팔' }
+          } catch (err) {
+            console.error("JSON 파싱 실패:", err);
+          }
         });
-      })
-    })
+      });
+    });
   }, []);
 
   const iconMap = {
@@ -101,7 +112,7 @@ useEffect(() => {
     "방수 부츠": "rain-boots",
     "우비": "raincoat"
   };
-
+  
   // 필터 변경 시 이미지 크롤링 요청
   useEffect(() => {
     setLoading(true);
@@ -250,6 +261,9 @@ useEffect(() => {
                     alt={`${trimmed} 아이콘`}
                     onError={(e) => (e.target.src = "/icons/default.png")}
                   />
+                    <div className="tooltip-box">
+                      {trimmed}
+                    </div>
                 </div>
               );
             })}

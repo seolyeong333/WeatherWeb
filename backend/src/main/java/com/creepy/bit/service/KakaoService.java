@@ -55,6 +55,49 @@ public class KakaoService {
         return response.getBody();
     }
 
+    public KakaoMapDto getPlaceById(String placeId) {
+    String url = "https://dapi.kakao.com/v2/local/search/keyword.json?query=" + placeId;
+
+    HttpHeaders headers = new HttpHeaders();
+    headers.set("Authorization", "KakaoAK " + kakaoApiKey);
+
+    HttpEntity<String> entity = new HttpEntity<>(headers);
+
+    ResponseEntity<String> response = restTemplate.exchange(
+        url,
+        HttpMethod.GET,
+        entity,
+        String.class
+    );
+
+    JSONObject json = new JSONObject(response.getBody());
+    JSONArray documents = json.getJSONArray("documents");
+
+    if (documents.length() == 0) {
+        return null; // 장소 없음
+    }
+
+    JSONObject obj = documents.getJSONObject(0); // 첫 번째 장소 정보
+
+    // 모든 필드를 추출해서 생성자에 넘겨줌
+    return new KakaoMapDto(
+        obj.getString("id"),
+        obj.getString("place_name"),
+        obj.optString("category_name", ""),
+        obj.optString("category_group_code", ""),
+        obj.optString("category_group_name", ""),
+        obj.optString("phone", ""),
+        obj.optString("address_name", ""),
+        obj.optString("road_address_name", ""),
+        obj.getString("x"),
+        obj.getString("y"),
+        obj.optString("place_url", ""),
+        obj.optString("distance", "")
+    );
+}
+
+
+
     public List<KakaoMapDto> searchPlacesByCategory(double lat, double lon, String categoryCode, String keyword) {
     String url;
 
@@ -110,6 +153,42 @@ public class KakaoService {
     return result;
 }
 
+  public KakaoMapDto getPlaceByName(String placeName) {
+    // MyBatis 또는 직접 Kakao API 호출해서 처리 가능
+
+        // MyBatis를 통한 DB 저장 방식이 아니라면, 아래처럼 Kakao API 직접 호출
+        String url = UriComponentsBuilder.fromHttpUrl("https://dapi.kakao.com/v2/local/search/keyword.json")
+            .queryParam("query", placeName) // placeId가 아닌 placeName일 경우 적절히 변경 필요
+            .build().toUriString();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "KakaoAK " + kakaoApiKey);
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+
+        ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
+
+        JSONObject json = new JSONObject(response.getBody());
+        JSONArray documents = json.getJSONArray("documents");
+
+        if (documents.length() == 0) return null;
+
+        JSONObject doc = documents.getJSONObject(0);
+
+        return new KakaoMapDto(
+            doc.getString("id"),
+            doc.getString("place_name"),
+            doc.getString("category_name"),
+            doc.optString("category_group_code", null),
+            doc.optString("category_group_name", null),
+            doc.optString("phone", null),
+            doc.getString("address_name"),
+            doc.optString("road_address_name", null),
+            doc.getString("x"),
+            doc.getString("y"),
+            doc.getString("place_url"),
+            doc.optString("distance", null)
+        );
+    }
 
 
 }

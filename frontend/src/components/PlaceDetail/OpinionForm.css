@@ -1,0 +1,17 @@
+.star-rating {
+    display: flex;
+    gap: 4px;
+    font-size: 1.4rem;
+    cursor: pointer;
+    color: #ccc;
+  }
+  
+  .star.selected {
+    color: gold;
+  }
+  
+  .star:hover,
+  .star:hover ~ .star {
+    color: #ffdb70;
+  }
+  

@@ -67,6 +67,31 @@
   height: auto;
 }
 
+/* 툴팁 기본: 안 보임 */
+.tooltip-box {
+  position: absolute;
+  right: -75px;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: rgba(173, 216, 230, 0.9); /* 연하늘색 + 반투명 */
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  white-space: nowrap;
+  color: #003049;
+  font-weight: 500;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  z-index: 20;
+}
+
+/* hover 시만 보이게 */
+.feel-temp-tab:hover .tooltip-box {
+  opacity: 1;
+}
+
 /* 상단 영역 (색 박스 + 버튼 + 설명) */
 .today-look-header {
   display: flex;

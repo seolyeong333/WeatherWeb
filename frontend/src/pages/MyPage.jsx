@@ -8,9 +8,14 @@ import PasswordCheckModal from "../components/MyPage/PasswordCheckModal";
 import ConfirmModal from "../components/MyPage/ConfirmModal";
 import WeatherOverlay from "../components/MyPage/WeatherOverlay";
 import UserInfoTab from "../components/MyPage/UserInfoTab";
+import ChangePasswordTab from "../components/MyPage/ChangePasswordTab";
 import OpinionTab from "../components/MyPage/OpinionTab";
 import ReportTab from "../components/MyPage/ReportTab";
+import BookmarkTab from "../components/MyPage/BookmarkTab";
 import EditUserInfo from "../components/MyPage/EditUserInfo";
+import AlarmTab from "../components/MyPage/AlarmTab";
+import AlarmListTab from "../components/MyPage/AlarmListTab";
+import { FaBell } from "react-icons/fa";
 import { FaUser, FaCommentDots, FaExclamationCircle } from "react-icons/fa";
 import "./MyPage.css";
 
@@ -81,10 +86,16 @@ function MyPage() {
                 <Nav.Link eventKey="info"><FaUser /> 내 정보</Nav.Link>
               </Nav.Item>
               <Nav.Item>
+                <Nav.Link eventKey="bookmark"><FaUser /> 북마크 목록 </Nav.Link>
+              </Nav.Item>
+              <Nav.Item>
                 <Nav.Link eventKey="opinions"><FaCommentDots /> 한줄평 관리</Nav.Link>
               </Nav.Item>
               <Nav.Item>
                 <Nav.Link eventKey="reports"><FaExclamationCircle /> 신고 내역</Nav.Link>
+              </Nav.Item>
+              <Nav.Item>
+                <Nav.Link eventKey="alarms"><FaBell /> 알림 설정</Nav.Link>
               </Nav.Item>
             </Nav>
           </Col>
@@ -105,8 +116,22 @@ function MyPage() {
                 setShowEditComponent={() => setActiveTab("info")}
               />
             )}
+            {activeTab === "password" && (
+              <ChangePasswordTab
+                userInfo={userInfo}
+                setActiveTab={setActiveTab}
+                fetchUserInfo={fetchUserInfo} 
+                setShowEditComponent={() => setActiveTab("info")}
+              />
+            )}
+            {activeTab === "bookmark" && <BookmarkTab userInfo={userInfo} />}
             {activeTab === "opinions" && <OpinionTab userInfo={userInfo} />}
             {activeTab === "reports" && <ReportTab userInfo={userInfo} />}
+            {activeTab === "alarms" &&   <>
+              <AlarmTab userInfo={userInfo} />
+              <AlarmListTab userId={userInfo?.userId} />
+            </>
+            }
           </Col>
         </Row>
       </div>
@@ -119,6 +144,7 @@ function MyPage() {
           setShowModal(false);
           if (mode === "edit") setActiveTab("edit");
           else if (mode === "delete") setShowConfirmModal(true);
+          else if (mode === "password") setActiveTab("password"); 
         }}
         email={userInfo?.email}
       />

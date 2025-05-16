@@ -147,6 +147,8 @@ public class UserController {
     @PatchMapping("/password")
     public ResponseEntity<String> changePassword(@RequestBody UserRequestDto userDto) {
         System.out.println("UserController PATCH /password 호출");
+        System.out.println(userDto.getEmail());
+        System.out.println(userDto.getPassword());
         userService.changePasswd(userDto);
         return ResponseEntity.ok("비밀번호 변경 완료!");
     }

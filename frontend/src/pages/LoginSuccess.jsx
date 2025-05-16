@@ -8,7 +8,7 @@ function LoginSuccess() {
   useEffect(() => {
 
     if (hasRun.current) return;
-    hasRun.current = true; // ✅ 딱 한 번만 실행되게 제어
+    hasRun.current = true; 
 
     const params = new URLSearchParams(window.location.search);
     const token = params.get("token");  // 카카오용
@@ -17,11 +17,10 @@ function LoginSuccess() {
 
     if (token) {
       localStorage.setItem("token", token);
-      alert("소셜 로그인 성공!");
-      navigate("/main"); 
     } else {
       alert("토큰 없음. 카카오 로그인 실패");
     }
+    navigate("/main"); 
   }, [navigate]);
 
   return <div> <h2>로그인 처리 중입니다...</h2> </div>;

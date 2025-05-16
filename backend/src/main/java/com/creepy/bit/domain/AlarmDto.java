@@ -8,6 +8,7 @@ import lombok.Setter;
 public class AlarmDto {
     private int alarmId;
     private int userId;
+    private String email;
     private String conditionType;
     private String weatherCondition;
     private String airCondition;

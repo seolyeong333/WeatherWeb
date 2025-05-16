@@ -1,0 +1,144 @@
+.intro-cards {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+}
+
+.tarot-card {
+  width: 180px;
+  height: 250px;
+  border-radius: 8px;
+  transition: transform 0.4s ease;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+}
+
+/* Intro tarot effect */
+.tarot-card:hover {
+  transform: translateY(-20px);
+  box-shadow:
+    0 0 7px rgba(207, 178, 17, 0.03),
+    0 0 12px rgba(206, 177, 10, 0.6),
+    0 0 17px rgba(216, 175, 52, 0.4);
+}
+
+.tarot-card.selected {
+  box-shadow: 0 0 25px rgba(213, 183, 15, 0.6);
+  opacity: 0.9;
+  cursor: default;
+}
+
+.tarot-card.flipped {
+  transform: rotateY(180deg);
+  box-shadow: 0;
+  opacity: 1;
+}
+
+/* === 1단계: 중앙으로 모으기 === */
+.shuffle-sequence .tarot-card:nth-child(1) {
+  animation: gatherLeft 0.8s ease-in forwards;
+  z-index: 3;
+}
+.shuffle-sequence .tarot-card:nth-child(2) {
+  animation: gatherCenter 0.8s ease-in forwards;
+  z-index: 4;
+}
+.shuffle-sequence .tarot-card:nth-child(3) {
+  animation: gatherRight 0.8s ease-in forwards;
+  z-index: 2;
+}
+
+/* === 2단계: 카드 순서 바뀌는 듯한 이동 === */
+.shuffle-sequence.step2 .tarot-card:nth-child(1) {
+  animation: moveToRight 0.6s ease-in-out forwards;
+}
+.shuffle-sequence.step2 .tarot-card:nth-child(2) {
+  animation: moveToBackLeft 0.6s ease-in-out forwards;
+  z-index: 1; /* 뒤로 들어가는 느낌 */
+}
+.shuffle-sequence.step2 .tarot-card:nth-child(3) {
+  animation: moveToCenterFront 0.6s ease-in-out forwards;
+  z-index: 5;
+}
+
+/* 💫 카드 압축 */
+@keyframes gatherLeft {
+  100% {
+    transform: translateX(150px) rotate(-0deg);
+  }
+}
+@keyframes gatherCenter {
+  100% {
+    transform: scale(1.1) translateY(-10px);
+  }
+}
+@keyframes gatherRight {
+  100% {
+    transform: translateX(-150px) rotate(0deg);
+  }
+}
+
+/* 순서 바꾸는 이동 */
+@keyframes moveToRight {
+  0% { transform: translateX(60px); }
+  100% { transform: translateX(180px); }
+}
+
+@keyframes moveToBackLeft {
+  0% { transform: scale(1.1) translateY(-10px); }
+  100% { transform: translateX(-60px) scale(1); }
+}
+
+@keyframes moveToCenterFront {
+  0% { transform: translateX(-60px); }
+  100% { transform: translateX(-180px) scale(1); }
+}
+
+/* Result.jsx */
+/* 모달 뒷배경 흐림 */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  backdrop-filter: blur(5px); /* 💡 흐림 효과 */
+  background-color: rgba(0, 0, 0, 0.3); /* 반투명 배경 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+/* 모달 박스 */
+.modal-content {
+  background: white;
+  padding: 2rem 3rem;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 0 20px rgba(0,0,0,0.2);
+  z-index: 1000;
+  max-width: 400px;
+  animation: fadeIn 0.4s ease-in-out;
+}
+
+.modal-content h3 {
+  font-size: 1.4rem;
+  margin-bottom: 1rem;
+}
+
+.modal-content button {
+  margin-top: 1.5rem;
+  background-color: #5B8DEF;
+  color: white;
+  border: none;
+  padding: 0.6rem 1.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+/* 간단한 페이드 애니메이션 */
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to   { opacity: 1; transform: scale(1); }
+}
