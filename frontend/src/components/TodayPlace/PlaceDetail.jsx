@@ -29,6 +29,7 @@ function PlaceDetail() {
   const [message, setMessage] = useState("로딩 중...");
   const [fitList, setFitList] = useState([]);
   const [opinion, setOpinion] = useState("");
+  const [rating, setRating] = useState(0);
   const [opinions, setOpinions] = useState([]);
   const [showReportModal, setShowReportModal] = useState(false);
   const [reportTargetId, setReportTargetId] = useState(null);
@@ -130,9 +131,10 @@ function PlaceDetail() {
     }
   };
 
-  const handleOpinionSubmit = async () => {
+  const handleOpinionSubmit = async ({ content, rating }) => {
     const token = localStorage.getItem("token");
     if (!token) return alert("로그인이 필요합니다.");
+  
     try {
       const res = await fetch("http://localhost:8080/api/opinions", {
         method: "POST",
@@ -143,10 +145,12 @@ function PlaceDetail() {
         body: JSON.stringify({
           placeId: place.id,
           placeName: place.placeName,
-          content: opinion,
+          content,
+          rating,
           isPublic: true,
         }),
       });
+  
       if (!res.ok) throw new Error();
       alert("등록 완료!");
       setOpinion("");
@@ -155,6 +159,7 @@ function PlaceDetail() {
       alert("등록 중 오류 발생");
     }
   };
+  
 
   const handleLikeDislike = async (id, type) => {
     const token = localStorage.getItem("token");
@@ -213,11 +218,12 @@ function PlaceDetail() {
   return (
     <div className="place-detail-wrapper">
       <div className="d-flex justify-content-between align-items-center">
-      <h2 className="place-title"> {place.placeName}
-  <button onClick={toggleBookmark} className="bookmark-button-inline" >
-    {isBookmarked ? "★" : "☆"} </button>
-</h2>
-
+        <h2 className="place-title">
+          {place.placeName}
+          <button onClick={toggleBookmark} className="bookmark-button-inline">
+            {isBookmarked ? "★" : "☆"}
+          </button>
+        </h2>
         <button className="btn btn-outline-danger" onClick={openPlaceReportModal}>
           🚨 장소 신고
         </button>
@@ -269,6 +275,8 @@ function PlaceDetail() {
           opinion={opinion}
           setOpinion={setOpinion}
           onSubmit={handleOpinionSubmit}
+          rating={rating}
+          setRating={setRating}
         />
 
         <button className="back-btn mt-4" onClick={() => navigate(-1)}>

@@ -50,6 +50,22 @@ function Login({ closeLogin, setIsLoggedIn }) {
           onClose={() => setMode("login")}
         />
       )}
+
+    {mode === "socialSignup" && (
+      <>
+        <div className="modalOverlay" onClick={onClose}></div>
+        <SocialSignup
+          email={email}
+          nickname={nickname}
+          provider={provider}
+          onClose={closeModal}
+        />
+      </>
+    )}
+
+
+
+
     </div>
   );
 }

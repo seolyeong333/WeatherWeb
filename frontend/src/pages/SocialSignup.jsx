@@ -1,5 +1,4 @@
 import { useState } from "react";
-import "./SocialSignup.css";
 
 function SocialSignup({ email, provider, nickname, onClose }) {
   const [formData, setFormData] = useState({

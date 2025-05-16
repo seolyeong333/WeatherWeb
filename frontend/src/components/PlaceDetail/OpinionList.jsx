@@ -1,7 +1,7 @@
 import React from "react";
 import OpinionItem from "./OpinionItem";
 
-function OpinionList({ opinions, onLike, onDislike, onReport }) {
+function OpinionList({ opinions, onLike, rating, onDislike, onReport }) {
   return (
     <div className="opinion-list mt-4">
       <h4>💬 한줄평</h4>
@@ -12,6 +12,7 @@ function OpinionList({ opinions, onLike, onDislike, onReport }) {
           {opinions.map((opinion) => (
             <OpinionItem
               key={opinion.opinionId}
+              rating={rating}
               opinion={opinion}
               onLike={onLike}
               onDislike={onDislike}
