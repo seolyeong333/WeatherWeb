@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { Form, Button } from "react-bootstrap";
 import { FaGoogle } from "react-icons/fa";
 import { SiKakaotalk, SiNaver } from "react-icons/si";
@@ -14,10 +13,10 @@ function Login({ closeLogin, setIsLoggedIn }) {
     gender: "",
     birthday: "",
     remember: false,
+    provider: "local",
   });
 
   const [repassword, setRepassword] = useState("");
-  const [authKeySent, setAuthKeySent] = useState("");
   const [userInputKey, setUserInputKey] = useState("");
   const [isVerified, setIsVerified] = useState(false);
   const [emailStatus, setEmailStatus] = useState("");
@@ -56,7 +55,6 @@ function Login({ closeLogin, setIsLoggedIn }) {
       const data = await res.text();
       if (data === "duplicate") setEmailStatus("이미 존재하는 이메일입니다.");
       else {
-        setAuthKeySent(data);
         setIsCodeSent(true);
         setTimeLeft(300);
         setEmailStatus("인증 메일이 전송되었습니다.");
@@ -121,7 +119,7 @@ function Login({ closeLogin, setIsLoggedIn }) {
           closeLogin?.();}
       } else {
         const err = await res.text();
-        alert(`실패: ${err}`);
+        alert(err);
       }
     } catch (err) {
       console.error(err);

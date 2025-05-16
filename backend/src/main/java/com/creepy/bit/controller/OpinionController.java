@@ -1,10 +1,14 @@
 package com.creepy.bit.controller;
 
+import com.creepy.bit.util.JWTUtil;
 import com.creepy.bit.domain.OpinionDto;
 import com.creepy.bit.service.OpinionService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 import java.util.List;
 
@@ -13,15 +17,33 @@ import java.util.List;
 public class OpinionController {
 
     @Autowired
+    private JWTUtil jwtUtil; 
+
+    @Autowired
     private OpinionService opinionService;
 
     // 🔹 한줄평 작성
     @PostMapping
-    public ResponseEntity<String> addOpinion(@RequestBody OpinionDto opinionDto) {
-          System.out.println("OpinionController POST 호출");        
+    public ResponseEntity<String> addOpinion(HttpServletRequest request,
+                                            @RequestBody OpinionDto opinionDto) {
+        System.out.println("OpinionController POST 호출");
+
         try {
+            // 1️⃣ 토큰에서 Bearer 제거 후 추출
+            String authHeader = request.getHeader("Authorization");
+            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+                return ResponseEntity.status(401).body("인증 실패: 토큰 없음");
+            }
+            String token = authHeader.substring(7);
+
+            // 2️⃣ JWT에서 userId 추출
+            int userId = jwtUtil.getUserId(token);  // ✅ 여기서 userId 추출
+            opinionDto.setUserId(userId);           // ✅ opinionDto에 주입
+
+            // 3️⃣ DB 저장
             opinionService.insertOpinion(opinionDto);
             return ResponseEntity.ok("작성 완료");
+
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.internalServerError().body("작성 실패");
@@ -35,8 +57,6 @@ public class OpinionController {
         List<OpinionDto> list = opinionService.getOpinionsByPlaceId(placeId);
         return ResponseEntity.ok(list);
     }
-
-
 
     // 🔹 한줄평 목록 조회 (userId 기반)
     @GetMapping

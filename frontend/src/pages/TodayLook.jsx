@@ -8,6 +8,7 @@ import ColorPickerModal from "../components/ColorPickerModal";
 import { COLORS, fancyName, getTodayColor } from "../api/colors";
 import view2col from "../assets/view-2col.png";
 import view4col from "../assets/view-4col.png";
+import { getCurrentWeather} from "../api/weather";
 
 function TodayLook() {
   const navigate = useNavigate();
@@ -24,7 +25,7 @@ function TodayLook() {
 
   // 체감온도에 따른 아이콘 출력
   const [showIcons, setShowIcons] = useState({
-    items: "반팔, 반바지, 샌들들"
+    items: "반팔, 반바지, 샌들"
   });
   // DB 날씨조건 필터
   const weatherDescriptionMap = {
@@ -101,7 +102,7 @@ useEffect(() => {
     "방수 부츠": "rain-boots",
     "우비": "raincoat"
   };
-
+  
   // 필터 변경 시 이미지 크롤링 요청
   useEffect(() => {
     setLoading(true);
@@ -250,6 +251,9 @@ useEffect(() => {
                     alt={`${trimmed} 아이콘`}
                     onError={(e) => (e.target.src = "/icons/default.png")}
                   />
+                    <div className="tooltip-box">
+                      {trimmed}
+                    </div>
                 </div>
               );
             })}

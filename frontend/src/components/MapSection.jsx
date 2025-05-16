@@ -171,6 +171,7 @@ function MapSection() {
 
   return (
     <div>
+      
       <div className="mb-2 d-flex gap-2 justify-content-center">
         <button
           className={`btn btn-sm ${timeMode === "current" ? "btn-dark" : "btn-outline-dark"}`}
@@ -190,7 +191,7 @@ function MapSection() {
         >
           오늘오후
         </button>
-      </div>
+        </div>
 
       <div
         ref={mapContainer}

@@ -8,10 +8,13 @@ import com.creepy.bit.domain.BookMarkDto;
 import com.creepy.bit.domain.ReportDto;
 import com.creepy.bit.domain.OpinionDto;
 import com.creepy.bit.domain.WeatherMessageDto;
+import com.creepy.bit.domain.TarotCardDto;
+import com.creepy.bit.domain.TarotColorDto;
 
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
+import org.apache.ibatis.annotations.Param;
 
 @Mapper
 public interface MainMapper {
@@ -41,7 +44,8 @@ public interface MainMapper {
     // 회원 정보 수정 (비밀번호 + 이메일 수정)
     void modifyUser(UserRequestDto userDto);
 
-    
+    // Id로 이메일 찾기
+    String findEmailByUserId(int userId);
 
     // Notice
     // 공지 전체 조회
@@ -96,6 +100,9 @@ public interface MainMapper {
     // 내 알림 목록 
     List<AlarmDto> selectAlarmsByUserId(int userId);
 
+    // 전체 알림 목록
+    List<AlarmDto> selectAll();
+
     // 알림 삭제
     void deleteAlarm(int alarmId);
     
@@ -118,6 +125,13 @@ public interface MainMapper {
     // 신고 처리상태 변경 
     int updateReportStatus(int id, String status);
 
+    //  신고 중복상태 확인
+    int countDuplicateReports(ReportDto reportDto);
+
     WeatherMessageDto findByWeatherTypeAndTempRange(String weatherType, double feelsLike);
 
+    // 운세 페이지
+    List<TarotCardDto> getCardsByIds(@Param("categoryId") int categoryId, @Param("cardIds") List<Integer> cardIds);
+
+    List<TarotColorDto> getColorsByCardId(@Param("cardId") int cardId);
 }
