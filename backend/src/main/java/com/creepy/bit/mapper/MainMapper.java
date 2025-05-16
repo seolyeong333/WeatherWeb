@@ -14,6 +14,7 @@ import com.creepy.bit.domain.TarotColorDto;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
+import org.apache.ibatis.annotations.Param;
 
 @Mapper
 public interface MainMapper {

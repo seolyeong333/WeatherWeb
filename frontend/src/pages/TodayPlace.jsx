@@ -3,38 +3,21 @@ import TodayPlaceList from "../components/TodayPlace/TodayPlaceList";
 import TodayPlaceMap from "../components/TodayPlace/TodayPlaceMap";
 import PlaceDetail from "../components/TodayPlace/PlaceDetail";
 import Header from "../components/Header";
+import "./Background.css";
 
 
 function TodayPlace() {
   const location = useLocation();
 
   return (
-    <>
+    <div className="background-wrapper">
       <Header />
-      <div style={{ display: "flex", justifyContent: "center", padding: "2rem" }}>
-        <div
-          style={{
-            display: "flex",
-            width: "90%",
-            maxWidth: "1200px",
-            backgroundColor: "#f9f9f9",
-            borderRadius: "10px",
-            boxShadow: "0 0 8px rgba(0,0,0,0.05)",
-            overflow: "hidden",
-            minHeight: "80vh",
-          }}
-        >
+      <div className="common-background">
+        <div className="common-container">
           {/* 사이드바 */}
-          <aside
-            style={{
-              width: "200px",
-              backgroundColor: "#f5f5f5",
-              padding: "1rem",
-              boxShadow: "2px 0 4px rgba(0,0,0,0.1)",
-            }}
-          >
-            <ul style={{ listStyle: "none", paddingLeft: 0 }}>
-              <li style={{ marginBottom: "0.5rem" }}>
+          <aside className="common-sidebar">
+            <ul className="sidebar-list">
+              <li className="sidebar-item">
                 <Link
                   to="/today-place/list"
                   style={{
@@ -46,7 +29,7 @@ function TodayPlace() {
                   목록 보기
                 </Link>
               </li>
-              <li>
+              <li className="sidebar-item">
                 <Link
                   to="/today-place/map"
                   style={{
@@ -60,9 +43,8 @@ function TodayPlace() {
               </li>
             </ul>
           </aside>
-
           {/* 콘텐츠 */}
-          <main style={{ flex: 1, padding: "2rem", backgroundColor: "#fff" }}>
+          <main style={{ flex: 1, padding: "2rem" }}>
             <Routes>
               <Route index element={<Navigate to="/today-place/list" replace />} />
               <Route path="/list" element={<TodayPlaceList />} />
@@ -72,7 +54,7 @@ function TodayPlace() {
           </main>
         </div>
       </div>
-    </>
+    </div>
   );
 }
 

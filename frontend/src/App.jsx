@@ -25,7 +25,7 @@ function App() {
           <Route path="/admin" element={<AdminPage />} />
           <Route path="/today-place/*" element={<TodayPlace />} />
           <Route path="/today-look" element={<TodayLook />} />
-          <Route path="/today-tarot" element={<TodayTarot />} />
+          <Route path="/horoscope/*" element={<TodayTarot />} />
           <Route path="/today-weather" element={<TodayWeatherPage />} />
           <Route path="/notice" element={<NoticePage />} />
           <Route path="/socialsignup" element={<SocialSignup />} />

@@ -47,7 +47,7 @@ function Header() {
             <Nav.Link href="/today-weather">오늘의 날씨</Nav.Link>
             <Nav.Link href="/today-place">오늘의 장소</Nav.Link>
             <Nav.Link href="/today-look">오늘의 코디</Nav.Link>
-            <Nav.Link href="/today-tarot">오늘의 운세</Nav.Link>
+            <Nav.Link href="/horoscope/tarot">오늘의 운세</Nav.Link>
             <Nav.Link href="/notice">공지사항</Nav.Link>
             {isLoggedIn && (
               <Nav.Link href={isAdmin ? "/admin" : "/mypage"}>

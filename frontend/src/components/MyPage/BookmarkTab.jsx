@@ -23,6 +23,7 @@ function BookmarkTab({ userInfo }) {
         const bookmarkDtos = await res.json();
         setBookmarks(bookmarkDtos);
       } catch (err) {
+        alert("로그인이 필요한 기능입니다");
         console.error("북마크 목록 불러오기 실패", err);
       }
     };
