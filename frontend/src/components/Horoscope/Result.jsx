@@ -22,9 +22,7 @@ function Result({ categoryId, selectedCards, onRestart }) {
 
     const data = await res.json();
     setCardInfos(data); 
-    console.log("사용자 토큰 👉", token);
-    console.log("받아온 카드 정보 👉", data); 
-    console.log("요청 URL 👉", url);
+    console.log("받아온 카드 정보 : ", data); 
       } catch (err) {
         console.error("타로 카드 결과 불러오기 실패:", err);
       }
