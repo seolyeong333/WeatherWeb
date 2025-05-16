@@ -1,21 +1,11 @@
-import { useSearchParams, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import Header from "../components/Header";
-import "./SocialSignup.css";
 
-function SocialSignup() {
-  const [params] = useSearchParams();
-  const navigate = useNavigate();
-
-  const email = params.get("email");
-  const provider = params.get("provider");
-  const initialNickname = params.get("nickname");
-
+function SocialSignup({ email, provider, nickname, onClose }) {
   const [formData, setFormData] = useState({
     email,
     provider,
     password: "",
-    nickname: initialNickname || "",
+    nickname: nickname || "",
     gender: "",
     birthday: "",
   });
@@ -33,11 +23,6 @@ function SocialSignup() {
   };
 
   const validateForm = () => {
-    /*
-    if (!formData.password || formData.password.length < 6) {
-      return "비밀번호는 최소 6자 이상이어야 합니다.";
-    }
-      */
     if (formData.password !== repassword) {
       return "비밀번호가 일치하지 않습니다.";
     }
@@ -58,20 +43,10 @@ function SocialSignup() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
-
+    
       if (res.ok) {
-        const loginRes = await fetch("http://localhost:8080/api/users/login", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            email: formData.email,
-            password: formData.password,
-          }),
-        });
-
-        const data = await loginRes.json();
-        localStorage.setItem("token", data.token);
-        navigate("/main");
+        alert("회원가입이 완료되었습니다. 로그인 후 이용해주세요.");
+        onClose?.(); 
       } else {
         const msg = await res.text();
         setErrorMessage(`회원가입 실패: ${msg}`);
@@ -144,6 +119,9 @@ function SocialSignup() {
 
         <button type="submit" className="btn btn-dark w-100">
           회원가입 완료
+        </button>
+        <button type="button" className="btn btn-secondary w-100 mt-2" onClick={onClose}>
+          닫기
         </button>
       </form>
     </div>

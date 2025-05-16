@@ -1,6 +1,3 @@
-# application.properties 보다 가독성이 좋음
-# 예시
-
 server:
   port: 8080   # 서버 포트 
 
@@ -35,3 +32,4 @@ logging:
   level:
     root: INFO
     com.project: DEBUG
+

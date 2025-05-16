@@ -6,6 +6,7 @@ import WeatherBox from "../components/WeatherBox";
 import MapSection from "../components/MapSection";
 import NationalWeatherFetcher from "../components/NationalWeatherFetcher";
 import WeeklyForecast from "../components/WeeklyForecast";
+import SocialSignup from "./SocialSignup"; 
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import "./MainPage.css";
@@ -30,9 +31,27 @@ function MainPage() {
   const [testIndex, setTestIndex] = useState(0);          // 현재 테스트 중인 날씨 index
   const [isTestMode, setIsTestMode] = useState(true);     // 테스트 모드 ON/OFF
 
+  const [showSocialSignup, setShowSocialSignup] = useState(false);
+  const [socialInfo, setSocialInfo] = useState(null);
+
   // overrideWeather: 테스트 모드일 경우만 값이 설정됨
   const overrideWeather = isTestMode ? testWeatherSequence[testIndex] : null;
 
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const mode = params.get("mode");
+  
+    if (mode === "socialSignup") {
+      const email = params.get("email");
+      const provider = params.get("provider");
+      const nickname = params.get("nickname") || "";
+  
+      setSocialInfo({ email, provider, nickname });
+      setShowSocialSignup(true);
+    }
+  }, [location]);
+  
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const token = params.get("token");
@@ -153,6 +172,21 @@ function MainPage() {
                 날씨 테스트 토글 ({overrideWeather})
               </button>
             </>
+          )}
+          {showSocialSignup && socialInfo && (
+            <div className="modal-overlay">
+              <div className="modal-content">
+                <SocialSignup
+                  email={socialInfo.email}
+                  provider={socialInfo.provider}
+                  nickname={socialInfo.nickname}
+                  onClose={() => {
+                    setShowSocialSignup(false);
+                    navigate("/main", { replace: true }); // URL 정리
+                  }}
+                />
+              </div>
+            </div>
           )}
         </div>
       </main>

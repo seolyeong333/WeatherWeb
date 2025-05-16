@@ -117,25 +117,21 @@ function TodayPlaceList() {
     const token = localStorage.getItem("token");
     const placeKey = place.id;
     const bookmarkId = bookmarkedMap[placeKey];
-
+  
     if (!token) return alert("로그인 후 이용 가능합니다.");
-
-    if (bookmarkId) {
-      try {
+  
+    try {
+      if (bookmarkId) {
+        // ✅ 북마크 삭제
         const res = await fetch(`http://localhost:8080/api/bookmarks/${bookmarkId}`, {
           method: "DELETE",
           headers: { Authorization: `Bearer ${token}` },
         });
         if (res.ok) {
-          const newMap = { ...bookmarkedMap };
-          delete newMap[placeKey];
-          setBookmarkedMap(newMap);
+          await fetchBookmarks(); // ⬅️ 삭제 후에도 최신 DB 상태 반영
         }
-      } catch (err) {
-        console.error("북마크 삭제 실패:", err);
-      }
-    } else {
-      try {
+      } else {
+        // ✅ 북마크 추가
         const res = await fetch("http://localhost:8080/api/bookmarks", {
           method: "POST",
           headers: {
@@ -145,15 +141,14 @@ function TodayPlaceList() {
           body: JSON.stringify({ placeId: placeKey, placeName: place.placeName }),
         });
         if (res.ok) {
-          const saved = await res.json();
-          setBookmarkedMap((prev) => ({ ...prev, [placeKey]: saved.bookmarkId }));
-          await fetchBookmarks(); 
+          await fetchBookmarks(); // ⬅️ 추가 후 최신 상태 유지
         }
-      } catch (err) {
-        console.error("북마크 추가 실패:", err);
       }
+    } catch (err) {
+      console.error("북마크 처리 실패:", err);
     }
   };
+  
 
   return (
     <div style={{ padding: "2rem" }}>
@@ -221,7 +216,7 @@ function TodayPlaceList() {
                       e.stopPropagation();
                       toggleBookmark(place);
                     }}
-                    className="bookmark-button"
+                    className={`bookmark-button ${isBookmarked ? "active" : ""}`} // ⭐ 조건 클래스
                     title="북마크"
                   >
                     {isBookmarked ? "★" : "☆"}

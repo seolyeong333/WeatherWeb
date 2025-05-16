@@ -1,17 +1,16 @@
 package com.creepy.bit.domain;
 
+import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
-
+import com.creepy.bit.domain.TarotColorDto;
 
 @Getter
 @Setter
 public class TarotCardDto {
-    private int tarotId;
-    private String name;
+    private int cardId;
+    private String cardName;
     private String description;
-    private String imageUrl;
-    private String associatedColor;
-    private int categoryId;
+    private List<TarotColorDto> colors;
 }
 

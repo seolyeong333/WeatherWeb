@@ -27,3 +27,14 @@
     text-decoration: none;
     cursor: pointer;
   }
+    /* 달력 아이콘 보이도록 배경/테두리 조정 */
+  .loginModal input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(0.5);        /* 색 반전으로 어두운 배경에서도 보이게 */
+    cursor: pointer;
+    opacity: 1;
+  }
+
+  /* Firefox 대응 */
+  .loginModal input[type="date"]::-moz-calendar-picker-indicator {
+    filter: invert(0.5);
+  }
