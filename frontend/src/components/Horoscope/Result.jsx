@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import "./TarotAnimation.css";
+import "../../styles/TarotAnimation.css";
 
 function Result({ categoryId, selectedCards, onRestart }) {
   const [cardInfos, setCardInfos] = useState([]);
@@ -9,24 +9,24 @@ function Result({ categoryId, selectedCards, onRestart }) {
     // 서버에서 카드 정보 가져오기
     const fetchCardInfo = async () => {
       try {
-        const token = localStorage.getItem("token"); // 또는 sessionStorage
-
-        const queryParams = selectedCards.map(i => `cardIds=${i + 1}`).join("&");
+        const token = localStorage.getItem("token");
+        const queryParams = selectedCards.map(i => `cardIds=${i}`).join("&");
         const url = `http://localhost:8080/api/tarot/result?categoryId=${categoryId}&${queryParams}`;
 
-       const res = await fetch(url, {
-        headers: {
-          "Authorization": `Bearer ${token}`
-        }
-      });
+        console.log("✅ selectedCards:", selectedCards);
+        const res = await fetch(url, {
+          headers: {
+            "Authorization": `Bearer ${token}`
+          }
+        });
 
-    const data = await res.json();
-    setCardInfos(data); 
-    console.log("받아온 카드 정보 : ", data); 
-      } catch (err) {
-        console.error("타로 카드 결과 불러오기 실패:", err);
-      }
-    };
+        const data = await res.json();
+        setCardInfos(data); 
+        console.log("받아온 카드 정보 : ", data); 
+          } catch (err) {
+            console.error("타로 카드 결과 불러오기 실패:", err);
+          }
+        };
 
     fetchCardInfo();
 
@@ -40,11 +40,11 @@ function Result({ categoryId, selectedCards, onRestart }) {
     <div style={{ textAlign: "center", padding: "3rem" }}>
       <h2 style={{ marginBottom: "3rem", fontFamily: "'Gowun Dodum', sans-serif" }}>🧙‍♀️ 당신의 오늘의 운세 결과입니다</h2>
       <div style={{ display: "flex", justifyContent: "center", gap: "2rem" }}>
-        {selectedCards.map((index) => (
+        {cardInfos.map((c, index) => (
           <img
             key={index}
-            src={`/tarot/${categoryId}/${index + 1}.png`}
-            alt={`카드${index + 1}`}
+            src={`/tarot/${categoryId}/${c.cardId}.png`}
+            alt={`카드${c.cardName}`}
             style={{ width: "180px", height: "250px" }}
           />
         ))}
@@ -65,7 +65,8 @@ function Result({ categoryId, selectedCards, onRestart }) {
           <h3 style={{ marginBottom: "3rem", fontFamily: "'Gowun Dodum', sans-serif" }}>🔮 오늘의 타로 메시지</h3>
             {cardInfos.map((c, index) => (
               <p key={index}>
-                <strong>「{c.cardName}」</strong>: {c.description}
+                <strong>「{c.cardName}」</strong>: {c.description} &nbsp;
+                색상: {c.colors.map(color => color.colorName).join(", ")}
               </p>
             ))}
           <button onClick={() => setShowModal(false)}>확인</button>
