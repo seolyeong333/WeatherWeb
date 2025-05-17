@@ -162,7 +162,7 @@ useEffect(() => {
             </div>
           </div>
 
-          <button className="tarot-btn" onClick={() => navigate("/today-tarot")}>
+          <button className="tarot-btn" onClick={() => navigate("/horoscope/tarot")}>
             타로 페이지에서 행운의 색 받기
           </button>
         </div>
@@ -239,6 +239,18 @@ useEffect(() => {
               }}
             >
               오늘의 감성 코디를 불러오는 중입니다...
+            </p>
+          </div>
+        ) : lookImages.length === 0 ? (
+          <div style={{ textAlign: "center", padding: "3rem" }}>
+            <p
+              style={{
+                color: "#888",
+                fontFamily: "'Gowun Dodum', sans-serif",
+                fontSize: "1.1rem",
+              }}
+            >
+              불러올 코디가 없습니다.
             </p>
           </div>
         ) : (
