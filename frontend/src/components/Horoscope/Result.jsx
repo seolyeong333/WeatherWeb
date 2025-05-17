@@ -65,7 +65,7 @@ function Result({ categoryId, selectedCards, onRestart }) {
           <h3 style={{ marginBottom: "3rem", fontFamily: "'Gowun Dodum', sans-serif" }}>🔮 오늘의 타로 메시지</h3>
             {cardInfos.map((c, index) => (
               <p key={index}>
-                <strong>「{c.cardName}」</strong>: {c.description}
+                <strong>「{c.cardName}」</strong>: {c.description}, {c.colors[0].colorName}
               </p>
             ))}
           <button onClick={() => setShowModal(false)}>확인</button>

@@ -1,6 +1,7 @@
 // src/pages/PlaceDetail.jsx
 import { useLocation, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
+import { FaRegBookmark, FaBookmark } from "react-icons/fa";
 import { getCurrentWeather } from "../../api/weather";
 import axios from "axios";
 import ReportModal from "../../components/PlaceDetail/ReportModal";
@@ -12,7 +13,7 @@ const opinionReasons = ["욕설", "광고", "도배", "개인정보 노출", "�
 const placeReasons = ["정보 오류", "부적절한 장소", "폐업/이전", "기타"];
 
 const weatherDescriptionMap = {
-  "튼구름": "구름 많음", "맑음": "맑음", "비": "비", "눈": "눈",
+  "튼구름": "구름 많음", "맑음": "맑음", "비": "비", "눈": "눈", "보통 비": "비",
   "강한 비": "비", "실 비": "이슬비", "소나기": "소나기", "천둥번개": "뇌우",
   "연무": "흐림", "흐림": "흐림", "온흐림": "흐림", "박무": "흐림"
 };
@@ -220,9 +221,13 @@ function PlaceDetail() {
       <div className="d-flex justify-content-between align-items-center">
         <h2 className="place-title">
           {place.placeName}
-          <button onClick={toggleBookmark} className="bookmark-button-inline">
-            {isBookmarked ? "★" : "☆"}
-          </button>
+          <button onClick={toggleBookmark} className="bookmark-button-inline" title="북마크">
+          {isBookmarked ? (
+            <FaBookmark size={22} color="#ffcc00" />
+          ) : (
+            <FaRegBookmark size={22} color="#555" />
+          )}
+        </button>
         </h2>
         <button className="btn btn-outline-danger" onClick={openPlaceReportModal}>
           🚨 장소 신고

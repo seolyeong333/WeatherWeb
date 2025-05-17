@@ -24,5 +24,11 @@ public class GooglePlaceController {
         return googlePlaceService.getPlaceImageUrl(name, lat, lon);
     }
 
+    @GetMapping("/rating")
+    public double getPlaceRating(@RequestParam String name, @RequestParam double lat, @RequestParam double lon) {
+        System.out.println("GooglePlaceController /rating GET 호출");
+        return googlePlaceService.getPlaceRating(name, lat, lon);
+    }
+
 
 }

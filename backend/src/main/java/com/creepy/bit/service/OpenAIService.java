@@ -63,6 +63,9 @@ public class OpenAIService {
     String url = "https://api.openai.com/v1/chat/completions";
     HttpHeaders headers = new HttpHeaders();
     headers.setContentType(MediaType.APPLICATION_JSON);
+     String apiKey = openAIProperties.getApiKey();
+    System.out.println("🔑 현재 API 키: " + apiKey);  
+  
     headers.setBearerAuth(openAIProperties.getApiKey());
 
     Map<String, Object> body = new HashMap<>();

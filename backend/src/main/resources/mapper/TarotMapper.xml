@@ -5,9 +5,7 @@
 <mapper namespace="com.creepy.bit.mapper.MainMapper">
 
     <select id="getCardsByIds" resultType="com.creepy.bit.domain.TarotCardDto">
-        SELECT cardId, cardName, description
-        FROM tarot_cards
-        WHERE categoryId = #{categoryId}
+        SELECT * FROM tarot_cards WHERE categoryId = #{categoryId}
             AND cardId IN
             <foreach item="id" collection="cardIds" open="(" separator="," close=")">
             #{id}
@@ -19,5 +17,16 @@
         FROM tarot_card_colors
         WHERE cardId = #{cardId}
     </select>
+
+    <select id="countPlayLogsToday" resultType="int">
+        SELECT COUNT(*) FROM tarot_play_logs
+        WHERE userId = #{userId} AND isPlay = #{today}
+    </select>
     
+    <insert id="insertPlayLog">
+        INSERT INTO tarot_play_logs (userId, cardId, isPlay, description)
+        VALUES (#{userId}, #{cardId}, #{isPlay}, #{description})
+    </insert>
+
+
 </mapper>
