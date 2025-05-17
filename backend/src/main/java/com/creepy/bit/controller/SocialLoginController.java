@@ -18,6 +18,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Map;
 import java.time.LocalDate;
+import java.net.URLEncoder;
 
 @RestController
 @RequestMapping("/api/users/login")
@@ -49,17 +50,14 @@ public class SocialLoginController {
 
             // ✅ 자동 회원가입 (최초 로그인 시)
             if (userService.checkEmail(email) == 0) {
-                UserRequestDto newUser = new UserRequestDto();
-                newUser.setEmail(email);
-                newUser.setPassword("1234");
-                newUser.setNickname(nickname);
-                newUser.setProvider("kakao");
-                newUser.setAuth("USER");
-                newUser.setGender(null);
-                newUser.setBirthday(null);
-                newUser.setProvider("kakao");
-                userService.signup(newUser);
-                System.out.println("🎉 자동 회원가입 완료: " + email);
+                String redirectUrl = "http://localhost:5173/main"
+                    + "?mode=socialSignup"
+                    + "&email=" + URLEncoder.encode(email, "UTF-8")
+                    + "&nickname=" + URLEncoder.encode(nickname, "UTF-8")
+                    + "&provider=kakao";
+                response.sendRedirect(redirectUrl);
+                return;
+
             }
 
             // ✅ userId, auth 포함 JWT 발급
@@ -93,17 +91,16 @@ public class SocialLoginController {
 
             // ✅ 자동 회원가입 (최초 로그인 시)
             if (userService.checkEmail(email) == 0) {
-                UserRequestDto newUser = new UserRequestDto();
-                newUser.setEmail(email);
-                newUser.setPassword("1234");
-                newUser.setNickname(nickname); // 구글 이름 사용
-                newUser.setProvider("google");
-                newUser.setAuth("USER");
-                newUser.setGender(null);      // 또는 기본값 "unknown" 등
-                newUser.setBirthday(null);      // 생일 미수집 시 null
-                userService.signup(newUser);
-                System.out.println("🎉 자동 회원가입 완료: " + email);
+                // 최초 로그인 → 추가 정보 입력 페이지로 리디렉션
+                String redirectUrl = "http://localhost:5173/main"
+                + "?mode=socialSignup"
+                + "&email=" + URLEncoder.encode(email, "UTF-8")
+                + "&nickname=" + URLEncoder.encode(nickname, "UTF-8")
+                + "&provider=google";
+                response.sendRedirect(redirectUrl);
+                return;
             }
+
 
             // ✅ userId, auth 포함 JWT 발급
             UserRequestDto userData = userService.userData(email);
@@ -156,17 +153,15 @@ public class SocialLoginController {
 
             // ✅ 자동 회원가입 (최초 로그인 시)
             if (userService.checkEmail(email) == 0) {
-                UserRequestDto newUser = new UserRequestDto();
-                newUser.setEmail(email);
-                newUser.setPassword("1234"); // 더미 패스워드
-                newUser.setNickname(nickname);
-                newUser.setProvider("naver");
-                newUser.setAuth("USER");
-                newUser.setGender(gender != null ? gender.toLowerCase() : null); // M → male, F → female 등 변환 가능
-                newUser.setBirthday(fullBirthday);
-                userService.signup(newUser);
-                System.out.println("🎉 자동 회원가입 완료: " + email);
+                String redirectUrl = "http://localhost:5173/main"
+                + "?mode=socialSignup"
+                + "&email=" + URLEncoder.encode(email, "UTF-8")
+                + "&nickname=" + URLEncoder.encode(nickname, "UTF-8")
+                + "&provider=naver";
+                response.sendRedirect(redirectUrl);
+                return;
             }
+
 
             // ✅ JWT 발급
             UserRequestDto userData = userService.userData(email);

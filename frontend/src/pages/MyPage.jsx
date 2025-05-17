@@ -1,9 +1,8 @@
 // src/pages/MyPage.jsx
 import { useState, useEffect, useContext } from "react";
-import { Tab, Nav, Row, Col } from "react-bootstrap";
+import { Nav, Row, Col } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
-import { WeatherContext } from "../components/WeatherContext";
 import PasswordCheckModal from "../components/MyPage/PasswordCheckModal";
 import ConfirmModal from "../components/MyPage/ConfirmModal";
 import WeatherOverlay from "../components/MyPage/WeatherOverlay";
@@ -17,7 +16,7 @@ import AlarmTab from "../components/MyPage/AlarmTab";
 import AlarmListTab from "../components/MyPage/AlarmListTab";
 import { FaBell } from "react-icons/fa";
 import { FaUser, FaCommentDots, FaExclamationCircle } from "react-icons/fa";
-import "./MyPage.css";
+import "../styles/Mypage.css";
 
 function MyPage() {
   const [userInfo, setUserInfo] = useState(null);

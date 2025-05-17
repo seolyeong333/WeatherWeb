@@ -13,7 +13,7 @@ import { getCurrentWeather} from "../api/weather";
 function TodayLook() {
   const navigate = useNavigate();
   const todayColor = getTodayColor(); // 오늘 날짜로 고정된 색상 하나 추출
-
+  const [current, setCurrent] = useState(null);
   const [lookImages, setLookImages] = useState([]); // 받아온 코디 이미지 목록
   const [loading, setLoading] = useState(true); // 로딩 상태
   const [showModal, setShowModal] = useState(false); // 색상 선택 모달 표시 여부
@@ -62,18 +62,28 @@ useEffect(() => {
       getCurrentWeather(latitude, longitude).then((res) => {
               setCurrent(res.data);
       const rawDesc = res.data.weather[0].description;
-      const desc = overrideWeather || getKoreanWeatherDescription(rawDesc);
+      const desc = getKoreanWeatherDescription(rawDesc);
       const weatherType = normalizeWeatherType(desc);
       const feeling = res.data.main.feels_like;
 
-      fetch(`/api/fashion/recommend?weather=${weatherType}&feeling=${feeling}`)
+      const token = localStorage.getItem("token");
+
+      fetch(`/api/fashion/recommend?weather=${weatherType}&feeling=${feeling}`, {
+        headers: {
+          "Authorization": `Bearer ${token}`,
+        },
+      })
         .then((res) => res.json())
         .then((data) => {
           console.log("추천 아이템:", data.items);
-          setShowIcons(data); // { items: '가디건,반팔' }
+          try {
+            setShowIcons(data); // { items: '가디건,반팔' }
+          } catch (err) {
+            console.error("JSON 파싱 실패:", err);
+          }
         });
-      })
-    })
+      });
+    });
   }, []);
 
   const iconMap = {

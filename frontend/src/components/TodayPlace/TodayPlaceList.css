@@ -124,3 +124,15 @@
   color: #666;
   padding: 2rem;
 }
+.bookmark-button {
+  font-size: 1.6rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: gray; /* 기본 별 색 */
+  padding: 0 0 0 0.5rem;
+}
+
+.bookmark-button.active {
+  color: gold; /* 북마크된 경우 노란 별 */
+}

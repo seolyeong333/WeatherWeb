@@ -119,7 +119,7 @@ function TodayPlaceMap() {
       const body = { location: `${lat},${lon}` };
       if (category) body.category = category;
 
-      const res = await fetch("http://localhost:8080/api/ai/ask", {
+      const res = await fetch("http://localhost:8080/api/ai/place", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),

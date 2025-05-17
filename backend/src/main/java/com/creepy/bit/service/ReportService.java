@@ -37,4 +37,11 @@ public class ReportService {
     public boolean updateReportStatus(int id, String status) {
         return mainMapper.updateReportStatus(id, status) > 0;
     }
+    
+    // 6. 신고 중복여부 확인
+    public boolean isDuplicateReport(ReportDto reportDto) {
+    return mainMapper.countDuplicateReports(reportDto) > 0;
+}
+
+
 }

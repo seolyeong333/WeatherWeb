@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Navbar, Nav, Button } from "react-bootstrap";
 import { FaBars } from "react-icons/fa";
@@ -11,14 +11,10 @@ import { isLoggedIn as checkLogin, getUserAuth } from "../api/jwt";
 function Header() {
   const navigate = useNavigate();
   const [isLoggedIn, setIsLoggedIn] = useState(checkLogin());
-  const [isAdmin, setIsAdmin] = useState(getUserAuth() === "ADMIN");
   const [menuOpen, setMenuOpen] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
 
-  useEffect(() => {
-    setIsLoggedIn(checkLogin());
-    setIsAdmin(getUserAuth() === "ADMIN");
-  }, [isLoggedIn]);
+  const isAdmin = getUserAuth() === "ADMIN"; // 🔹 권한 판단
 
   const toggleMenu = () => setMenuOpen(prev => !prev);
   const closeMenu = () => setMenuOpen(false);
@@ -27,8 +23,7 @@ function Header() {
 
   const handleLogout = () => {
     localStorage.removeItem("token");
-    setIsLoggedIn(false);
-    setIsAdmin(false);
+    setIsLoggedIn(false); // 로그인 상태만 갱신하면 됨
     navigate("/main");
   };
 
@@ -54,8 +49,8 @@ function Header() {
             <Nav.Link href="/today-weather">오늘의 날씨</Nav.Link>
             <Nav.Link href="/today-place">오늘의 장소</Nav.Link>
             <Nav.Link href="/today-look">오늘의 코디</Nav.Link>
-            <Nav.Link href="/today-tarot">오늘의 운세</Nav.Link>
-            <Nav.Link href="/noticelist">공지사항</Nav.Link>
+            <Nav.Link href="/horoscope/tarot">오늘의 운세</Nav.Link>
+            <Nav.Link href="/notice">공지사항</Nav.Link>
             {isLoggedIn && (
               <Nav.Link href={isAdmin ? "/admin" : "/mypage"}>
                 {isAdmin ? "관리자페이지" : "마이페이지"}
