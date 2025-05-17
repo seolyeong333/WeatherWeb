@@ -1,17 +1,19 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { shuffleArray } from "../../utils/shuffle";
 
 function CardSelect({ categoryId, onFinish }) {
   const [selected, setSelected] = useState([]);
   const [flippedCards, setFlippedCards] = useState([]); // 앞면 보여줄 카드
   const [revealing, setRevealing] = useState(false); // 결과 보여주기 중
+  const [shuffledCards, setShuffledCards] = useState([]); // 카드 랜덤으로 순서 배열
 
-  const handleCardClick = (index) => {
-    if (selected.includes(index)) {
+  const handleCardClick = (cardId) => {
+    if (selected.includes(cardId)) {
       // 이미 선택한 카드 → 제거
-      setSelected(selected.filter((i) => i !== index));
+      setSelected(selected.filter((i) => i !== cardId));
     } else if (selected.length < 3) {
       // 최대 3장까지 선택 가능
-      setSelected([...selected, index]);
+      setSelected([...selected, cardId]);
     }
   };
 
@@ -24,7 +26,24 @@ function CardSelect({ categoryId, onFinish }) {
     }, 1500); // 1.5초 후
   };
 
-  const cards = Array.from({ length: 10 }, (_, i) => i); 
+  useEffect(() => {
+    // categoryId별 카드 ID 범위 설정
+    const categoryRanges = {
+      1: { start: 1, end: 10 },
+      2: { start: 11, end: 22 },
+      3: { start: 23, end: 35 },
+    };
+
+    const { start, end } = categoryRanges[categoryId] || { start: 1, end: 10 };
+
+    const rawIds = [];
+    for (let i = start; i <= end; i++) {
+      rawIds.push(i);
+    }
+
+    const shuffled = shuffleArray(rawIds);
+    setShuffledCards(shuffled);
+  }, [categoryId]);
 
   return (
     <div style={{ textAlign: "center", padding: "2rem" }}>
@@ -38,19 +57,19 @@ function CardSelect({ categoryId, onFinish }) {
           marginBottom: "2rem",
         }}
       >
-        {cards.map((_, index) => (
+        {shuffledCards.map((cardId, displayIndex) => (
           <img
-              key={index}
+              key={displayIndex}
               className={`tarot-card 
-                ${selected.includes(index) ? "selected" : ""}
-                ${flippedCards.includes(index) ? "flipped" : ""}`}
+                ${selected.includes(cardId) ? "selected" : ""}
+                ${flippedCards.includes(cardId) ? "flipped" : ""}`}
               src={
-                flippedCards.includes(index)
-                  ? `/tarot/${categoryId}/${index + 1}.png`
+                flippedCards.includes(cardId)
+                  ? `/tarot/${categoryId}/${cardId}.png`
                   : `/tarot/tarot-back${categoryId}.png`
               }
-              alt={`카드${index + 1}`}
-              onClick={() => !revealing && handleCardClick(index)}
+              alt={`카드${cardId}`}
+              onClick={() => !revealing && handleCardClick(cardId)}
               style={{
                 width: "160px",
                 height: "225px",

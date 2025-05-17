@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import "./TarotAnimation.css";
+import "../../styles/TarotAnimation.css";
 
 function Intro({ onStart }) {
   const [selectedCategory, setSelectedCategory] = useState(null);
