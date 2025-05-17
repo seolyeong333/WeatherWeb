@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Form, Button } from "react-bootstrap";
 import { FaGoogle } from "react-icons/fa";
 import { SiKakaotalk, SiNaver } from "react-icons/si";
-import "./Login.css"; 
+import "./login.css"; 
 
 function Login({ closeLogin, setIsLoggedIn }) {
   const [isSignup, setIsSignup] = useState(false);
@@ -196,7 +196,16 @@ function Login({ closeLogin, setIsLoggedIn }) {
               <option value="male">남자</option>
               <option value="female">여자</option>
             </Form.Select>
-            <Form.Control type="date" name="birthday" className="mb-3" value={formData.birthday} onChange={changeHandler} required />
+            <Form.Control
+              type="date"
+              name="birthday"
+              className="mb-3"
+              value={formData.birthday}
+              onChange={changeHandler}
+              required
+              min="1900-01-01"
+              max="2025-12-31"
+            />
           </>
         )}
 

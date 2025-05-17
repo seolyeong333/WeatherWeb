@@ -49,10 +49,25 @@ const getColorByTemp = (temp) => {
 function MapSection() {
   const mapContainer = useRef(null);
   const mapInstance = useRef(null);
-  const overlaysRef = useRef([]); // ✅ 오버레이 추적용
+  const overlaysRef = useRef([]);
   const [weatherData, setWeatherData] = useState([]);
   const [timeMode, setTimeMode] = useState("current");
+  const [isMapReady, setIsMapReady] = useState(false);
 
+  // ✅ Kakao Maps API 로드
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=8bcccc0b92f918feea4dfc630cf3537e&autoload=false`;
+    script.async = true;
+    script.onload = () => {
+      window.kakao.maps.load(() => {
+        setIsMapReady(true); // Kakao 객체 준비 완료
+      });
+    };
+    document.head.appendChild(script);
+  }, []);
+
+  // ✅ 날씨 데이터 불러오기
   useEffect(() => {
     const fetchWeather = async () => {
       const apiKey = "4f673522ff69c4d615b1e593ce6fa16b";
@@ -111,8 +126,11 @@ function MapSection() {
     fetchWeather();
   }, [timeMode]);
 
+  // ✅ 지도 및 오버레이 렌더링
   useEffect(() => {
-    if (!mapInstance.current && window.kakao && window.kakao.maps && mapContainer.current) {
+    if (!isMapReady || !mapContainer.current) return;
+
+    if (!mapInstance.current) {
       const bounds = new window.kakao.maps.LatLngBounds(
         new window.kakao.maps.LatLng(33.0, 124.5),
         new window.kakao.maps.LatLng(39.0, 132.0)
@@ -127,15 +145,12 @@ function MapSection() {
       map.setMaxLevel(13);
       mapInstance.current = map;
 
-      mapContainer.current.addEventListener(
-        "touchmove",
-        (e) => e.stopPropagation(),
-        { passive: false }
-      );
+      mapContainer.current.addEventListener("touchmove", (e) => e.stopPropagation(), {
+        passive: false,
+      });
     }
 
     if (mapInstance.current && weatherData.length > 0) {
-      // ✅ 기존 오버레이 제거
       overlaysRef.current.forEach((overlay) => overlay.setMap(null));
       overlaysRef.current = [];
 
@@ -164,14 +179,13 @@ function MapSection() {
         });
 
         overlay.setMap(mapInstance.current);
-        overlaysRef.current.push(overlay); // ✅ 저장
+        overlaysRef.current.push(overlay);
       });
     }
-  }, [weatherData]);
+  }, [isMapReady, weatherData]);
 
   return (
     <div>
-      
       <div className="mb-2 d-flex gap-2 justify-content-center">
         <button
           className={`btn btn-sm ${timeMode === "current" ? "btn-dark" : "btn-outline-dark"}`}
@@ -191,15 +205,13 @@ function MapSection() {
         >
           오늘오후
         </button>
-        </div>
+      </div>
 
       <div
         ref={mapContainer}
         className="w-100"
         style={{ height: "400px", borderRadius: "10px" }}
-      >
-        
-      </div>
+      />
     </div>
   );
 }

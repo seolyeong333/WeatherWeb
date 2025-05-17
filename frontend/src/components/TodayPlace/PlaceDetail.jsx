@@ -1,4 +1,3 @@
-// src/pages/PlaceDetail.jsx
 import { useLocation, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { getCurrentWeather } from "../../api/weather";
@@ -34,6 +33,7 @@ function PlaceDetail() {
   const [showReportModal, setShowReportModal] = useState(false);
   const [reportTargetId, setReportTargetId] = useState(null);
   const [currentReportType, setCurrentReportType] = useState("opinion");
+  const [flagged, setFlagged] = useState(false); // 🚨 신고 처리된 장소 여부
 
   const fetchOpinions = async () => {
     if (!place?.id) return;
@@ -75,6 +75,34 @@ function PlaceDetail() {
   useEffect(() => {
     fetchOpinions();
   }, [place]);
+
+// 🚨 처리된 장소 여부 확인 API 호출
+useEffect(() => {
+  if (!place?.placeName) return;
+
+  const token = localStorage.getItem("token");
+
+  fetch(`http://localhost:8080/api/admin/reports/check-flag?placeName=${encodeURIComponent(place.placeName)}`, {
+  headers: {
+    Authorization: `Bearer ${token}`,
+  },
+})
+
+    .then(async (res) => {
+      if (!res.ok) {
+        const errorText = await res.text(); // JSON이 아닐 수 있으므로 text()
+        console.error("🚨 flagged 확인 실패:", errorText);
+        return;
+      }
+      const data = await res.json();
+      if (data.flagged) {
+        setFlagged(true);
+      }
+    })
+    .catch((err) => console.error("🚨 flagged 확인 실패:", err));
+}, [place]);
+
+
 
   const handleOpinionSubmit = async () => {
     try {
@@ -147,6 +175,7 @@ function PlaceDetail() {
         body: JSON.stringify({
           targetType: currentReportType,
           targetId: reportTargetId,
+          placeName: place.placeName,
           content: reason,
         }),
       });
@@ -161,6 +190,13 @@ function PlaceDetail() {
 
   return (
     <div className="place-detail-wrapper">
+      {/* 🚨 신고 처리된 장소 경고 */}
+      {flagged && (
+        <div className="alert alert-danger mt-2">
+          🚨 이 장소는 관리자에 의해 신고 처리된 페이지입니다. 신뢰할 수 없는 정보가 포함되어 있을 수 있습니다.
+        </div>
+      )}
+
       <div className="d-flex justify-content-between align-items-center">
         <h2 className="place-title">{place.placeName}</h2>
         <button className="btn btn-outline-danger" onClick={openPlaceReportModal}>

@@ -5,38 +5,19 @@ import { FaBars } from "react-icons/fa";
 import { motion } from "framer-motion";
 import Login from "./Login/login.jsx";
 
-// ✅ JWT 디코딩 함수 (Base64 디코딩)
-function parseJwt(token) {
-  try {
-    const base64Url = token.split('.')[1];
-    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-    const payload = decodeURIComponent(atob(base64).split('').map(function (c) {
-      return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-    }).join(''));
-    return JSON.parse(payload);
-  } catch (e) {
-    return null;
-  }
-}
+// ✅ 공통 JWT 유틸 import
+import { isLoggedIn as checkLogin, getUserAuth } from "../api/jwt";
 
 function Header() {
   const navigate = useNavigate();
-  const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem("token"));
-  const [isAdmin, setIsAdmin] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(checkLogin());
+  const [isAdmin, setIsAdmin] = useState(getUserAuth() === "ADMIN");
   const [menuOpen, setMenuOpen] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
 
-  // 🔹 로그인 시 JWT에서 관리자 여부 판단
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      const decoded = parseJwt(token);
-      if (decoded?.auth === "ADMIN") {
-        setIsAdmin(true);
-      } else {
-        setIsAdmin(false);
-      }
-    }
+    setIsLoggedIn(checkLogin());
+    setIsAdmin(getUserAuth() === "ADMIN");
   }, [isLoggedIn]);
 
   const toggleMenu = () => setMenuOpen(prev => !prev);
@@ -59,10 +40,10 @@ function Header() {
         </Button>
 
         <Navbar.Brand href="#" className="fw-bold">
-          <div className="d-flex align-items-center" style={{ gap: "0.0rem" }}>
-            <span style={{ fontSize: "1.2rem", fontWeight: 600, marginRight: "0.1rem" }}>ON</span>
-            <img src="/onda-favicon.png" alt="ONDA 로고" style={{ height: "33px", objectFit: "contain" }} />
-            <span style={{ fontSize: "1.2rem", fontWeight: 600, marginLeft: "0.1rem" }}>DA</span>
+          <div className="d-flex align-items-center">
+            <span style={{ fontSize: "1.2rem", fontWeight: 600 }}>ON</span>
+            <img src="/onda-favicon.png" alt="ONDA 로고" style={{ height: "33px", margin: "0 5px" }} />
+            <span style={{ fontSize: "1.2rem", fontWeight: 600 }}>DA</span>
           </div>
         </Navbar.Brand>
 

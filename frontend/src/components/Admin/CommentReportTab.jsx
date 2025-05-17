@@ -1,37 +1,71 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom"; // ✅ 추가
+import { getUserAuth } from "../../api/jwt";
 
 function CommentReportTab({ onReportClick }) {
   const [reports, setReports] = useState([]);
+  const navigate = useNavigate(); // ✅ 네비게이터 훅 사용
 
-  // ✅ 통합 reports 테이블 기반 목데이터
   useEffect(() => {
-    const mockData = [
-      {
-        reportId: 1,
-        reporterNickname: "장준하",
-        targetType: "opinion",
-        targetId: "op123",
-        content: "욕설이 포함된 한줄평입니다.",
-        commentText: "진짜 별로임",
-        status: "PENDING",
-      },
-      {
-        reportId: 2,
-        reporterNickname: "장준환",
-        targetType: "opinion",
-        targetId: "op456",
-        content: "광고성 내용입니다.",
-        commentText: "이거 보러 오세요 www.example.com",
-        status: "PENDING",
-      },
-    ];
+    const fetchOpinionReports = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const res = await fetch("http://localhost:8080/api/admin/reports/opinions", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
 
-    const opinionReports = mockData.filter((r) => r.targetType === "opinion");
-    setReports(opinionReports);
+        if (!res.ok) {
+          throw new Error("신고 데이터를 불러오는 데 실패했습니다.");
+        }
+
+        const data = await res.json();
+        const transformed = data.map((r) => ({
+          ...r,
+          commentText: r.opinionContent,
+          placeName: r.placeName,
+        }));
+
+        setReports(transformed);
+      } catch (error) {
+        console.error("🚨 한줄평 신고 로드 실패:", error);
+      }
+    };
+
+    fetchOpinionReports();
   }, []);
 
-  const handleAction = (reportId, action) => {
-    alert(`신고 ID ${reportId}에 대해 '${action}' 처리되었습니다.`);
+  const handleAction = async (reportId, action, opinionId, placeName) => {
+    if (action === "보기") {
+      // ✅ 상세페이지로 이동 (placeName을 state로 전달)
+      navigate("/today-place/place-detail", { state: { placeName } });
+      return;
+    }
+
+    if (action === "무시") {
+      const token = localStorage.getItem("token");
+      await fetch(`http://localhost:8080/api/admin/reports/${reportId}/status?status=RESOLVED`, {
+        method: "PATCH",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      alert("무시 처리 완료");
+    }
+
+    if (action === "삭제") {
+      const token = localStorage.getItem("token");
+
+      await fetch(`http://localhost:8080/api/admin/reports/opinions/${opinionId}/delete?reportId=${reportId}`, {
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+  alert("삭제 처리 완료");
+}
+
+
     setReports((prev) => prev.filter((r) => r.reportId !== reportId));
   };
 
@@ -61,25 +95,19 @@ function CommentReportTab({ onReportClick }) {
                 <td>
                   <button
                     className="btn btn-info btn-sm me-1"
-                    onClick={() => onReportClick(report)}
+                    onClick={() => handleAction(report.reportId, "보기", report.targetId, report.placeName)}
                   >
                     보기
                   </button>
                   <button
                     className="btn btn-success btn-sm me-1"
-                    onClick={() => handleAction(report.reportId, "완료")}
-                  >
-                    완료
-                  </button>
-                  <button
-                    className="btn btn-secondary btn-sm me-1"
-                    onClick={() => handleAction(report.reportId, "무시")}
+                    onClick={() => handleAction(report.reportId, "무시", report.targetId)}
                   >
                     무시
                   </button>
                   <button
                     className="btn btn-danger btn-sm"
-                    onClick={() => handleAction(report.reportId, "삭제")}
+                    onClick={() => handleAction(report.reportId, "삭제", report.targetId)}
                   >
                     삭제
                   </button>
