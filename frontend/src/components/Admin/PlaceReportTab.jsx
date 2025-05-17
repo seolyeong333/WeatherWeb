@@ -1,101 +1,138 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { getUserAuth, isLoggedIn } from "../../api/jwt";
 
 function PlaceReportTab() {
   const [reports, setReports] = useState([]);
-
-  // ✅ 통합 reports 테이블 구조 기반 목데이터
-  const dummyAllReports = [
-    {
-      reportId: 1,
-      reporterNickname: "유저A",
-      targetId: "ChIJZ6FYjR-8ezUR0LhYALJqZ1I",
-      targetType: "place",
-      content: "부적절한 이미지 포함",
-      status: "PENDING",
-      placeName: "카페 온다", // 임시 표시용 필드
-    },
-    {
-      reportId: 2,
-      reporterNickname: "유저B",
-      targetId: "op123",
-      targetType: "opinion",
-      content: "욕설 포함됨",
-      status: "PENDING",
-    },
-    {
-      reportId: 3,
-      reporterNickname: "유저C",
-      targetId: "ChIJL6wn6oL6ezURVZkrsFYv1UQ",
-      targetType: "place",
-      content: "잘못된 위치 정보",
-      status: "RESOLVED",
-      placeName: "공원 A",
-    },
-  ];
+  const navigate = useNavigate();
 
   useEffect(() => {
-    // ✅ targetType이 'place'인 것만 필터링
-    const placeReports = dummyAllReports
-      .filter((r) => r.targetType === "place")
-      .map((r) => ({
-        ...r,
-        reason: r.content, // 기존 UI 호환을 위한 필드 매핑
-      }));
-    setReports(placeReports);
+    if (!isLoggedIn()) {
+      alert("로그인이 필요합니다.");
+      return;
+    }
+
+    if (getUserAuth() !== "ADMIN") {
+      alert("접근 권한이 없습니다.");
+      return;
+    }
+
+    fetchReports();
   }, []);
 
-  const handleAction = (reportId, action) => {
-    const newStatus = action === "처리완료" ? "RESOLVED" : action;
-    const updated = reports.map((r) =>
-      r.reportId === reportId ? { ...r, status: newStatus } : r
-    );
-    setReports(updated);
-    alert(`신고 ${reportId} 처리: ${action}`);
+  const fetchReports = async () => {
+    try {
+      const token = localStorage.getItem("token");
+
+      const res = await fetch("http://localhost:8080/api/admin/reports/place", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!res.ok) throw new Error("신고 데이터를 불러올 수 없습니다.");
+
+      const data = await res.json();
+
+      const placeReports = data
+        .filter((r) => r.status !== "RESOLVED") // ✅ 무시된 신고는 숨김
+        .map((r) => ({
+          reportId: r.reportId,
+          reporterNickname: r.reporterNickname || "(알 수 없음)",
+          placeName: r.placeName || r.targetId,
+          reason: r.content,
+          status: r.status,
+        }));
+
+      setReports(placeReports);
+    } catch (err) {
+      console.error("🚨 장소 신고 로드 실패:", err);
+      alert("장소 신고 데이터를 불러오는 데 실패했습니다.");
+    }
+  };
+
+  const handleAction = async (reportId, action, placeName) => {
+    const token = localStorage.getItem("token");
+
+    if (action === "보기") {
+      navigate("/today-place/place-detail", {
+        state: {
+          placeName,
+          flagged: true, // 🚨 경고 표시
+        },
+      });
+      return;
+    }
+
+    if (action === "무시") {
+      try {
+        await fetch(`http://localhost:8080/api/admin/reports/${reportId}/status?status=RESOLVED`, {
+          method: "PATCH",
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        alert("무시 처리 완료");
+      } catch {
+        alert("무시 처리 중 오류 발생");
+      }
+    }
+
+    if (action === "처리") {
+      await fetch("http://localhost:8080/api/admin/reports/flag-place", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ placeName }),
+      });
+      alert("처리 완료: 해당 장소는 앞으로 경고 문구가 표시됩니다.");
+    }
+
+
+    setReports((prev) => prev.filter((r) => r.reportId !== reportId));
   };
 
   return (
-    <div>
-      <h4 className="fw-bold mb-3">📍 장소 신고 목록</h4>
+    <div className="notice-section">
+      <h3>📍 장소 신고 처리</h3>
       {reports.length === 0 ? (
         <p>신고된 장소가 없습니다.</p>
       ) : (
-        <table className="table table-bordered">
+        <table className="notice-table">
           <thead>
             <tr>
-              <th>번호</th>
+              <th>신고 ID</th>
               <th>신고자</th>
               <th>장소명</th>
-              <th>신고내용</th>
-              <th>처리상태</th>
+              <th>신고 내용</th>
               <th>처리</th>
             </tr>
           </thead>
           <tbody>
-            {reports.map((r, idx) => (
-              <tr key={r.reportId}>
-                <td>{idx + 1}</td>
-                <td>{r.reporterNickname}</td>
-                <td>{r.placeName || r.targetId}</td>
-                <td>{r.reason}</td>
-                <td>{r.status}</td>
+            {reports.map((report) => (
+              <tr key={report.reportId}>
+                <td>{report.reportId}</td>
+                <td>{report.reporterNickname}</td>
+                <td>{report.placeName}</td>
+                <td>{report.reason}</td>
                 <td>
                   <button
-                    className="btn btn-success btn-sm me-1"
-                    onClick={() => handleAction(r.reportId, "처리완료")}
+                    className="btn btn-info btn-sm me-1"
+                    onClick={() => handleAction(report.reportId, "보기", report.placeName)}
                   >
-                    완료
+                    보기
                   </button>
                   <button
                     className="btn btn-secondary btn-sm me-1"
-                    onClick={() => handleAction(r.reportId, "무시")}
+                    onClick={() => handleAction(report.reportId, "무시", report.placeName)}
                   >
                     무시
                   </button>
                   <button
                     className="btn btn-danger btn-sm"
-                    onClick={() => handleAction(r.reportId, "삭제")}
+                    onClick={() => handleAction(report.reportId, "처리", report.placeName)}
                   >
-                    삭제
+                    처리
                   </button>
                 </td>
               </tr>
