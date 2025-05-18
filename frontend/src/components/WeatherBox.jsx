@@ -1,5 +1,5 @@
 // src/components/WeatherBox.jsx
-// 역할: 현재 위치의 날씨, 미세먼지 정보, 6시간 예보를 보여주는 박스 UI
+// 현재 위치의 날씨, 미세먼지 정보, 6시간 예보를 보여주는 박스 UI
 import { useEffect, useState } from "react";
 import { getCurrentWeather, getAirPollution, getForecast } from "../api/weather";
 import axios from "axios";

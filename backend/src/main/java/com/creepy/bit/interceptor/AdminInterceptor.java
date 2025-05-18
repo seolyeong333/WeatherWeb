@@ -24,7 +24,7 @@ public class AdminInterceptor implements HandlerInterceptor {
 
             if (jwtUtil.validateToken(token)) {
                 String auth = jwtUtil.getAuth(token); // ex) "admin" or "user"
-                if ("admin".equals(auth)) {
+                if ("ADMIN".equalsIgnoreCase(auth)) {
                     return true; // ✅ 관리자 권한만 통과
                 }
             }

@@ -8,48 +8,34 @@ import CommentReportTab from "../components/Admin/CommentReportTab";
 import AdminUserDetailModal from "../components/Admin/AdminUserDetailModal";
 import AdminPlaceReportModal from "../components/Admin/AdminPlaceReportModal";
 import AdminCommentReportModal from "../components/Admin/AdminCommentReportModal";
+import { isLoggedIn, getUserAuth } from "../api/jwt";
+import "../styles/AdminPage.css"; // MyPage.css 구조와 동일한 스타일 정의
 
 function AdminPage() {
   const navigate = useNavigate();
-
   const [authChecked, setAuthChecked] = useState(false);
-  const [unauthorized, setUnauthorized] = useState(false); // 🔸 접근 거부 모달 상태
-
+  const [unauthorized, setUnauthorized] = useState(false);
   const [activeTab, setActiveTab] = useState("users");
+
   const [selectedUser, setSelectedUser] = useState(null);
   const [selectedPlaceReport, setSelectedPlaceReport] = useState(null);
   const [selectedCommentReport, setSelectedCommentReport] = useState(null);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) {
+    if (!isLoggedIn() || getUserAuth() !== "ADMIN") {
       setUnauthorized(true);
-      return;
-    }
-
-    try {
-      const payload = JSON.parse(atob(token.split(".")[1]));
-      if (payload.auth !== "ADMIN") {
-        setUnauthorized(true);
-        return;
-      }
-      setAuthChecked(true); // ✅ 인증 통과
-    } catch (err) {
-      console.error("토큰 파싱 오류:", err);
-      setUnauthorized(true);
+    } else {
+      setAuthChecked(true);
     }
   }, []);
 
-  // ✅ 권한 미통과 → 모달만 보여줌
   if (unauthorized) {
     return (
       <Modal show centered>
         <Modal.Header>
           <Modal.Title>🚫 잘못된 접근</Modal.Title>
         </Modal.Header>
-        <Modal.Body>
-          관리자 권한이 없거나 로그인되지 않았습니다.
-        </Modal.Body>
+        <Modal.Body>관리자 권한이 없거나 로그인되지 않았습니다.</Modal.Body>
         <Modal.Footer>
           <Button variant="primary" onClick={() => navigate("/main")}>
             메인으로 이동
@@ -59,27 +45,41 @@ function AdminPage() {
     );
   }
 
-  if (!authChecked) return null; // 아직 검사 중이면 아무것도 렌더링 안 함
+  if (!authChecked) return null;
 
   return (
     <>
       <Header />
       <div className="admin-wrapper container mt-5 mb-5">
-        <h2 className="fw-bold mb-4">🔧 관리자 페이지</h2>
+        <h2 className="fw-bold mb-4">🛠️ 관리자 페이지</h2>
+        <Row>
+          <Col md={3} className="mb-3">
+            <Nav
+              variant="pills"
+              className="flex-column shadow-sm rounded-3 p-3 bg-light"
+              activeKey={activeTab}
+              onSelect={(k) => setActiveTab(k)}
+            >
+              <Nav.Item>
+                <Nav.Link eventKey="users">👤 사용자 목록</Nav.Link>
+              </Nav.Item>
+              <Nav.Item>
+                <Nav.Link eventKey="places">📍 장소 신고</Nav.Link>
+              </Nav.Item>
+              <Nav.Item>
+                <Nav.Link eventKey="comments">💬 한줄평 신고</Nav.Link>
+              </Nav.Item>
+            </Nav>
+          </Col>
 
-        <Tabs activeKey={activeTab} onSelect={(k) => setActiveTab(k)} className="mb-3">
-          <Tab eventKey="users" title="👤 사용자 목록">
-            <UserListTab onUserClick={setSelectedUser} />
-          </Tab>
-          <Tab eventKey="places" title="📍 장소 신고">
-            <PlaceReportTab onReportClick={setSelectedPlaceReport} />
-          </Tab>
-          <Tab eventKey="comments" title="💬 한줄평 신고">
-            <CommentReportTab onReportClick={setSelectedCommentReport} />
-          </Tab>
-        </Tabs>
+          <Col md={9}>
+            {activeTab === "users" && <UserListTab onUserClick={setSelectedUser} />}
+            {activeTab === "places" && <PlaceReportTab onReportClick={setSelectedPlaceReport} />}
+            {activeTab === "comments" && <CommentReportTab onReportClick={setSelectedCommentReport} />}
+          </Col>
+        </Row>
 
-        {/* 상세 모달들 */}
+        {/* 모달 */}
         <AdminUserDetailModal show={!!selectedUser} onHide={() => setSelectedUser(null)} user={selectedUser} />
         <AdminPlaceReportModal show={!!selectedPlaceReport} onHide={() => setSelectedPlaceReport(null)} report={selectedPlaceReport} />
         <AdminCommentReportModal show={!!selectedCommentReport} onHide={() => setSelectedCommentReport(null)} report={selectedCommentReport} />

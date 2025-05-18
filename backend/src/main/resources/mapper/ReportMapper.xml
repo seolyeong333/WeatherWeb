@@ -6,8 +6,8 @@
 <mapper namespace="com.creepy.bit.mapper.MainMapper">
 
     <insert id="insertReport" parameterType="com.creepy.bit.domain.ReportDto">
-        INSERT INTO reports (userId, targetType, targetId, content, status)
-        VALUES (#{userId}, #{targetType}, #{targetId}, #{content}, 'PENDING')
+        INSERT INTO reports (userId, targetType, targetId, placeName, content, status)
+        VALUES (#{userId}, #{targetType}, #{targetId}, #{placeName}, #{content}, 'PENDING')
     </insert>
 
     <select id="selectReportsByUserId" parameterType="int" resultType="com.creepy.bit.domain.ReportDto">
@@ -26,9 +26,78 @@
         UPDATE reports SET status = #{status} WHERE reportId = #{id}
     </update>
 
-    <select id="countDuplicateReports" resultType="int">
-    SELECT COUNT(*) FROM reports WHERE targetId = #{targetId}
-    AND content = #{content} AND userId = ${userId} AND status = 'PENDING'
+    <!-- 장소 신고 목록 (targetType = 'place' 만 조회) -->
+    <select id="selectPlaceReports" resultType="com.creepy.bit.domain.ReportDto">
+        SELECT 
+            r.reportId,
+            r.userId,
+            r.targetId,
+            r.targetType,
+            r.placeName,        
+            r.content,
+            r.status,
+            r.createdAt,
+            u.nickname AS reporterNickname
+        FROM reports r
+        JOIN users u ON r.userId = u.userId
+        WHERE r.targetType = 'place'
+        AND r.status != 'RESOLVED'
+        ORDER BY r.createdAt DESC
     </select>
+
+
+    <!-- 한줄평 신고 목록 (targetType = 'opinion'만 조회) -->
+    <select id="selectOpinionReports" resultType="com.creepy.bit.domain.ReportDto">
+        SELECT 
+            r.reportId,
+            r.userId,
+            r.targetId,
+            r.targetType,
+            r.content,
+            r.status,
+            r.placeName,
+            r.createdAt,
+            u.nickname AS reporterNickname,
+            o.content AS opinionContent
+        FROM reports r
+        JOIN users u ON r.userId = u.userId
+        LEFT JOIN opinions o ON o.opinionId = CAST(r.targetId AS UNSIGNED)
+        WHERE r.targetType = 'opinion'
+        AND r.status != 'RESOLVED'
+        ORDER BY r.createdAt DESC
+    </select>
+
+    <!-- 한줄평 신고 삭제처리 -->
+    <update id="updateOpinionContent">
+        UPDATE opinions
+        SET content = #{content}
+        WHERE opinionId = #{opinionId}
+    </update>
+
+    <!-- 장소 신고 처리 -->
+    <insert id="insertFlaggedPlace">
+        INSERT IGNORE INTO flagged_places (placeName) VALUES (#{placeName})
+    </insert>
+
+    <!-- 장소 신고 처리 확인 -->
+    <select id="isPlaceFlagged" parameterType="string" resultType="int">
+        SELECT COUNT(*) FROM flagged_places WHERE placeName = #{placeName}
+    </select>
+
+    <!-- 장소 신고 처리 시 status 일괄 변경 -->
+    <update id="updatePlaceReportStatus">
+        UPDATE reports
+        SET status = 'RESOLVED'
+        WHERE targetType = 'place'
+        AND placeName = #{placeName}
+        AND status = 'PENDING'
+    </update>
+
+    <select id="countDuplicateReports" resultType="int">
+        SELECT COUNT(*) FROM reports WHERE targetId = #{targetId}
+        AND content = #{content} AND userId = ${userId} AND status = 'PENDING'
+    </select>
+
+
 
 </mapper>

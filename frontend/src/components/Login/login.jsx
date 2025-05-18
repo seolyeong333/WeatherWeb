@@ -62,10 +62,6 @@ function Login({ closeLogin, setIsLoggedIn }) {
         />
       </>
     )}
-
-
-
-
     </div>
   );
 }
