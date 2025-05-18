@@ -6,7 +6,7 @@ import Tarot from "../components/Horoscope/Tarot";
 import Shuffle from "../components/Horoscope/Shuffle";
 import CardSelect from "../components/Horoscope/CardSelect";
 import Result from "../components/Horoscope/Result";
-import "./Background.css";
+import "../styles/Background.css";
 
 function TodayTarot() {
   const [step, setStep] = useState("intro");

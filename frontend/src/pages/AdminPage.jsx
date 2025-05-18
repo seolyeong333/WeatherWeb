@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Header from "../components/Header";
 import { Tabs, Tab, Modal, Button } from "react-bootstrap";
-
+import Header from "../components/Header";
 import UserListTab from "../components/Admin/UserListTab";
 import PlaceReportTab from "../components/Admin/PlaceReportTab";
 import CommentReportTab from "../components/Admin/CommentReportTab";

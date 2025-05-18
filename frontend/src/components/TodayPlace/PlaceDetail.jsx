@@ -6,7 +6,7 @@ import axios from "axios";
 import ReportModal from "../../components/PlaceDetail/ReportModal";
 import OpinionForm from "../../components/PlaceDetail/OpinionForm";
 import OpinionList from "../../components/PlaceDetail/OpinionList";
-import "./PlaceDetail.css";
+import "../../styles/TodayPlace/PlaceDetail.css";
 
 const opinionReasons = ["욕설", "광고", "도배", "개인정보 노출", "기타"];
 const placeReasons = ["정보 오류", "부적절한 장소", "폐업/이전", "기타"];

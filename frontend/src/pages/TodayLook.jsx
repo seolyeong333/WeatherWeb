@@ -1,6 +1,4 @@
 import React, { useState, useEffect } from "react";
-import Header from "../components/Header";
-import "./TodayLook.css";
 import Lottie from "lottie-react";
 import loadingAnimation from "../assets/loading.json";
 import { useNavigate } from "react-router-dom";
@@ -9,6 +7,8 @@ import { COLORS, fancyName, getTodayColor } from "../api/colors";
 import view2col from "../assets/view-2col.png";
 import view4col from "../assets/view-4col.png";
 import { getCurrentWeather} from "../api/weather";
+import Header from "../components/Header";
+import "../styles/TodayLook.css";
 
 function TodayLook() {
   const navigate = useNavigate();
@@ -64,11 +64,11 @@ useEffect(() => {
       const rawDesc = res.data.weather[0].description;
       const desc = getKoreanWeatherDescription(rawDesc);
       const weatherType = normalizeWeatherType(desc);
-      const feeling = res.data.main.feels_like;
+      const feelsLike = res.data.main.feels_like;
 
       const token = localStorage.getItem("token");
 
-      fetch(`/api/fashion/recommend?weather=${weatherType}&feeling=${feeling}`, {
+      fetch(`/api/weather/recommend?weather=${weatherType}&feeling=${feelsLike}`, {
         headers: {
           "Authorization": `Bearer ${token}`,
         },
@@ -250,7 +250,7 @@ useEffect(() => {
                 fontSize: "1.1rem",
               }}
             >
-              불러올 코디가 없습니다.
+              아쉽게도 해당 색상의 추천 코디가 없습니다.
             </p>
           </div>
         ) : (
