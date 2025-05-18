@@ -4,7 +4,7 @@ import { FaRegBookmark, FaBookmark } from "react-icons/fa";
 import { useNavigate, useLocation, useSearchParams } from "react-router-dom";
 import Lottie from "lottie-react";
 import loadingAnimation from "../../assets/loading.json"; // 애니메이션 파일
-import "./TodayPlaceList.css";
+import "../../styles/TodayPlace/TodayPlaceList.css";
 
 function TodayPlaceList() {
   const navigate = useNavigate();

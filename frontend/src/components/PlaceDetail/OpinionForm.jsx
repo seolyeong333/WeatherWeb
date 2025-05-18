@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "./OpinionForm.css";
+import "../../styles/PlaceDetail/OpinionForm.css";
 
 function OpinionForm({ opinion, setOpinion, onSubmit }) {
   const [rating, setRating] = useState(0);

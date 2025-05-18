@@ -3,7 +3,7 @@ import axios from "axios";
 import Lottie from "lottie-react";
 import loadingAnimation from "../../assets/loading.json";
 import { getKoreanWeatherDescription } from "../../api/weatherMapping";
-import "./TodayPlaceMap.css";
+import "../../styles/TodayPlace/TodayPlaceMap.css";
 
 function TodayPlaceMap() {
   const mapRef = useRef(null);

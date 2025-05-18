@@ -1,5 +1,5 @@
 import { useState } from "react";
-import "./notice.css";
+import "../../styles/notice.css";
 
 
 function NoticeForm({ onBack }) {

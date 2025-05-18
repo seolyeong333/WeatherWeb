@@ -3,7 +3,7 @@ import TodayPlaceList from "../components/TodayPlace/TodayPlaceList";
 import TodayPlaceMap from "../components/TodayPlace/TodayPlaceMap";
 import PlaceDetail from "../components/TodayPlace/PlaceDetail";
 import Header from "../components/Header";
-import "./Background.css";
+import "../styles/Background.css";
 
 
 function TodayPlace() {
