@@ -157,7 +157,7 @@ public interface MainMapper {
 
     // 운세 페이지
     // 타로 카드 정보 가져오기
-    List<TarotCardDto> getCardsByIds(int categoryId, List<Integer> cardIds);
+    List<TarotCardDto> getCardsByIds(List<Integer> cardIds);
 
     // 타로 카드 추천 색 가져오기
     List<TarotColorDto> getColorsByCardId(int cardId);
@@ -168,5 +168,7 @@ public interface MainMapper {
     // 플레이 결과 저장 
     void insertPlayLog(TarotPlayLogsDto log);
 
-    
+    // 내 플레이 결과 가져오기
+    List<TarotPlayLogsDto> getPlayMyLogs(int userId);
+
 }

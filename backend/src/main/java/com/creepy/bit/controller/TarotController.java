@@ -20,6 +20,7 @@ import java.time.LocalDate;
 
 import com.creepy.bit.util.JWTUtil;
 import com.creepy.bit.domain.TarotCardDto;
+import com.creepy.bit.domain.TarotPlayLogsDto;
 import com.creepy.bit.service.TarotService;
 import com.creepy.bit.service.OpenAIService;
 
@@ -36,6 +37,19 @@ public class TarotController {
     @Autowired 
     private JWTUtil jwtUtil;
 
+     @GetMapping("/mylogs")
+    public ResponseEntity<List<TarotPlayLogsDto>> getMyLogs(@RequestHeader("Authorization") String token) {
+        String pureToken = token.replace("Bearer ", "");
+        int userId = jwtUtil.getUserId(pureToken);
+        System.out.println(userId);
+
+        List<TarotPlayLogsDto> logs = tarotService.getMyTarotLogs(userId);
+        System.out.println(logs);
+
+        return ResponseEntity.ok(logs);
+    }
+
+
     @GetMapping("/check")
     public ResponseEntity<Map<String, Boolean>> checkPlayedToday(@RequestHeader("Authorization") String token) {
         String pureToken = token.replace("Bearer ", "");
@@ -50,13 +64,12 @@ public class TarotController {
 
 
     @PostMapping("/result")
-    public ResponseEntity<Map<String, Object>> getTarotResults( @RequestHeader("Authorization") String token,
-        @RequestParam int categoryId, @RequestBody List<Integer> cardIds
+    public ResponseEntity<Map<String, Object>> getTarotResults( @RequestHeader("Authorization") String token, @RequestBody List<Integer> cardIds
     ) {
         String pureToken = token.replace("Bearer ", "");
         int userId = jwtUtil.getUserId(pureToken);
 
-        List<TarotCardDto> cards = tarotService.getCardsByIds(categoryId, cardIds);
+        List<TarotCardDto> cards = tarotService.getCardsByIds(cardIds);
 
         // 카드 정보를 AI에게 보낼 수 있는 형식으로 변환
         List<Map<String, Object>> selectedCardsInfo = cards.stream().map(card -> {
@@ -80,5 +93,12 @@ public class TarotController {
 
         return ResponseEntity.ok(response);
     }
+
+
+
+
+
+
+
 
 }

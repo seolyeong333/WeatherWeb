@@ -24,9 +24,12 @@ public class TarotService {
     return mainMapper.countPlayLogsToday(userId, today);
     }
 
+    public List<TarotPlayLogsDto> getMyTarotLogs(int userId) {
+        return mainMapper.getPlayMyLogs(userId);
+    }
 
-    public List<TarotCardDto> getCardsByIds(int categoryId, List<Integer> cardIds) {
-        List<TarotCardDto> cards = mainMapper.getCardsByIds(categoryId, cardIds);
+    public List<TarotCardDto> getCardsByIds(List<Integer> cardIds) {
+        List<TarotCardDto> cards = mainMapper.getCardsByIds(cardIds);
         Random random = new Random();
 
         for (TarotCardDto card : cards) {
@@ -47,23 +50,30 @@ public class TarotService {
         return cards;
     }
 
-    
     public void savePlayLog(int userId, List<TarotCardDto> cards, String message) {
-        TarotPlayLogsDto log = new TarotPlayLogsDto();
-        log.setUserId(userId);
-        log.setIsPlay(LocalDate.now());
-        log.setDescription(message);  // AI 메시지 저장
+    TarotPlayLogsDto log = new TarotPlayLogsDto();
+    log.setUserId(userId);
+    log.setIsPlay(LocalDate.now());
+    log.setDescription(message);  // AI 메시지 저장
 
-        // 카드 ID 리스트를 "1,3,10" 형식 문자열로 변환
-        String cardIdList = cards.stream()
-            .map(card -> String.valueOf(card.getCardId()))
-            .collect(Collectors.joining(","));
+    // 카드 ID 리스트 → "1,3,10"
+    String cardIdList = cards.stream()
+        .map(card -> String.valueOf(card.getCardId()))
+        .collect(Collectors.joining(","));
+    log.setCardIds(cardIdList);
 
-        log.setCardIds(cardIdList);
+    // 색상 이름 리스트 → "빨강,파랑,노랑"
+    String colorList = cards.stream()
+        .map(card -> {
+            if (card.getColors() != null && !card.getColors().isEmpty()) {
+                return card.getColors().get(0).getColorName(); // 랜덤 1개만 저장했으므로
+            }
+            return "없음";
+        })
+        .collect(Collectors.joining(","));
+    log.setCardColors(colorList);
 
-        mainMapper.insertPlayLog(log);  // 한 줄로 저장
-    }
-
-
+    mainMapper.insertPlayLog(log);
+}
 
 }

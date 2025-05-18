@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Tabs, Tab, Modal, Button } from "react-bootstrap";
+import {  Row, Col, Nav,  Tabs, Tab, Modal, Button } from "react-bootstrap";// AdminPage.jsx 상단에 
 import Header from "../components/Header";
 import UserListTab from "../components/Admin/UserListTab";
 import PlaceReportTab from "../components/Admin/PlaceReportTab";
