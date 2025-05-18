@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import "./notice.css";
+import "../../styles/notice.css";
 import { getUserAuth } from "../../api/jwt"; // 🔹 관리자 확인용
 
 function NoticeList({ onView, onCreate }) {

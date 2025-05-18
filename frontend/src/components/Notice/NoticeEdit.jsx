@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import "./notice.css";
+import "../../styles/notice.css";
 
 
 function NoticeEdit({ id, onBack }) {

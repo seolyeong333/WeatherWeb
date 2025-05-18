@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Tabs, Tab, Modal, Button } from "react-bootstrap";
 import Header from "../components/Header";
-import { Tab, Nav, Row, Col, Modal, Button } from "react-bootstrap";
 import UserListTab from "../components/Admin/UserListTab";
 import PlaceReportTab from "../components/Admin/PlaceReportTab";
 import CommentReportTab from "../components/Admin/CommentReportTab";
@@ -9,7 +9,7 @@ import AdminUserDetailModal from "../components/Admin/AdminUserDetailModal";
 import AdminPlaceReportModal from "../components/Admin/AdminPlaceReportModal";
 import AdminCommentReportModal from "../components/Admin/AdminCommentReportModal";
 import { isLoggedIn, getUserAuth } from "../api/jwt";
-import "./AdminPage.css"; // ✅ MyPage.css 구조와 동일한 스타일 정의
+import "../styles/AdminPage.css"; // MyPage.css 구조와 동일한 스타일 정의
 
 function AdminPage() {
   const navigate = useNavigate();

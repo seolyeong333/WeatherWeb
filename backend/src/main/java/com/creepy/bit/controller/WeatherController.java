@@ -46,7 +46,7 @@ public class WeatherController {
         return weatherService.getForecast(lat, lon);
     }
 
-       @GetMapping("/message")
+    @GetMapping("/message")
     public WeatherMessageDto getMessage(@RequestParam String weatherType, @RequestParam double feelsLike) {
         System.out.println("WeatherController GET /message 요청");
         System.out.println(weatherType + " " +feelsLike);
