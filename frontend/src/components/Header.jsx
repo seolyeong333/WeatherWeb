@@ -4,6 +4,8 @@ import { Navbar, Nav, Button } from "react-bootstrap";
 import { FaBars } from "react-icons/fa";
 import { motion } from "framer-motion";
 import Login from "./Login/login.jsx";
+
+// ✅ 공통 JWT 유틸 import
 import { isLoggedIn as checkLogin, getUserAuth } from "../api/jwt";
 
 function Header() {
@@ -33,10 +35,10 @@ function Header() {
         </Button>
 
         <Navbar.Brand href="#" className="fw-bold">
-          <div className="d-flex align-items-center" style={{ gap: "0.0rem" }}>
-            <span style={{ fontSize: "1.2rem", fontWeight: 600, marginRight: "0.1rem" }}>ON</span>
-            <img src="/onda-favicon.png" alt="ONDA 로고" style={{ height: "33px", objectFit: "contain" }} />
-            <span style={{ fontSize: "1.2rem", fontWeight: 600, marginLeft: "0.1rem" }}>DA</span>
+          <div className="d-flex align-items-center">
+            <span style={{ fontSize: "1.2rem", fontWeight: 600 }}>ON</span>
+            <img src="/onda-favicon.png" alt="ONDA 로고" style={{ height: "33px", margin: "0 5px" }} />
+            <span style={{ fontSize: "1.2rem", fontWeight: 600 }}>DA</span>
           </div>
         </Navbar.Brand>
 

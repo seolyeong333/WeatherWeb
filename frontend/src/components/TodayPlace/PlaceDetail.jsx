@@ -1,4 +1,3 @@
-// src/pages/PlaceDetail.jsx
 import { useLocation, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { FaRegBookmark, FaBookmark } from "react-icons/fa";
@@ -13,8 +12,8 @@ const opinionReasons = ["욕설", "광고", "도배", "개인정보 노출", "�
 const placeReasons = ["정보 오류", "부적절한 장소", "폐업/이전", "기타"];
 
 const weatherDescriptionMap = {
-  "튼구름": "구름 많음", "맑음": "맑음", "비": "비", "눈": "눈", "보통 비": "비",
-  "강한 비": "비", "실 비": "이슬비", "소나기": "소나기", "천둥번개": "뇌우",
+  "구름 많음": "흐림", "튼구름": "흐림", "맑음": "맑음", "비": "비", "눈": "눈", 
+  "보통 비": "비", "강한 비": "비", "실 비": "이슬비", "소나기": "소나기", "천둥번개": "뇌우",
   "연무": "흐림", "흐림": "흐림", "온흐림": "흐림", "박무": "흐림"
 };
 
@@ -37,6 +36,7 @@ function PlaceDetail() {
   const [currentReportType, setCurrentReportType] = useState("opinion");
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [bookmarkId, setBookmarkId] = useState(null);
+  const [flagged, setFlagged] = useState(false); // 🚨 신고 처리된 장소 여부
 
   const fetchOpinions = async () => {
     if (!place?.id) return;
@@ -48,6 +48,22 @@ function PlaceDetail() {
       console.error("한줄평 로드 실패:", err);
     }
   };
+
+  // 함수 정의 위치 (컴포넌트 내부 또는 외부에 추가 가능)
+  function renderStars(rating) {
+    const fullStars = Math.floor(rating);
+    const halfStar = rating - fullStars >= 0.5;
+    const emptyStars = 5 - fullStars - (halfStar ? 1 : 0);
+
+    return (
+      <>
+        {Array(fullStars).fill().map((_, i) => <span key={"full" + i}>⭐</span>)}
+        {halfStar && <span key="half">⭐️½</span>}
+        {Array(emptyStars).fill().map((_, i) => <span key={"empty" + i}>☆</span>)}
+      </>
+    );
+  }
+
 
   useEffect(() => {
     if (place) return;
@@ -106,6 +122,35 @@ function PlaceDetail() {
     refreshBookmark();
   }, [place]);
 
+// 🚨 처리된 장소 여부 확인 API 호출
+useEffect(() => {
+  if (!place?.placeName) return;
+
+  const token = localStorage.getItem("token");
+
+  fetch(`http://localhost:8080/api/admin/reports/check-flag?placeName=${encodeURIComponent(place.placeName)}`, {
+  headers: {
+    Authorization: `Bearer ${token}`,
+  },
+})
+
+    .then(async (res) => {
+      if (!res.ok) {
+        const errorText = await res.text(); // JSON이 아닐 수 있으므로 text()
+        console.error("🚨 flagged 확인 실패:", errorText);
+        return;
+      }
+      const data = await res.json();
+      if (data.flagged) {
+        setFlagged(true);
+      }
+    })
+    .catch((err) => console.error("🚨 flagged 확인 실패:", err));
+}, [place]);
+
+
+
+  
   const toggleBookmark = async () => {
     const token = localStorage.getItem("token");
     if (!token) return alert("로그인이 필요합니다.");
@@ -203,6 +248,7 @@ function PlaceDetail() {
         body: JSON.stringify({
           targetType: currentReportType,
           targetId: reportTargetId,
+          placeName: place.placeName,
           content: reason,
         }),
       });
@@ -218,6 +264,13 @@ function PlaceDetail() {
 
   return (
     <div className="place-detail-wrapper">
+      {/* 🚨 신고 처리된 장소 경고 */}
+      {flagged && (
+        <div className="alert alert-danger mt-2">
+          🚨 이 장소는 관리자에 의해 신고 처리된 페이지입니다. 신뢰할 수 없는 정보가 포함되어 있을 수 있습니다.
+        </div>
+      )}
+
       <div className="d-flex justify-content-between align-items-center">
         <h2 className="place-title">
           {place.placeName}
@@ -263,11 +316,21 @@ function PlaceDetail() {
         <h3 className="place-subtitle">{place.placeName}</h3>
         <p className="description">
           📍 {place.addressName} <br />
-          📞 {place.phone || "전화번호 없음"}
+          📞 {place.phone || "전화번호 없음"} <br />
         </p>
+        {place.rating ? (
+          <p className="rating-text">
+            ⭐ 평점: {place.rating.toFixed(1)} &nbsp; {renderStars(place.rating)}
+          </p>
+        ) : (
+          <p className="rating-text">⭐ 평점: 없음</p>
+        )}
+
+        
         <a className="kakao-link-button" href={place.placeUrl} target="_blank" rel="noreferrer">
           🔗 카카오맵에서 보기
         </a>
+
 
         <OpinionList
           opinions={opinions}

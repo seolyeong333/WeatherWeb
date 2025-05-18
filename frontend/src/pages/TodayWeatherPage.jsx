@@ -8,21 +8,9 @@ import loadingAnimation from "../assets/loading.json"; // 경로는 프로젝트
 import { getKoreanWeatherDescription } from "../api/weatherMapping";
 import MapSection from "../components/MapSection"; // 경로는 위치에 따라 조정
 import WeeklyForecast from "../components/WeeklyForecast"; // 경로는 위치에 따라 조정
-
-
-import {
-  Chart as ChartJS,
-  LineElement,
-  BarElement,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  Tooltip,
-  Legend,
-} from "chart.js";
-
+import { Chart as ChartJS, LineElement, BarElement, CategoryScale, LinearScale, PointElement, Tooltip, Legend} from "chart.js";
 import { fetchWeatherData } from "../api/fetchWeather";
-import "./TodayWeatherPage.css";
+import "../styles/TodayWeatherPage.css";
 
 // Chart.js 플러그인 등록
 ChartJS.register(LineElement, BarElement, CategoryScale, LinearScale, PointElement, Tooltip, Legend, ChartDataLabels);
@@ -500,8 +488,6 @@ const renderDailyChart = () => {
     </div>
   );
 };
-
-
 
   const renderDetailSection = () => {
   const today = weatherData.daily[0];

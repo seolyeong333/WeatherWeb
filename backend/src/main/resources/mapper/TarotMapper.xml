@@ -24,8 +24,8 @@
     </select>
     
     <insert id="insertPlayLog">
-        INSERT INTO tarot_play_logs (userId, cardId, isPlay, description)
-        VALUES (#{userId}, #{cardId}, #{isPlay}, #{description})
+        INSERT INTO tarot_play_logs (userId, cardIds, isPlay, description)
+        VALUES (#{userId}, #{cardIds}, #{isPlay}, #{description})
     </insert>
 
 

@@ -58,5 +58,20 @@
 	<select id="findEmailByUserId" resultType="string">
 		SELECT email FROM users WHERE userId = #{userId}
 	</select>
+
+	<!-- [관리자] 전체 사용자 조회 -->
+	<select id="selectAllUsers" resultType="com.creepy.bit.domain.UserRequestDto">
+		SELECT
+		userId,
+		email,
+		nickname,
+		gender,
+		birthday,
+		provider,
+		auth,
+		createdAt
+		FROM users
+		ORDER BY userId ASC
+	</select>
  
 </mapper>

@@ -44,7 +44,8 @@ public class WebConfig implements WebMvcConfigurer {
                 .excludePathPatterns("/api/users/login/**", "/api/users", "/api/users/password", "/api/public/**","/api/ai/**","/api/weather/**","/api/kakao/**","/api/users/email/**","/api/crawl/**","/api/google/**","/api/opinions/place/**","/api/notices/**"); // 로그인, 회원가입 등 제외
 
         registry.addInterceptor(adminInterceptor)
-                .addPathPatterns("/api/admin/**"); // 👈 관리자만 접근
+                .addPathPatterns("/api/admin/**") // 👈 관리자만 접근
+                .excludePathPatterns( "/api/admin/reports/**");
 
     }
 }

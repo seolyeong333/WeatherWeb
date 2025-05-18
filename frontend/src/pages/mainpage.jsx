@@ -9,7 +9,7 @@ import WeeklyForecast from "../components/WeeklyForecast";
 import SocialSignup from "./SocialSignup"; 
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import "./MainPage.css";
+import "../styles/Mainpage.css";
 
 // 테스트용 날씨 시퀀스 (🧪 버튼 클릭 시 순환)
 const testWeatherSequence = ["맑음", "흐림", "비", "뇌우", "눈"];

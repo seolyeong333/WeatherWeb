@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 import java.time.LocalDate;
 
@@ -46,17 +47,21 @@ public class TarotService {
         return cards;
     }
 
-    public void savePlayLog(int userId, List<TarotCardDto> cards) {
-        for (TarotCardDto card : cards) {
-            TarotPlayLogsDto log = new TarotPlayLogsDto();
-            log.setUserId(userId);
-            log.setCardId(card.getCardId());
-            log.setIsPlay(LocalDate.now());
-            log.setDescription(card.getDescription());
+    
+    public void savePlayLog(int userId, List<TarotCardDto> cards, String message) {
+        TarotPlayLogsDto log = new TarotPlayLogsDto();
+        log.setUserId(userId);
+        log.setIsPlay(LocalDate.now());
+        log.setDescription(message);  // AI 메시지 저장
 
-            mainMapper.insertPlayLog(log);
-        }
+        // 카드 ID 리스트를 "1,3,10" 형식 문자열로 변환
+        String cardIdList = cards.stream()
+            .map(card -> String.valueOf(card.getCardId()))
+            .collect(Collectors.joining(","));
 
+        log.setCardIds(cardIdList);
+
+        mainMapper.insertPlayLog(log);  // 한 줄로 저장
     }
 
 

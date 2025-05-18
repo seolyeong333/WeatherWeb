@@ -158,7 +158,7 @@ function TodayPlaceList() {
   
 
   return (
-    <div style={{ padding: "2rem" }}>
+    <div style={{ padding: "2rem", color: "black" }}>
       <div className="search">
         <input
           type="text"
@@ -167,7 +167,7 @@ function TodayPlaceList() {
           onChange={(e) => setKeyword(e.target.value)}
         />
         <button onClick={() => fetchPlaceList(selectedCategory, keyword)}>🔍</button>
-      </div>
+      </div> 
 
       <div className="label-wrapper">
         {["음식점", "카페", "관광명소"].map((label) => (
