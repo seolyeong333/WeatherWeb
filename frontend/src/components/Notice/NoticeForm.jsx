@@ -1,6 +1,6 @@
 import { useState } from "react";
 import "../../styles/notice.css";
-
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 function NoticeForm({ onBack }) {
   const [title, setTitle] = useState("");
@@ -14,7 +14,7 @@ function NoticeForm({ onBack }) {
     const token = localStorage.getItem("token"); 
 
     try {
-      const res = await fetch("http://localhost:8080/api/notices", {
+      const res = await fetch(`${API_BASE_URL}/api/notices`, {
         method: "POST",
         headers: 
         { "Content-Type": "application/json",

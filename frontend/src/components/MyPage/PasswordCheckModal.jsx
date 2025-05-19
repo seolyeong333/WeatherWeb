@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Modal, Button, Form, Alert } from "react-bootstrap";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 function PasswordCheckModal({ show, onHide, mode, onSuccess,email }) {
   const [password, setPassword] = useState("");
@@ -8,7 +9,7 @@ function PasswordCheckModal({ show, onHide, mode, onSuccess,email }) {
   const handleCheck = async () => {
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch("http://localhost:8080/api/users/check-password", {
+      const res = await fetch(`${API_BASE_URL}/api/users/check-password`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

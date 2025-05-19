@@ -1,6 +1,7 @@
 // src/components/MyPage/ChangePasswordTab.jsx
 import { useState } from "react";
 import { Card, Form, Button, Alert } from "react-bootstrap";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 function ChangePasswordTab({ userInfo, onSuccess, setShowEditComponent }) {
   const [newPw, setNewPw] = useState("");
@@ -16,7 +17,7 @@ function ChangePasswordTab({ userInfo, onSuccess, setShowEditComponent }) {
 
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch("http://localhost:8080/api/users/password", {
+      const res = await fetch(`${API_BASE_URL}/api/users/password`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",

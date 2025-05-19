@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getUserAuth, isLoggedIn } from "../../api/jwt";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 function PlaceReportTab() {
   const [reports, setReports] = useState([]);
@@ -24,7 +25,7 @@ function PlaceReportTab() {
     try {
       const token = localStorage.getItem("token");
 
-      const res = await fetch("http://localhost:8080/api/admin/reports/place", {
+      const res = await fetch(`${API_BASE_URL}/api/admin/reports/place`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -66,7 +67,7 @@ function PlaceReportTab() {
 
     if (action === "무시") {
       try {
-        await fetch(`http://localhost:8080/api/admin/reports/${reportId}/status?status=RESOLVED`, {
+        await fetch(`${API_BASE_URL}/api/admin/reports/${reportId}/status?status=RESOLVED`, {
           method: "PATCH",
           headers: { Authorization: `Bearer ${token}` },
         });
@@ -77,7 +78,7 @@ function PlaceReportTab() {
     }
 
     if (action === "처리") {
-      await fetch("http://localhost:8080/api/admin/reports/flag-place", {
+      await fetch(`${API_BASE_URL}/api/admin/reports/flag-place`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Form, Button } from "react-bootstrap";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 function ChangePassword({ email, onClose }) {
   const [password, setPassword] = useState("");
@@ -13,7 +14,7 @@ function ChangePassword({ email, onClose }) {
     }
 
     try {
-      const res = await fetch("http://localhost:8080/api/users/password", {
+      const res = await fetch(`${API_BASE_URL}/api/users/password`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),

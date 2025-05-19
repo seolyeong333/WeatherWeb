@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import "../../styles/notice.css";
 import { getUserAuth } from "../../api/jwt"; // 🔹 관리자 확인용
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 function NoticeList({ onView, onCreate }) {
   const [notices, setNotices] = useState([]);
@@ -12,7 +13,7 @@ function NoticeList({ onView, onCreate }) {
   const isAdmin = getUserAuth() === "ADMIN"; // 🔹 관리자 여부 판단
 
   useEffect(() => {
-    fetch(`http://localhost:8080/api/notices?page=${page - 1}&size=${pageSize}`)
+    fetch(`${API_BASE_URL}/api/notices?page=${page - 1}&size=${pageSize}`)
       .then(res => res.json())
       .then(data => {
         setNotices(data.content || []);

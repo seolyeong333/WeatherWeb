@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import AdminUserDetailModal from "./AdminUserDetailModal";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 function UserListTab() {
   const [users, setUsers] = useState([]);
@@ -10,7 +11,7 @@ function UserListTab() {
     const fetchUsers = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await fetch("http://localhost:8080/api/admin/users", {
+        const res = await fetch(`${API_BASE_URL}/api/admin/users`, {
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`, // ✅ 토큰 포함

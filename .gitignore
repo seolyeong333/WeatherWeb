@@ -1,11 +1,12 @@
 # Frontend
 /frontend/node_modules
 /frontend/dist
-/frontend/.env
+
 
 # Backend
 /backend/target
-/backend/.env
+
 
 *.log
 hs_err_pid*.log
+

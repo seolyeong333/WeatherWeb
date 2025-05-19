@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "../../styles/TarotAnimation.css";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 function Result({ categoryId, selectedCards, onRestart }) {
   const [cardInfos, setCardInfos] = useState([]);
@@ -10,7 +11,7 @@ function Result({ categoryId, selectedCards, onRestart }) {
     const fetchResult = async () => {
       try {
         const token = localStorage.getItem("token");
-        const url = `http://localhost:8080/api/tarot/result?categoryId=${categoryId}`;
+        const url = `${API_BASE_URL}/api/tarot/result?categoryId=${categoryId}`;
         const res = await fetch(url, {
           method: "POST",
           headers: {

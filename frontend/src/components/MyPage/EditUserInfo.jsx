@@ -1,6 +1,7 @@
 // src/components/MyPage/EditUserInfo.jsx
 import { useState } from "react";
 import { Card, Form, Button } from "react-bootstrap";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 function EditUserInfo({ userInfo, setUserInfo, fetchUserInfo, setShowEditComponent }) {
   const [nickname, setNickname] = useState(userInfo.nickname);
@@ -10,7 +11,7 @@ function EditUserInfo({ userInfo, setUserInfo, fetchUserInfo, setShowEditCompone
   const handleSave = async () => {
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch("http://localhost:8080/api/users", {
+      const res = await fetch(`${API_BASE_URL}/api/users`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",

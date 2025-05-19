@@ -1,6 +1,7 @@
 // src/components/MyPage/AlarmTab.jsx
 import { useState } from "react";
 import { Card, Form, Button } from "react-bootstrap";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 function AlarmTab({ userInfo }) {
   const userId = userInfo?.userId;
@@ -20,7 +21,7 @@ function AlarmTab({ userInfo }) {
   const handleSave = async () => {
     const token = localStorage.getItem("token");
     try {
-      const res = await fetch("http://localhost:8080/api/alarms", {
+      const res = await fetch(`${API_BASE_URL}/api/alarms`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
