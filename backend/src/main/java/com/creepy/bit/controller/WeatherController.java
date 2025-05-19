@@ -71,7 +71,7 @@ public class WeatherController {
         if (result == null) {
             FashionColorsDto fallback = new FashionColorsDto();
             fallback.setWeatherType(weatherType);
-            fallback.setItemSuggestionList(List.of()); // 빈 리스트로 명확하게 프론트에 전달
+            fallback.setItemSuggestionList(List.of()); 
             return fallback;
         }
 

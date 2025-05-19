@@ -1,21 +1,25 @@
 import React, { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import Lottie from "lottie-react";
 import loadingAnimation from "../assets/loading.json";
 import { useNavigate } from "react-router-dom";
 import ColorPickerModal from "../components/ColorPickerModal";
-import { fancyName, getTodayColor } from "../api/colors";
+import { fancyName, getLuckyColor, getTodayColor } from "../api/colors";
 import view2col from "../assets/view-2col.png";
 import view4col from "../assets/view-4col.png";
 import { getCurrentWeather} from "../api/weather";
 import Header from "../components/Header";
 import FashionIconSection from "../components/TodayLook/FashionIconSection";
 import { getKoreanWeatherDescription } from "../utils/weatherUtil"
+import { fetchTodayTarotLogs } from "../api/tarot"; 
 import "../styles/TodayLook.css";
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 function TodayLook() {
   const navigate = useNavigate();
-  const todayColor = getTodayColor(); // 오늘 날짜로 고정된 색상 하나 추출
+  const location = useLocation();
+  const { userColorName } = location.state || {};
+  const todayColor = getLuckyColor(userColorName) || getTodayColor(); // 오늘 날짜로 고정된 색상 하나 추출
   const [current, setCurrent] = useState(null);
   const [lookImages, setLookImages] = useState([]); // 받아온 코디 이미지 목록
   const [loading, setLoading] = useState(true); // 로딩 상태
@@ -26,6 +30,7 @@ function TodayLook() {
   const [type, setType] = useState("상의"); // 필터: 종류
   const [viewType, setViewType] = useState("grid-4"); // "grid-2" 또는 "grid-4" 설정
   const [showIcons, setShowIcons] = useState({}); // 체감온도에 따른 아이콘 출력
+  const [hasResult, setHasResult] = useState(false); // 타로 봤는지
 
   const normalizeWeatherType = (rawType) => {
     if (["맑음"].includes(rawType)) return "맑음";
@@ -40,6 +45,7 @@ useEffect(() => {
   navigator.geolocation.getCurrentPosition(async (position) => {
       const { latitude, longitude } = position.coords;
     try {
+
       const res = await getCurrentWeather(latitude, longitude);
       setCurrent(res.data);
 
@@ -88,6 +94,16 @@ useEffect(() => {
       });
   }, [selectedColorName, gender, type]);
 
+  // 타로 운세 봤으면 버튼 바꾸기
+  useEffect(() => {
+    const loadLogs = async () => {
+      const data = await fetchTodayTarotLogs();
+      setHasResult(data && data.length > 0);
+    };
+
+    loadLogs();
+  }, []);
+  
   return (
     <div className="today-look-wrapper">
       <Header />
@@ -96,7 +112,7 @@ useEffect(() => {
           <div style={{ display: "flex", gap: "1.5rem", alignItems: "center" }}>
             <div className="color-box-wrapper">
               <div className="color-box" style={{ backgroundColor: todayColor.hex }} />
-              <span className="color-label">오늘의 색</span>
+              <span className="color-label"> {userColorName ? "행운의 색" : "오늘의 색"} </span>
             </div>
             <div className="color-box-wrapper">
               <div
@@ -119,8 +135,13 @@ useEffect(() => {
             </div>
           </div>
 
-          <button className="tarot-btn" onClick={() => navigate("/horoscope/tarot")}>
-            타로 페이지에서 행운의 색 받기
+          <button className="tarot-btn" onClick={() => { 
+            if (hasResult) {
+                navigate("/mypage", { state: { activeTab: "tarot" } });
+              } else {
+                navigate("/horoscope/tarot");}
+            }}>
+            {hasResult ? "나의 행운의 색상 보기" : "타로 페이지에서 행운의 색 받기"}
           </button>
         </div>
 
