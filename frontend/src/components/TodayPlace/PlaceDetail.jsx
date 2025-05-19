@@ -1,18 +1,21 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { FaRegBookmark, FaBookmark } from "react-icons/fa";
-import { getCurrentWeather } from "../../api/weather";
 import axios from "axios";
+import PlaceHeader from "../../components/PlaceDetail/PlaceHeader";
+import PlaceWeatherSection from "../../components/PlaceDetail/PlaceWeatherSection";
+import PlaceInfoSection from "../../components/PlaceDetail/PlaceInfoSection";
 import ReportModal from "../../components/PlaceDetail/ReportModal";
 import OpinionForm from "../../components/PlaceDetail/OpinionForm";
 import OpinionList from "../../components/PlaceDetail/OpinionList";
+import { getCurrentWeather } from "../../api/weather";
 import "../../styles/TodayPlace/PlaceDetail.css";
+
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const opinionReasons = ["욕설", "광고", "도배", "개인정보 노출", "기타"];
 const placeReasons = ["정보 오류", "부적절한 장소", "폐업/이전", "기타"];
 
 const weatherDescriptionMap = {
-  "구름 많음": "흐림", "튼구름": "흐림", "맑음": "맑음", "비": "비", "눈": "눈", "구름조금":"흐림", 
+  "구름 많음": "흐림", "튼구름": "흐림", "맑음": "맑음", "비": "비", "눈": "눈", "구름조금": "흐림",
   "보통 비": "비", "강한 비": "비", "실 비": "이슬비", "소나기": "소나기", "천둥번개": "뇌우",
   "연무": "흐림", "흐림": "흐림", "온흐림": "흐림", "박무": "흐림"
 };
@@ -36,7 +39,19 @@ function PlaceDetail() {
   const [currentReportType, setCurrentReportType] = useState("opinion");
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [bookmarkId, setBookmarkId] = useState(null);
-  const [flagged, setFlagged] = useState(false); // 🚨 신고 처리된 장소 여부
+  const [flagged, setFlagged] = useState(false);
+  const [averageRating, setAverageRating] = useState(null);
+
+  const fetchAverageRating = async () => {
+    if (!place?.id) return;
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/opinions/rating?placeId=${place.id}`);
+      const avg = await res.json();
+      setAverageRating(avg);
+    } catch {
+      console.error("🌟 평균 평점 가져오기 실패");
+    }
+  };
 
   const fetchOpinions = async () => {
     if (!place?.id) return;
@@ -49,21 +64,21 @@ function PlaceDetail() {
     }
   };
 
-  // 함수 정의 위치 (컴포넌트 내부 또는 외부에 추가 가능)
-  function renderStars(rating) {
-    const fullStars = Math.floor(rating);
-    const halfStar = rating - fullStars >= 0.5;
-    const emptyStars = 5 - fullStars - (halfStar ? 1 : 0);
+  const renderStars = (rating) => {
+    const stars = [];
+    for (let i = 1; i <= 5; i++) {
+      let percent = 0;
+      if (rating >= i) percent = 100;
+      else if (rating + 1 > i) percent = (rating - (i - 1)) * 100;
 
-    return (
-      <>
-        {Array(fullStars).fill().map((_, i) => <span key={"full" + i}>⭐</span>)}
-        {halfStar && <span key="half">⭐️½</span>}
-        {Array(emptyStars).fill().map((_, i) => <span key={"empty" + i}>☆</span>)}
-      </>
-    );
-  }
-
+      stars.push(
+        <span key={i} className="star" style={{ "--star-percent": `${percent}%` }}>
+          ★
+        </span>
+      );
+    }
+    return <div className="star-wrapper">{stars}</div>;
+  };
 
   useEffect(() => {
     if (place) return;
@@ -77,7 +92,8 @@ function PlaceDetail() {
 
   useEffect(() => {
     fetchOpinions();
-  }, [place]);
+    fetchAverageRating();
+  }, [place?.id]);
 
   useEffect(() => {
     if (!place?.x || !place?.y) return;
@@ -122,47 +138,31 @@ function PlaceDetail() {
     refreshBookmark();
   }, [place]);
 
-// 🚨 처리된 장소 여부 확인 API 호출
-useEffect(() => {
-  if (!place?.placeName) return;
+  useEffect(() => {
+    if (!place?.placeName) return;
+    const token = localStorage.getItem("token");
+    fetch(`${API_BASE_URL}/api/admin/reports/check-flag?placeName=${encodeURIComponent(place.placeName)}`,
+      { headers: { Authorization: `Bearer ${token}` } })
+      .then(async (res) => {
+        if (!res.ok) return;
+        const data = await res.json();
+        if (data.flagged) setFlagged(true);
+      })
+      .catch((err) => console.error("🚨 flagged 확인 실패:", err));
+  }, [place]);
 
-  const token = localStorage.getItem("token");
-
-  fetch(`${API_BASE_URL}/api/admin/reports/check-flag?placeName=${encodeURIComponent(place.placeName)}`, {
-  headers: {
-    Authorization: `Bearer ${token}`,
-  },
-})
-
-    .then(async (res) => {
-      if (!res.ok) {
-        const errorText = await res.text(); // JSON이 아닐 수 있으므로 text()
-        console.error("🚨 flagged 확인 실패:", errorText);
-        return;
-      }
-      const data = await res.json();
-      if (data.flagged) {
-        setFlagged(true);
-      }
-    })
-    .catch((err) => console.error("🚨 flagged 확인 실패:", err));
-}, [place]);
-
-
-
-  
   const toggleBookmark = async () => {
     const token = localStorage.getItem("token");
     if (!token) return alert("로그인이 필요합니다.");
     try {
       if (isBookmarked && bookmarkId) {
-        const res = await fetch(`${API_BASE_URL}/api/bookmarks/${bookmarkId}`, {
+        await fetch(`${API_BASE_URL}/api/bookmarks/${bookmarkId}`, {
           method: "DELETE",
           headers: { Authorization: `Bearer ${token}` },
         });
-        if (res.ok) await refreshBookmark();
+        await refreshBookmark();
       } else {
-        const res = await fetch(`${API_BASE_URL}/api/bookmarks`, {
+        await fetch(`${API_BASE_URL}/api/bookmarks`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -170,7 +170,7 @@ useEffect(() => {
           },
           body: JSON.stringify({ placeId: place.id, placeName: place.placeName }),
         });
-        if (res.ok) await refreshBookmark();
+        await refreshBookmark();
       }
     } catch {
       alert("북마크 처리 중 오류 발생");
@@ -180,9 +180,8 @@ useEffect(() => {
   const handleOpinionSubmit = async ({ content, rating }) => {
     const token = localStorage.getItem("token");
     if (!token) return alert("로그인이 필요합니다.");
-  
     try {
-      const res = await fetch(`${API_BASE_URL}/api/opinions`, {
+      await fetch(`${API_BASE_URL}/api/opinions`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -196,16 +195,14 @@ useEffect(() => {
           isPublic: true,
         }),
       });
-  
-      if (!res.ok) throw new Error();
       alert("등록 완료!");
       setOpinion("");
       fetchOpinions();
+      fetchAverageRating();
     } catch {
       alert("등록 중 오류 발생");
     }
   };
-  
 
   const handleLikeDislike = async (id, type) => {
     const token = localStorage.getItem("token");
@@ -215,8 +212,12 @@ useEffect(() => {
         method: "PATCH",
         headers: { Authorization: `Bearer ${token}` },
       });
-      if (res.ok) fetchOpinions();
-      else alert(`${type === "like" ? "좋아요" : "싫어요"} 실패`);
+      if (res.ok) {
+        fetchOpinions();
+        fetchAverageRating();
+      } else {
+        alert(`${type === "like" ? "좋아요" : "싫어요"} 실패`);
+      }
     } catch {
       alert("처리 실패");
     }
@@ -264,93 +265,40 @@ useEffect(() => {
 
   return (
     <div className="place-detail-wrapper">
-      {/* 🚨 신고 처리된 장소 경고 */}
       {flagged && (
         <div className="alert alert-danger mt-2">
-          🚨 이 장소는 관리자에 의해 신고 처리된 페이지입니다. 신뢰할 수 없는 정보가 포함되어 있을 수 있습니다.
+          🚨 이 장소는 관리자에 의해 신고 처리된 페이지입니다.
         </div>
       )}
 
-      <div className="d-flex justify-content-between align-items-center">
-        <h2 className="place-title">
-          {place.placeName}
-          <button onClick={toggleBookmark} className="bookmark-button-inline" title="북마크">
-          {isBookmarked ? (
-            <FaBookmark size={22} color="#ffcc00" />
-          ) : (
-            <FaRegBookmark size={22} color="#555" />
-          )}
-        </button>
-        </h2>
-        <button className="btn btn-outline-danger" onClick={openPlaceReportModal}>
-          🚨 장소 신고
-        </button>
-      </div>
+      <PlaceHeader
+        place={place}
+        isBookmarked={isBookmarked}
+        toggleBookmark={toggleBookmark}
+        openPlaceReportModal={openPlaceReportModal}
+      />
 
-      <section className="section-3">
-        <div className="place-header">
-          <p className="weather-question">오늘 "{place.placeName}"의 날씨는?</p>
-          <div className="weather-middle">
-            <div className="weather-icon">🌤️</div>
-            <div className="weather-temp">{weather.temp}℃</div>
-          </div>
-          <p className="weather-message">{message}</p>
-          {fitList.length > 0 && (
-            <div className="recommend-tags">
-              <span className="recommend-label">웨더핏 추천:</span>
-              {fitList.map((name) => (
-                <button
-                  className="fit-tag"
-                  key={name}
-                  onClick={() => navigate(`/today-place/list?keyword=${encodeURIComponent(name)}`)}
-                >
-                  {name}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-      </section>
+      <PlaceWeatherSection
+        place={place}
+        weather={weather}
+        message={message}
+        fitList={fitList}
+      />
 
-      <section className="section-2">
-        <h3 className="place-subtitle">{place.placeName}</h3>
-        <p className="description">
-          📍 {place.addressName} <br />
-          📞 {place.phone || "전화번호 없음"} <br />
-        </p>
-        {place.rating ? (
-          <p className="rating-text">
-            ⭐ 평점: {place.rating.toFixed(1)} &nbsp; {renderStars(place.rating)}
-          </p>
-        ) : (
-          <p className="rating-text">⭐ 평점: 없음</p>
-        )}
-
-        
-        <a className="kakao-link-button" href={place.placeUrl} target="_blank" rel="noreferrer">
-          🔗 카카오맵에서 보기
-        </a>
-
-
-        <OpinionList
-          opinions={opinions}
-          onLike={(id) => handleLikeDislike(id, "like")}
-          onDislike={(id) => handleLikeDislike(id, "dislike")}
-          onReport={openReportModal}
-        />
-
-        <OpinionForm
-          opinion={opinion}
-          setOpinion={setOpinion}
-          onSubmit={handleOpinionSubmit}
-          rating={rating}
-          setRating={setRating}
-        />
-
-        <button className="back-btn mt-4" onClick={() => navigate(-1)}>
-          ← 뒤로가기
-        </button>
-      </section>
+      <PlaceInfoSection
+        place={place}
+        averageRating={averageRating}
+        renderStars={renderStars}
+        opinions={opinions}
+        handleLikeDislike={handleLikeDislike}
+        openReportModal={openReportModal}
+        opinion={opinion}
+        setOpinion={setOpinion}
+        rating={rating}
+        setRating={setRating}
+        handleOpinionSubmit={handleOpinionSubmit}
+        navigate={navigate}
+      />
 
       <ReportModal
         show={showReportModal}

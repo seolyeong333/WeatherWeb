@@ -104,4 +104,20 @@ public class OpinionController {
             return ResponseEntity.internalServerError().body("삭제 실패");
         }
     }
+
+    @GetMapping("/rating")
+    public ResponseEntity<Double> getAverageRating(@RequestParam String placeId) {
+        System.out.println("OpinionController GET /rating 호출");
+        try {
+            Double avg = opinionService.getAverageRatingByPlaceId(placeId);
+            return ResponseEntity.ok(avg != null ? avg : 0.0);  // null 처리
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().body(0.0);
+        }
+    }
+
+
+
+
 }
