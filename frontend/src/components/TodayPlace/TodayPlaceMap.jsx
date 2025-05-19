@@ -5,6 +5,7 @@ import Lottie from "lottie-react";
 import loadingAnimation from "../../assets/loading.json";
 import { getKoreanWeatherDescription } from "../../api/weatherMapping";
 import "../../styles/TodayPlace/TodayPlaceMap.css";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 function TodayPlaceMap() {
   const mapRef = useRef(null);

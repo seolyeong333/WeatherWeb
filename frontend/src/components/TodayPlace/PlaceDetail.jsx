@@ -7,7 +7,7 @@ import ReportModal from "../../components/PlaceDetail/ReportModal";
 import OpinionForm from "../../components/PlaceDetail/OpinionForm";
 import OpinionList from "../../components/PlaceDetail/OpinionList";
 import "../../styles/TodayPlace/PlaceDetail.css";
-
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const opinionReasons = ["욕설", "광고", "도배", "개인정보 노출", "기타"];
 const placeReasons = ["정보 오류", "부적절한 장소", "폐업/이전", "기타"];
 
@@ -41,7 +41,7 @@ function PlaceDetail() {
   const fetchOpinions = async () => {
     if (!place?.id) return;
     try {
-      const res = await fetch(`http://localhost:8080/api/opinions/place?placeId=${place.id}`);
+      const res = await fetch(`${API_BASE_URL}/api/opinions/place?placeId=${place.id}`);
       const data = await res.json();
       setOpinions(data);
     } catch (err) {
@@ -69,7 +69,7 @@ function PlaceDetail() {
     if (place) return;
     const placeName = state?.placeName;
     if (!placeName) return;
-    fetch(`http://localhost:8080/api/kakao/place?placeName=${encodeURIComponent(placeName)}`)
+    fetch(`${API_BASE_URL}/api/kakao/place?placeName=${encodeURIComponent(placeName)}`)
       .then(res => res.json())
       .then(setPlace)
       .catch(() => navigate("/main"));
@@ -86,7 +86,7 @@ function PlaceDetail() {
       const weatherType = getKoreanWeatherDescription(data.weather[0].description);
       setWeather({ temp: data.main.temp, feeling: data.main.feels_like });
 
-      axios.get("http://localhost:8080/api/weather/message", {
+      axios.get(`${API_BASE_URL}/api/weather/message`, {
         params: { weatherType, feelsLike: data.main.feels_like }
       })
         .then(res => {
@@ -101,7 +101,7 @@ function PlaceDetail() {
     const token = localStorage.getItem("token");
     if (!token || !place?.id) return;
     try {
-      const res = await fetch("http://localhost:8080/api/bookmarks", {
+      const res = await fetch(`${API_BASE_URL}/api/bookmarks`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
@@ -128,7 +128,7 @@ useEffect(() => {
 
   const token = localStorage.getItem("token");
 
-  fetch(`http://localhost:8080/api/admin/reports/check-flag?placeName=${encodeURIComponent(place.placeName)}`, {
+  fetch(`${API_BASE_URL}/api/admin/reports/check-flag?placeName=${encodeURIComponent(place.placeName)}`, {
   headers: {
     Authorization: `Bearer ${token}`,
   },
@@ -156,13 +156,13 @@ useEffect(() => {
     if (!token) return alert("로그인이 필요합니다.");
     try {
       if (isBookmarked && bookmarkId) {
-        const res = await fetch(`http://localhost:8080/api/bookmarks/${bookmarkId}`, {
+        const res = await fetch(`${API_BASE_URL}/api/bookmarks/${bookmarkId}`, {
           method: "DELETE",
           headers: { Authorization: `Bearer ${token}` },
         });
         if (res.ok) await refreshBookmark();
       } else {
-        const res = await fetch("http://localhost:8080/api/bookmarks", {
+        const res = await fetch(`${API_BASE_URL}/api/bookmarks`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -182,7 +182,7 @@ useEffect(() => {
     if (!token) return alert("로그인이 필요합니다.");
   
     try {
-      const res = await fetch("http://localhost:8080/api/opinions", {
+      const res = await fetch(`${API_BASE_URL}/api/opinions`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -211,7 +211,7 @@ useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) return alert("로그인이 필요합니다.");
     try {
-      const res = await fetch(`http://localhost:8080/api/opinions/${id}/${type}`, {
+      const res = await fetch(`${API_BASE_URL}/api/opinions/${id}/${type}`, {
         method: "PATCH",
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -239,7 +239,7 @@ useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) return alert("로그인이 필요합니다.");
     try {
-      const res = await fetch("http://localhost:8080/api/reports", {
+      const res = await fetch(`${API_BASE_URL}/api/reports`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "../../styles/TarotAnimation.css";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 function Intro({ onStart }) {
   const [selectedCategory, setSelectedCategory] = useState(null);
@@ -48,7 +49,7 @@ function Intro({ onStart }) {
     }
   
     try {
-      const res = await fetch("http://localhost:8080/api/tarot/check", {
+      const res = await fetch(`${API_BASE_URL}/api/tarot/check`, {
         headers: { Authorization: `Bearer ${token}` }
       });
   

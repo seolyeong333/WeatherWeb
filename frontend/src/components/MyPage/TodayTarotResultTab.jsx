@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Card } from "react-bootstrap";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 function TodayTarotResultTab() {
   const [logs, setLogs] = useState([]);
@@ -8,7 +9,7 @@ function TodayTarotResultTab() {
     const fetchResult = async () => {
       const token = localStorage.getItem("token");
       try {
-        const res = await fetch("http://localhost:8080/api/tarot/mylogs", {
+        const res = await fetch(`${API_BASE_URL}/api/tarot/mylogs`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         const data = await res.json();

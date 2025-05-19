@@ -4,10 +4,12 @@ import com.creepy.bit.service.WeatherService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import com.creepy.bit.domain.WeatherMessageDto;
+import com.creepy.bit.domain.FashionColorsDto;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/weather")  // 모든 날씨 관련 API는 이 경로(/api/weather)로 시작
-@CrossOrigin(origins = "http://localhost:5173")     // 프론트엔드(React 등)에서 호출 가능하게 CORS 허용
 public class WeatherController {
 
     @Autowired
@@ -60,7 +62,19 @@ public class WeatherController {
         return result;
     }
 
+    @GetMapping("/recommend")
+    public FashionColorsDto getFashionRecommendation(@RequestParam String weatherType, @RequestParam double feelsLike) {
+        System.out.println("WeatherController GET /recommend 요청");
+        System.out.println(weatherType + " " +feelsLike);
+        FashionColorsDto result = weatherService.getFashionRecommendation(weatherType, feelsLike);
 
+        if (result == null) {
+            FashionColorsDto fallback = new FashionColorsDto();
+            fallback.setWeatherType(weatherType);
+            fallback.setItemSuggestionList(List.of()); // 빈 리스트로 명확하게 프론트에 전달
+            return fallback;
+        }
 
-
+        return result;
+    }
 }

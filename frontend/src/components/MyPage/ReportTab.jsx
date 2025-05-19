@@ -1,6 +1,7 @@
 // src/components/MyPage/ReportTab.jsx
 import { Card } from "react-bootstrap";
 import { useState, useEffect } from "react";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 function ReportTab({ userInfo }) {
   const [reports, setReports] = useState([]);
@@ -10,7 +11,7 @@ function ReportTab({ userInfo }) {
 
     const token = localStorage.getItem("token");
 
-    fetch(`http://localhost:8080/api/reports?userId=${userInfo.userId}`, {
+    fetch(`${API_BASE_URL}/api/reports?userId=${userInfo.userId}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },

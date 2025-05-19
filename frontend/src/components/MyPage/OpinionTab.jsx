@@ -2,6 +2,7 @@
 import { Card } from "react-bootstrap";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 function OpinionTab({ userInfo }) {
   const [opinions, setOpinions] = useState([]);
@@ -12,7 +13,7 @@ function OpinionTab({ userInfo }) {
 
     const token = localStorage.getItem("token");
 
-    fetch(`http://localhost:8080/api/opinions?userId=${userInfo.userId}`, {
+    fetch(`${API_BASE_URL}/api/opinions?userId=${userInfo.userId}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },

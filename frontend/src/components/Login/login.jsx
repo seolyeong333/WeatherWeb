@@ -1,10 +1,10 @@
-// src/components/Login/Login.jsx
+// src/components/Login/login.jsx
 import { useState } from "react";
 import LoginForm from "./LoginForm";
 import SignupForm from "./SignupForm";
 import FindPassword from "./FindPassword";
 import ChangePassword from "./ChangePassword";
-import "../../styles/Login.css";
+import "../../styles/login.css";
 
 function Login({ closeLogin, setIsLoggedIn }) {
   const [mode, setMode] = useState("login"); 

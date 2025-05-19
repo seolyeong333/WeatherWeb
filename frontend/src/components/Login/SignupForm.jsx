@@ -1,6 +1,7 @@
 // src/components/Login/SignupForm.jsx
 import { useState, useEffect } from "react";
 import { Form, Button } from "react-bootstrap";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 function SignupForm({ setMode, closeLogin }) {
   const [formData, setFormData] = useState({
@@ -30,7 +31,7 @@ function SignupForm({ setMode, closeLogin }) {
 
   const sendEmailHandler = async () => {
     if (!formData.email) return alert("이메일을 입력하세요.");
-    const res = await fetch("http://localhost:8080/api/users/email/auth", {
+    const res = await fetch(`${API_BASE_URL}/api/users/email/auth`, {
       method: "POST", headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email: formData.email, type: "signup" }),
     });
@@ -44,7 +45,7 @@ function SignupForm({ setMode, closeLogin }) {
   };
 
   const verifyAuthKeyHandler = async () => {
-    const res = await fetch("http://localhost:8080/api/users/email/verify", {
+    const res = await fetch(`${API_BASE_URL}/api/users/email/verify`, {
       method: "POST", headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email: formData.email, authKey: userInputKey }),
     });
@@ -62,7 +63,7 @@ function SignupForm({ setMode, closeLogin }) {
     e.preventDefault();
     if (!isVerified) return alert("이메일 인증 먼저 진행해주세요.");
     if (formData.password !== repassword) return alert("비밀번호 불일치");
-    const res = await fetch("http://localhost:8080/api/users", {
+    const res = await fetch(`${API_BASE_URL}/api/users`, {
       method: "POST", headers: { "Content-Type": "application/json" },
       body: JSON.stringify(formData),
     });
@@ -152,6 +153,7 @@ function SignupForm({ setMode, closeLogin }) {
         value={formData.birthday}
         onChange={changeHandler}
         required
+        max="9999-12-31"
       />
 
       <Button type="submit" variant="dark" className="w-100 mb-3">회원가입</Button>

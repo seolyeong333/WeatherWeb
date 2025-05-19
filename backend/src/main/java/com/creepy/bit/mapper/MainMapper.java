@@ -9,6 +9,7 @@ import com.creepy.bit.domain.BookMarkDto;
 import com.creepy.bit.domain.ReportDto;
 import com.creepy.bit.domain.OpinionDto;
 import com.creepy.bit.domain.WeatherMessageDto;
+import com.creepy.bit.domain.FashionColorsDto;
 import com.creepy.bit.domain.TarotCardDto;
 import com.creepy.bit.domain.TarotColorDto;
 import com.creepy.bit.domain.TarotPlayLogsDto;
@@ -148,12 +149,14 @@ public interface MainMapper {
     
     int isPlaceFlagged(String placeName);
 
-
-
     //  신고 중복상태 확인
     int countDuplicateReports(ReportDto reportDto);
 
+    // 체감 온도별 메세지 및 추천 아이템템
     WeatherMessageDto findByWeatherTypeAndTempRange(String weatherType, double feelsLike);
+    
+    FashionColorsDto findFashionIcons(String weatherType, double feelsLike);
+    
 
     // 운세 페이지
     // 타로 카드 정보 가져오기

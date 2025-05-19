@@ -93,11 +93,12 @@ public class GooglePlaceService {
                 return imageUrl;
             }
         }
-
+/*
         System.out.println("⚠️ 사진 없음 → Selenium fallback");
         String imageUrl = crawlGoogleMapImageWithSelenium(placeName);
         imageCache.put(placeName, imageUrl);
-        return imageUrl;
+        */
+        return DEFAULT_IMAGE_URL;
 
     } catch (Exception e) {
         System.out.println("❗ 이미지 조회 중 오류 발생");

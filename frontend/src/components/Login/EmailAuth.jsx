@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Form, Button } from "react-bootstrap";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 function EmailAuth({ onSuccess, onClose }) {
   const [email, setEmail] = useState("");
@@ -23,7 +24,7 @@ function EmailAuth({ onSuccess, onClose }) {
   const sendEmailHandler = async () => {
     if (!email) return alert("이메일을 입력하세요.");
     try {
-      const response = await fetch("http://localhost:8080/api/users/email/auth", {
+      const response = await fetch(`${API_BASE_URL}/api/users/email/auth`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, type: "reset" }),
@@ -44,7 +45,7 @@ function EmailAuth({ onSuccess, onClose }) {
 
   const verifyAuthKeyHandler = async () => {
     try {
-      const res = await fetch("http://localhost:8080/api/users/email/verify", {
+      const res = await fetch(`${API_BASE_URL}/api/users/email/verify`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, authKey: userInputKey.trim() }),
