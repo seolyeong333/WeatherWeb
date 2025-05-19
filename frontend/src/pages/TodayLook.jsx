@@ -69,7 +69,7 @@ useEffect(() => {
       const token = localStorage.getItem("token");
 
       const response = await fetch(
-        `http://localhost:8080/api/weather/recommend?weatherType=${weatherType}&feelsLike=${feelsLike}`
+        `${API_BASE_URL}/api/weather/recommend?weatherType=${weatherType}&feelsLike=${feelsLike}`
       );
         const data = await response.json();
         if (Array.isArray(data.itemSuggestionList)) {
