@@ -1,12 +1,22 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import ColorPickerModal from "../ColorPickerModal";
+import { COLORS } from "../../api/colors"; 
 import "../../styles/TarotAnimation.css";
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-function Result({ categoryId, selectedCards, onRestart }) {
+function Result({ categoryId, selectedCards }) {
   const [cardInfos, setCardInfos] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [message, setMessage] = useState(""); // 🔮 감성 메시지 상태
-
+  const [showColorModal, setShowColorModal] = useState(false);
+  const resultColors = [...new Set(
+    cardInfos.flatMap(c => c.colors.map(cl => cl.colorName))
+    )];
+  const modalColors = COLORS.filter(c => resultColors.includes(c.name));
+  const [userColor, setUserColor] = useState({});
+  const navigate = useNavigate();
+  
   useEffect(() => {
     const fetchResult = async () => {
       try {
@@ -37,6 +47,15 @@ function Result({ categoryId, selectedCards, onRestart }) {
     return () => clearTimeout(timer);
   }, [categoryId, selectedCards]);
 
+  const handleGoToLook = () => {
+    const allColors = cardInfos.flatMap((card) => card.colors.map((c) => c.colorName));
+    const luckyColor = allColors[0] || "옐로우";
+
+    navigate("/today-look", {
+      state: { color: luckyColor },
+    });
+  };
+
   return (
     <div style={{ textAlign: "center", padding: "3rem" }}>
       <h2 style={{ marginBottom: "3rem", fontFamily: "'Gowun Dodum', sans-serif" }}>
@@ -60,7 +79,7 @@ function Result({ categoryId, selectedCards, onRestart }) {
       </div>
 
       <button
-        onClick={onRestart}
+        onClick={() => setShowColorModal(true)}
         style={{
           marginTop: "3rem",
           padding: "0.8rem 2rem",
@@ -72,7 +91,7 @@ function Result({ categoryId, selectedCards, onRestart }) {
           cursor: "pointer",
         }}
       >
-        다시 하기
+        행운의 색상 코디 확인하기
       </button>
 
       {showModal && (
@@ -102,6 +121,16 @@ function Result({ categoryId, selectedCards, onRestart }) {
           </div>
         </div>
       )}
+      
+      <ColorPickerModal
+        show={showColorModal}
+        colors={modalColors}
+        onClose={() => setShowColorModal(false)}
+        onSelect={(color) => {
+          setUserColor(color); // { name, hex }
+          navigate('/today-look', { state: { userColorName: color.name } });
+        }}
+      />
     </div>
   );
 }

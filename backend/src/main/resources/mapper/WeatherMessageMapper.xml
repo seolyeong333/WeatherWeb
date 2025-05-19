@@ -18,6 +18,6 @@
     WHERE weatherType = #{weatherType}
       AND #{feelsLike} BETWEEN minTemp AND maxTemp
     LIMIT 1
-</select>
+  </select>
 
 </mapper>

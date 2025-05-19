@@ -1,7 +1,7 @@
 // src/pages/MyPage.jsx
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect } from "react";
 import { Nav, Row, Col } from "react-bootstrap";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import Header from "../components/Header";
 import PasswordCheckModal from "../components/MyPage/PasswordCheckModal";
 import ConfirmModal from "../components/MyPage/ConfirmModal";
@@ -25,8 +25,10 @@ function MyPage() {
   const [showModal, setShowModal] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [mode, setMode] = useState("");
-  const [activeTab, setActiveTab] = useState("info");
   const navigate = useNavigate();
+  const location = useLocation();
+  const defaultTab = location.state?.activeTab || "info";
+  const [activeTab, setActiveTab] = useState(defaultTab);
 
   const fetchUserInfo = async () => {
     try {

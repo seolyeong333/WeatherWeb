@@ -46,13 +46,12 @@ export const ZODIAC_COLOR_PAIRS = [
 ];
 
 
-// ✅ 매일 날짜에 따라 고정된 색상 하나를 랜덤처럼 반환하는 함수
+// 매일 날짜에 따라 고정된 색상 하나를 랜덤처럼 반환하는 함수
 // - 오늘의 색상 박스, 첫 화면 초기 크롤링에 사용됨
 export function getTodayColor() {
   const today = new Date().toISOString().split("T")[0]; // YYYY-MM-DD
   let hash = 0;
   for (let i = 0; i < today.length; i++) hash += today.charCodeAt(i);
-
 
   // 실버, 골드를 제외한 색상 배열
   const filteredColors = COLORS.filter(
@@ -60,4 +59,8 @@ export function getTodayColor() {
   );
 
   return filteredColors[hash % filteredColors.length];
+}
+
+export function getLuckyColor(userColorName) {
+  return COLORS.find(color => color.name === userColorName) || null;
 }
