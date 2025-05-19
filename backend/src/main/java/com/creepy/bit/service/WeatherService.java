@@ -1,6 +1,7 @@
 package com.creepy.bit.service;
 
 import com.creepy.bit.domain.WeatherMessageDto;
+import com.creepy.bit.domain.FashionColorsDto;
 import com.creepy.bit.mapper.MainMapper;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -11,6 +12,10 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import org.json.JSONObject;
 import org.json.JSONArray;
+
+import java.util.List;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 @Service
 public class WeatherService {
@@ -79,37 +84,51 @@ public class WeatherService {
     }
 
 
-public String getCurrentWeatherType() {
-    // 예시: 서울 위도/경도
-    double lat = 37.5665;
-    double lon = 126.9780;
-    String res = getCurrentWeather(lat, lon);
+    public String getCurrentWeatherType() {
+        // 예시: 서울 위도/경도
+        double lat = 37.5665;
+        double lon = 126.9780;
+        String res = getCurrentWeather(lat, lon);
 
-    JSONObject json = new JSONObject(res);
-    String description = json.getJSONArray("weather").getJSONObject(0).getString("description");
+        JSONObject json = new JSONObject(res);
+        String description = json.getJSONArray("weather").getJSONObject(0).getString("description");
 
-    // 날씨 상태 간단화 (맑음, 흐림, 비 등)
-    if (description.contains("맑")) return "맑음";
-    if (description.contains("흐") || description.contains("구름")) return "흐림";
-    if (description.contains("비")) return "비";
-    if (description.contains("눈")) return "눈";
-    if (description.contains("천둥") || description.contains("번개")) return "천둥번개";
+        // 날씨 상태 간단화 (맑음, 흐림, 비 등)
+        if (description.contains("맑")) return "맑음";
+        if (description.contains("흐") || description.contains("구름")) return "흐림";
+        if (description.contains("비")) return "비";
+        if (description.contains("눈")) return "눈";
+        if (description.contains("천둥") || description.contains("번개")) return "천둥번개";
 
-    return "기타";
-}
+        return "기타";
+    }
 
-public String getCurrentAirCondition() {
-    double lat = 37.5665;
-    double lon = 126.9780;
-    String res = getAirPollution(lat, lon);
+    public String getCurrentAirCondition() {
+        double lat = 37.5665;
+        double lon = 126.9780;
+        String res = getAirPollution(lat, lon);
 
-    JSONObject json = new JSONObject(res);
-    double pm10 = json.getJSONArray("list").getJSONObject(0).getJSONObject("components").getDouble("pm10");
+        JSONObject json = new JSONObject(res);
+        double pm10 = json.getJSONArray("list").getJSONObject(0).getJSONObject("components").getDouble("pm10");
 
-    if (pm10 <= 30) return "좋음";
-    if (pm10 <= 80) return "보통";
-    if (pm10 <= 150) return "나쁨";
-    return "매우 나쁨";
-}
+        if (pm10 <= 30) return "좋음";
+        if (pm10 <= 80) return "보통";
+        if (pm10 <= 150) return "나쁨";
+        return "매우 나쁨";
+    }
+
+    // 체감 온도별 아이콘 매칭
+    public FashionColorsDto getFashionRecommendation(String weatherType, double feelsLike) {
+        FashionColorsDto dto = mainMapper.findFashionIcons(weatherType, feelsLike);
+        if (dto == null || dto.getItemSuggestion() == null || dto.getItemSuggestion().isBlank()) {
+            return null; // fallback 없음
+        }
+
+        List<String> items = Arrays.stream(dto.getItemSuggestion().split(","))
+                                .map(String::trim)
+                                .collect(Collectors.toList());
+        dto.setItemSuggestionList(items);
+        return dto;
+    }
 
 }

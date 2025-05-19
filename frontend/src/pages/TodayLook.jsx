@@ -25,9 +25,7 @@ function TodayLook() {
   const [viewType, setViewType] = useState("grid-4"); // "grid-2" 또는 "grid-4" 설정
 
   // 체감온도에 따른 아이콘 출력
-  const [showIcons, setShowIcons] = useState({
-    items: "반팔, 반바지, 샌들"
-  });
+  const [showIcons, setShowIcons] = useState({});
   // DB 날씨조건 필터
   const weatherDescriptionMap = {
     "튼구름": "구름 많음",
@@ -59,9 +57,10 @@ function TodayLook() {
 useEffect(() => {
   navigator.geolocation.getCurrentPosition(async (position) => {
       const { latitude, longitude } = position.coords;
+    try {
+      const res = await getCurrentWeather(latitude, longitude);
+      setCurrent(res.data);
 
-      getCurrentWeather(latitude, longitude).then((res) => {
-              setCurrent(res.data);
       const rawDesc = res.data.weather[0].description;
       const desc = getKoreanWeatherDescription(rawDesc);
       const weatherType = normalizeWeatherType(desc);
@@ -69,49 +68,55 @@ useEffect(() => {
 
       const token = localStorage.getItem("token");
 
-      fetch(`/api/weather/recommend?weather=${weatherType}&feeling=${feelsLike}`, {
-        headers: {
-          "Authorization": `Bearer ${token}`,
-        },
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          console.log("추천 아이템:", data.items);
-          try {
-            setShowIcons(data); // { items: '가디건,반팔' }
-          } catch (err) {
-            console.error("JSON 파싱 실패:", err);
-          }
-        });
-      });
-    });
+      const response = await fetch(
+        `http://localhost:8080/api/weather/recommend?weatherType=${weatherType}&feelsLike=${feelsLike}`
+      );
+        const data = await response.json();
+        if (Array.isArray(data.itemSuggestionList)) {
+          console.log( "weatherType : " + weatherType + " feelsLike : " + feelsLike);
+          console.log("추천 아이템:", data.itemSuggestion);
+          setShowIcons(data.itemSuggestionList);
+
+        } else {
+          console.warn("추천 아이템이 없습니다.");
+          setShowIcons(["셔츠, 청바지"]);
+
+        }
+      } catch (err) {
+        console.error("추천 API 요청 중 오류:", err);
+      }
+   });
   }, []);
 
   const iconMap = {
-    "반팔": "short-sleeve",
-    "민소매": "sleeveless",
-    "기모 후드": "fleece-hoodie",
     "패딩": "padded-jacket",
-    "롱패딩": "long-padding",
-    "셔츠": "shirt",
-    "린넨 셔츠": "linen-shirt",
-    "니트": "knit",
-    "가디건": "cardigan",
-    "후드티": "hoodie",
-    "맨투맨": "sweatshirt",
-    "코트": "coat",
-    "청바지": "jeans",
-    "슬랙스": "slacks",
-    "긴바지": "long-pants",
-    "반바지": "shorts",
-    "핫팬츠": "hotpants",
-    "기모 팬츠": "fleece-pants",
-    "머플러": "scarf",
+    "기모 후드": "fleece-hoodie", //
     "귀마개": "earmuff",
+    "니트": "knit",
+    "얇은 니트": "light-knit",
+    "머플러": "muffler",
+    "코트": "coat",
+    "가디건": "cardigan", //
+    "스카프": "scarf", //
+    "셔츠": "shirt",
+    "면바지": "cotton-pants", //
+    "얇은 셔츠": "light-shirt", //
+    "청바지": "jeans", //
+    "반팔": "short-sleeve", //
+    "반바지": "shorts", //
+    "샌들": "sandals", //
+    "린넨 셔츠": "linen-shirt", //
+    "양산": "parasol",
+    "선글라스": "sunglasses",
+    "민소매": "sleeveless", //
     "장갑": "gloves",
-    "샌들": "sandals",
-    "방수 부츠": "rain-boots",
-    "우비": "raincoat"
+    "맨투맨": "sweatshirt",
+    "선크림": "sunscreen",
+    "부츠": "boots",
+    "우산": "umbrella",
+    "우비": "raincoat",
+    "롱슬리브": "long-sleeve",
+    "슬랙스": "slacks"
   };
   
   // 필터 변경 시 이미지 크롤링 요청
@@ -262,25 +267,28 @@ useEffect(() => {
           </div>
         )}
 
-        {showIcons?.items && (
+        {Array.isArray(showIcons) && (
+          showIcons.length === 0 ? (
+            console.log("추천 아이템이 없습니다")
+          ) : (
           <div className="feel-temp-container">
-            {showIcons.items.split(",").map((item, index) => {
-              const trimmed = item.trim();
-              const engName = iconMap[trimmed] || "default";
+            {showIcons.map((item, index) => {
+              const engName = iconMap[item] || "default";
               return (
                 <div className="feel-temp-tab" key={index}>
                   <img
                     src={`/icons/${engName}.png`}
-                    alt={`${trimmed} 아이콘`}
+                    alt={`${item} 아이콘`}
                     onError={(e) => (e.target.src = "/icons/default.png")}
                   />
-                    <div className="tooltip-box">
-                      {trimmed}
-                    </div>
+                  <div className="tooltip-box">
+                    {item}
+                  </div>
                 </div>
               );
             })}
           </div>
+          )
         )}
       </section>
 
