@@ -1,4 +1,4 @@
-// src/components/Login/Login.jsx
+// src/components/Login/login.jsx
 import { useState } from "react";
 import LoginForm from "./LoginForm";
 import SignupForm from "./SignupForm";

@@ -56,17 +56,28 @@ public class OnTheLookCrawlerService {
             }
         }
 
-        // 크롬 드라이버 위치 설정 (환경에 맞게 조정 필요)
-        System.setProperty("webdriver.chrome.driver", "C:\\tools\\chromedriver\\chromedriver.exe");
+        // 크롬 드라이버 위치 설정 (우분투 환경에 맞게 수정)
+        System.setProperty("webdriver.chrome.driver", "C:\\tools\\chromedriver\\chromedriver.exe"); // 윈도우 경로 주석 처리
+        // System.setProperty("webdriver.chrome.driver", "/usr/local/bin/chromedriver"); // 👈 우분투 경로로 변경
 
-        // 크롬 실행 옵션 (백그라운드 모드)
+        // 크롬 실행 옵션 (백그라운드 모드 - 리눅스 서버 환경에서는 headless가 필수)
         ChromeOptions options = new ChromeOptions();
-        options.addArguments("--headless=new", "--disable-gpu", "--no-sandbox", "--disable-dev-shm-usage");
+        options.addArguments(
+            "--headless=new",
+            "--disable-gpu",
+            "--no-sandbox", // 루트 사용자가 아닌 경우 또는 Docker 환경에서 필요할 수 있음
+            "--disable-dev-shm-usage", // 공유 메모리 문제 방지
+            "--window-size=1920,1080", // 가상 윈도우 크기 설정
+            "--user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36" // 일반적인 User-Agent 설정 (버전은 실제 크롬 버전에 맞춰주면 좋음)
+        );
 
-        WebDriver driver = new ChromeDriver(options);
+        WebDriver driver = null; // try-finally 블록을 위해 외부에 선언
         List<String> imageUrls = new ArrayList<>();
 
         try {
+            System.out.println("🚀 크롤링 시작: " + cacheKey); // 크롤링 시작 로그 추가
+            driver = new ChromeDriver(options); // try 블록 안에서 WebDriver 인스턴스 생성
+
             // 필터에 따라 URL 인코딩 처리
             String categoryKor = type.equals("상의") ? "%EC%83%81%EC%9D%98" : "%ED%95%98%EC%9D%98"; // 상의/하의
             String colorKor = URLEncoder.encode(color, StandardCharsets.UTF_8); // 색상
@@ -77,31 +88,38 @@ public class OnTheLookCrawlerService {
                 "https://onthelook.co.kr/search/result?q=%s&t=post&f={\"gender\":[%s],\"height\":[],\"weight\":[],\"price\":[1000,200000],\"selectedCategory\":\"\",\"selectedSubCategory\":\"\",\"item\":[],\"tpo\":[],\"season\":[],\"mood\":[],\"color\":[\"%s\"],\"randomMood\":\"false\",\"bodyType\":[]}\u0026vt=2\u0026st=POPULAR_STYLE\u0026from=result-intro",
                 categoryKor, genderCode, colorKor
             );
+            System.out.println("Crawling URL: " + url); // 실제 접속 URL 로그 추가
 
             driver.get(url);
 
-            // 이미지 태그가 로딩될 때까지 대기
-            new WebDriverWait(driver, Duration.ofSeconds(10)).until(
-                ExpectedConditions.presenceOfElementLocated(By.cssSelector("img.hhcWFz"))
-            );
+            // 이미지 태그가 로딩될 때까지 대기 (WebDriverWait 사용)
+            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(15)); // 대기 시간 15초로 늘림
+            wait.until(ExpectedConditions.numberOfElementsToBeMoreThan(By.cssSelector("img.hhcWFz"), 0)); // 하나 이상의 이미지가 로드될 때까지
+            // 또는 특정 요소가 확실히 존재하면: wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("img.hhcWFz")));
 
             // 원하는 이미지 태그들 수집
             List<WebElement> images = driver.findElements(By.cssSelector("img.hhcWFz"));
             for (WebElement img : images) {
                 String src = img.getAttribute("src");
-                imageUrls.add(src);
+                if (src != null && !src.isEmpty()) { // src가 null이거나 비어있지 않은 경우만 추가
+                    imageUrls.add(src);
+                }
             }
 
             System.out.println("✅ 크롤링 완료: " + cacheKey + " (" + imageUrls.size() + "개)");
 
-            // 캐시에 저장
-            cacheMap.put(cacheKey, new CachedResult(imageUrls, now));
+            // 캐시에 저장 (결과가 있을 때만)
+            if (!imageUrls.isEmpty()) {
+                cacheMap.put(cacheKey, new CachedResult(imageUrls, now));
+            }
 
         } catch (Exception e) {
-            e.printStackTrace();
+            System.err.println("❌ 크롤링 중 예외 발생 (" + cacheKey + "): " + e.getMessage()); // 어떤 조건에서 예외가 발생했는지 알 수 있도록 cacheKey 포함
+            // e.printStackTrace(); // 필요하다면 전체 스택 트레이스 출력
         } finally {
-            // 드라이버 종료
-            driver.quit();
+            if (driver != null) {
+                driver.quit(); // WebDriver 종료 (예외 발생 여부와 관계없이 항상 실행)
+            }
         }
 
         return CompletableFuture.completedFuture(imageUrls);
