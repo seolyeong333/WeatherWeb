@@ -4,6 +4,7 @@ import Lottie from "lottie-react";
 import loadingAnimation from "../../assets/loading.json";
 import { getKoreanWeatherDescription } from "../../api/weatherMapping";
 import "../../styles/TodayPlace/TodayPlaceMap.css";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 function TodayPlaceMap() {
   const mapRef = useRef(null);
@@ -119,7 +120,7 @@ function TodayPlaceMap() {
       const body = { location: `${lat},${lon}` };
       if (category) body.category = category;
 
-      const res = await fetch("http://localhost:8080/api/ai/place", {
+      const res = await fetch(`${API_BASE_URL}/api/ai/place`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),

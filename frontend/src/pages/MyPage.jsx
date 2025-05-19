@@ -18,6 +18,7 @@ import AlarmListTab from "../components/MyPage/AlarmListTab";
 import { FaBell } from "react-icons/fa";
 import { FaUser, FaCommentDots, FaExclamationCircle } from "react-icons/fa";
 import "../styles/Mypage.css";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 function MyPage() {
   const [userInfo, setUserInfo] = useState(null);
@@ -30,7 +31,7 @@ function MyPage() {
   const fetchUserInfo = async () => {
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch("http://localhost:8080/api/users/info", {
+      const res = await fetch(`${API_BASE_URL}/api/users/info`, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -50,7 +51,7 @@ function MyPage() {
 
   const deleteAccount = async () => {
     try {
-      const res = await fetch("http://localhost:8080/api/users", {
+      const res = await fetch(`${API_BASE_URL}/api/users`, {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: userInfo.email, password: userInfo.password }),

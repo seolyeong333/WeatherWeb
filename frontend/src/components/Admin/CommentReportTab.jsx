@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom"; // ✅ 추가
 import { getUserAuth } from "../../api/jwt";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 function CommentReportTab({ onReportClick }) {
   const [reports, setReports] = useState([]);
@@ -10,7 +11,7 @@ function CommentReportTab({ onReportClick }) {
     const fetchOpinionReports = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await fetch("http://localhost:8080/api/admin/reports/opinions", {
+        const res = await fetch(`${API_BASE_URL}/api/admin/reports/opinions`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -45,7 +46,7 @@ function CommentReportTab({ onReportClick }) {
 
     if (action === "무시") {
       const token = localStorage.getItem("token");
-      await fetch(`http://localhost:8080/api/admin/reports/${reportId}/status?status=RESOLVED`, {
+      await fetch(`${API_BASE_URL}/api/admin/reports/${reportId}/status?status=RESOLVED`, {
         method: "PATCH",
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -55,7 +56,7 @@ function CommentReportTab({ onReportClick }) {
     if (action === "삭제") {
       const token = localStorage.getItem("token");
 
-      await fetch(`http://localhost:8080/api/admin/reports/opinions/${opinionId}/delete?reportId=${reportId}`, {
+      await fetch(`${API_BASE_URL}/api/admin/reports/opinions/${opinionId}/delete?reportId=${reportId}`, {
         method: "PATCH",
         headers: {
           Authorization: `Bearer ${token}`,

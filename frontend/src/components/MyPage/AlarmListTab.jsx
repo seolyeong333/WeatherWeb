@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Card, Table, Button } from "react-bootstrap";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 function AlarmListTab({ userId, refreshKey }) {
   const [alarmList, setAlarmList] = useState([]);
@@ -7,7 +8,7 @@ function AlarmListTab({ userId, refreshKey }) {
   const fetchAlarms = async () => {
     const token = localStorage.getItem("token");
     try {
-      const res = await fetch(`http://localhost:8080/api/alarms?userId=${userId}`, {
+      const res = await fetch(`${API_BASE_URL}/api/alarms?userId=${userId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
@@ -29,7 +30,7 @@ function AlarmListTab({ userId, refreshKey }) {
     if (!confirm) return;
 
     try {
-      const res = await fetch(`http://localhost:8080/api/alarms/${alarmId}`, {
+      const res = await fetch(`${API_BASE_URL}/api/alarms/${alarmId}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       });

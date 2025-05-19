@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import "../../styles/notice.css";
 import { getUserAuth } from "../../api/jwt";
-
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 function NoticeDetail({ id, onBack, onEdit }) {
   const [notice, setNotice] = useState(null);
   const isAdmin = getUserAuth() === "ADMIN";
   useEffect(() => {
-    fetch(`http://localhost:8080/api/notices/${id}`)
+    fetch(`${API_BASE_URL}/api/notices/${id}`)
       .then(res => res.json())
       .then(setNotice)
       .catch(err => console.error("공지 상세 로딩 실패:", err));
@@ -16,7 +16,7 @@ function NoticeDetail({ id, onBack, onEdit }) {
   const handleDelete = async () => {
     if (!window.confirm("정말 삭제하시겠습니까?")) return;
 
-    const res = await fetch(`http://localhost:8080/api/notices/${id}`, { method: "DELETE" });
+    const res = await fetch(`${API_BASE_URL}/api/notices/${id}`, { method: "DELETE" });
     if (res.ok) {
       alert("삭제되었습니다.");
       onBack();
