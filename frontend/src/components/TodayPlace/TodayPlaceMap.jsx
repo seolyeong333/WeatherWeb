@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Lottie from "lottie-react";
 import loadingAnimation from "../../assets/loading.json";
@@ -12,6 +13,7 @@ function TodayPlaceMap() {
   const userMarkerRef = useRef(null);
   const currentInfoRef = useRef(null);
   const placeMarkersRef = useRef([]);
+  const labelOverlaysRef = useRef([]);
   const showMarkRef = useRef("");
 
   const [places, setPlaces] = useState([]);
@@ -21,6 +23,14 @@ function TodayPlaceMap() {
   const [regionName, setRegionName] = useState("서울시 강남구");
   const [weather, setWeather] = useState(null);
   const [lastRegionCode, setLastRegionCode] = useState(null);
+
+  const navigate = useNavigate();
+
+  const categoryCodeMap = {
+    "음식점": "FD6",
+    "카페": "CE7",
+    "관광명소": "AT4",
+  };
 
   useEffect(() => {
     if (!mapRef.current || !window.kakao || !window.kakao.maps) return;
@@ -57,15 +67,17 @@ function TodayPlaceMap() {
       const center = new window.kakao.maps.LatLng(lat, lon);
       map.setCenter(center);
 
-      new window.kakao.maps.Marker({
+      const marker = new window.kakao.maps.Marker({
         map,
         position: center,
         title: "내 위치",
         image: new window.kakao.maps.MarkerImage(
-          "https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/markerStar.png",
-          new window.kakao.maps.Size(24, 35)
+          "https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_red.png",
+          new window.kakao.maps.Size(36, 48),
+          new window.kakao.maps.Point(18, 48)
         ),
       });
+      userMarkerRef.current = marker;
 
       const regionCode = await getAddressFromKakao(lat, lon);
       setLastRegionCode(regionCode);
@@ -86,9 +98,7 @@ function TodayPlaceMap() {
       );
       if (res.data.documents.length > 0) {
         const region = res.data.documents[0];
-        setRegionName(
-          `${region.region_1depth_name} ${region.region_2depth_name} ${region.region_3depth_name}`
-        );
+        setRegionName(`${region.region_1depth_name} ${region.region_2depth_name} ${region.region_3depth_name}`);
         return region.code;
       }
     } catch (err) {
@@ -117,45 +127,44 @@ function TodayPlaceMap() {
 
     setLoading(true);
     try {
-      const body = { location: `${lat},${lon}` };
-      if (category) body.category = category;
+      const url = category
+        ? `http://localhost:8080/api/kakao/places?lat=${lat}&lon=${lon}&category=${category}`
+        : `http://localhost:8080/api/kakao/places?lat=${lat}&lon=${lon}`;
 
-      const res = await fetch(`${API_BASE_URL}/api/ai/place`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-      });
-
-      const answer = await res.text();
-      const json = JSON.parse(answer.replace(/```json|```/g, "").trim());
+      const res = await fetch(url);
+      const json = await res.json();
       setPlaces(json);
 
       placeMarkersRef.current.forEach((m) => m.setMap(null));
       placeMarkersRef.current = [];
+      labelOverlaysRef.current.forEach((l) => l.setMap(null));
+      labelOverlaysRef.current = [];
 
-      json.forEach((place) => {
-        const position = new window.kakao.maps.LatLng(place.latitude, place.longitude);
-        const marker = new window.kakao.maps.Marker({ map, position, title: place.name });
-        placeMarkersRef.current.push(marker);
-
-        const infowindow = new window.kakao.maps.InfoWindow({
-          content: `<div style="padding:8px;font-size:13px;">📍 ${place.name}</div>`
+      json.forEach((place, idx) => {
+        const position = new window.kakao.maps.LatLng(place.y, place.x);
+        const marker = new window.kakao.maps.Marker({
+          map,
+          position,
+          title: place.placeName,
         });
 
+        const label = new window.kakao.maps.CustomOverlay({
+          position,
+          content: `<div class="map-label">${idx + 1}</div>`,
+          yAnchor: 1.8,
+          zIndex: 3,
+        });
+        label.setMap(map);
+
+        placeMarkersRef.current.push(marker);
+        labelOverlaysRef.current.push(label);
+
         window.kakao.maps.event.addListener(marker, "click", () => {
-          if (currentInfoRef.current) currentInfoRef.current.close();
-          if (showMarkRef.current === place.name) {
-            setShowMark("");
-            currentInfoRef.current = null;
-            return;
-          }
-          infowindow.open(map, marker);
-          currentInfoRef.current = infowindow;
-          setShowMark(place.name);
+          navigate("/today-place/place-detail", { state: { placeName: place.placeName, place } });
         });
       });
     } catch (err) {
-      console.error("추천 장소 실패:", err);
+      console.error("카카오 추천 장소 실패:", err);
     } finally {
       setLoading(false);
     }
@@ -163,14 +172,19 @@ function TodayPlaceMap() {
 
   useEffect(() => {
     if (selectedLocation) {
-      loadRecommendedPlaces(selectedLocation.lat, selectedLocation.lon);
+      loadRecommendedPlaces(selectedLocation.lat, selectedLocation.lon, "CE7");
     }
   }, [selectedLocation]);
 
   const handleCategoryClick = (label) => {
     const map = mapInstanceRef.current;
     const center = map.getCenter();
-    loadRecommendedPlaces(center.getLat(), center.getLng(), label);
+    const categoryCode = categoryCodeMap[label];
+    loadRecommendedPlaces(center.getLat(), center.getLng(), categoryCode);
+  };
+
+  const handlePlaceClick = (place) => {
+    navigate("/today-place/place-detail", { state: { placeName: place.placeName, place } });
   };
 
   return (
@@ -179,7 +193,7 @@ function TodayPlaceMap() {
         <div ref={mapRef} style={{ width: "100%", height: "100%", borderRadius: "0 0 0 10px", zIndex: 1 }} />
 
         <div style={{ position: "absolute", top: "20px", left: "20px", zIndex: 10, display: "flex", gap: "0.5rem" }}>
-          {["음식점", "카페", "술집", "공원"].map((label, i) => (
+          {["음식점", "카페", "관광명소"].map((label, i) => (
             <button
               key={label}
               onClick={() => handleCategoryClick(label)}
@@ -196,7 +210,7 @@ function TodayPlaceMap() {
                 cursor: "pointer",
               }}
             >
-              <span style={{ fontSize: "1.2rem" }}>{["🍽️", "☕", "🍺", "🌳"][i]}</span>
+              <span style={{ fontSize: "1.2rem" }}>{["🍽️", "☕", "🌳"][i]}</span>
               <span style={{ color: "#333", fontSize: "0.95rem" }}>{label}</span>
             </button>
           ))}
@@ -218,12 +232,19 @@ function TodayPlaceMap() {
               </>
             ) : (
               <>
-                <ul style={{ listStyle: "none", padding: 0 }}>
-                  {places.map((place, idx) => (
-                    <li key={idx}>{place.name}</li>
-                  ))}
-                </ul>
-                <button style={{ marginTop: "0.5rem", width: "100%" }}>Show more</button>
+                <div style={{ maxHeight: "160px", overflowY: "auto" }}>
+                  <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
+                    {places.map((place, idx) => (
+                      <li
+                        key={idx}
+                        onClick={() => handlePlaceClick(place)}
+                        style={{ cursor: "pointer", padding: "4px 0", color: "#0077cc" }}
+                      >
+                        {idx + 1}. {place.placeName}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               </>
             )}
           </div>

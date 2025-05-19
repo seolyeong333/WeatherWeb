@@ -95,6 +95,8 @@ public interface MainMapper {
     // 싫어요
     void increaseDislikes(int opinionId);
 
+    // 장소 평균 평점
+    Double getAverageRatingByPlaceId(String placeId);
 
     // Alarm
     // 알림 추가 

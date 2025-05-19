@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import Lottie from "lottie-react";
 import loadingAnimation from "../assets/loading.json";
-import { useNavigate } from "react-router-dom";
 import ColorPickerModal from "../components/ColorPickerModal";
 import { fancyName, getLuckyColor, getTodayColor } from "../api/colors";
 import view2col from "../assets/view-2col.png";
@@ -75,7 +74,7 @@ useEffect(() => {
       }
    });
   }, []);
-  
+
   // 필터 변경 시 이미지 크롤링 요청
   useEffect(() => {
     setLoading(true);

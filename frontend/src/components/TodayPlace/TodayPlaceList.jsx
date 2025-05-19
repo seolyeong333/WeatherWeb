@@ -55,15 +55,14 @@ function TodayPlaceList() {
               try {
                 const [imageRes, ratingRes] = await Promise.all([
                   fetch(`${API_BASE_URL}/api/google/image?name=${encodeURIComponent(place.placeName)}&lat=${place.y}&lon=${place.x}`),
-                  fetch(`${API_BASE_URL}/api/google/rating?name=${encodeURIComponent(place.placeName)}&lat=${place.y}&lon=${place.x}`)
+                  fetch(`${API_BASE_URL}/api/opinions/rating?placeId=${place.id}`) // ✅ DB에서 평점 가져오기
                 ]);
           
                 const imageUrl = await imageRes.text();
-                const ratingText = await ratingRes.text();
-                const rating = parseFloat(ratingText); // 평점 숫자 변환
-          
-                return { ...place, imageUrl, rating: isNaN(rating) ? null : rating };
-              } catch (e) {
+                const rating = await ratingRes.json();
+                return { ...place, imageUrl, rating: isNaN(rating) || rating === null ? 0 : rating // ⭐ null이나 NaN이면 0으로
+                };
+                } catch (e) {
                 console.warn("이미지/평점 로딩 실패:", place.placeName);
                 return { ...place, imageUrl: null, rating: null };
               }
@@ -238,7 +237,7 @@ function TodayPlaceList() {
                 <div className="place-card-footer">
                   <span>{place.phone || "📞 없음"}</span>
                   {place.rating !== undefined && place.rating !== null && (
-                    <span style={{ marginLeft: "8px" }}>⭐ {place.rating}</span>
+                    <span style={{ marginLeft: "8px" }}>⭐ {place.rating.toFixed(1)}</span>
                   )}
                 </div>
               </div>

@@ -1,32 +1,32 @@
 const iconMap = {
     "패딩": "padded-jacket",
-    "기모 후드": "fleece-hoodie", //
+    "기모 후드": "fleece-hoodie", 
     "귀마개": "earmuff",
     "니트": "knit",
     "얇은 니트": "light-knit",
     "머플러": "muffler",
     "코트": "coat",
-    "가디건": "cardigan", //
-    "스카프": "scarf", //
+    "가디건": "cardigan", 
+    "스카프": "scarf", 
     "셔츠": "shirt",
-    "면바지": "cotton-pants", //
-    "얇은 셔츠": "light-shirt", //
-    "청바지": "jeans", //
-    "반팔": "short-sleeve", //
-    "반바지": "shorts", //
-    "샌들": "sandals", //
-    "린넨 셔츠": "linen-shirt", //
-    "양산": "parasol", //
+    "면바지": "cotton-pants", 
+    "얇은 셔츠": "light-shirt", 
+    "청바지": "jeans", 
+    "반팔": "short-sleeve", 
+    "반바지": "shorts", 
+    "샌들": "sandals", 
+    "린넨 셔츠": "linen-shirt", 
+    "양산": "parasol",
     "선글라스": "sunglasses",
-    "민소매": "sleeveless", //
+    "민소매": "sleeveless",
     "장갑": "gloves",
     "맨투맨": "sweatshirt",
     "선크림": "sunscreen",
     "부츠": "boots",
-    "우산": "umbrella", //
+    "우산": "umbrella",
     "우비": "raincoat",
-    "롱슬리브": "long-sleeve", //
-    "슬랙스": "slacks" //
+    "롱슬리브": "long-sleeve",
+    "슬랙스": "slacks" 
   };
 
 export default iconMap;
