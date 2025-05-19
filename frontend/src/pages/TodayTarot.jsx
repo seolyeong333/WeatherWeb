@@ -1,6 +1,5 @@
 // src/pages/TodayTarot.jsx
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { useState } from "react";
 import Header from "../components/Header";
 import Tarot from "../components/Horoscope/Tarot";
 import Shuffle from "../components/Horoscope/Shuffle";
@@ -39,8 +38,7 @@ function TodayTarot() {
             )}
               {step === "result" && <Result 
                 selectedCards={selectedCards}
-                categoryId={categoryId} 
-                onRestart={() => setStep("intro")} />}
+                categoryId={categoryId} /> }
           </main>
         </div>
       </div>

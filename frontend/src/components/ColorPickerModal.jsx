@@ -7,9 +7,11 @@ import React from "react";
 import { Modal } from "react-bootstrap";
 import { COLORS } from "../api/colors"; // 🎨 색상 목록 (이름 + HEX) import
 
-function ColorPickerModal({ show, onClose, onSelect }) {
+function ColorPickerModal({ show, onClose, onSelect, colors=COLORS }) {
   return (
-    <Modal show={show} onHide={onClose} centered>
+    <Modal show={show} onHide={onClose} centered 
+      dialogClassName={colors.length <= 3 ? "small-color-modal" : "default-color-modal"}
+    >
       {/* 모달 상단 헤더 */}
       <Modal.Header closeButton>
         <Modal.Title>색상 선택</Modal.Title>
@@ -20,12 +22,12 @@ function ColorPickerModal({ show, onClose, onSelect }) {
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(5, 1fr)", // 5열 그리드
+            gridTemplateColumns: `repeat(${colors.length <= 3 ? colors.length : 5}, 1fr)`,
             gap: "1.2rem",
             justifyItems: "center", // 가운데 정렬
           }}
         >
-          {COLORS.map((color) => (
+          {colors.map((color) => (
             <div
               key={color.name}
               onClick={() => {
