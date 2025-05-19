@@ -22,6 +22,7 @@ function PlaceInfoSection({
       <p className="description">
         📍 {place.addressName} <br />
         📞 {place.phone || "전화번호 없음"} <br />
+        🛣️ 도로명: {place.roadAddressName} <br />
       </p>
 
       {averageRating !== null ? (

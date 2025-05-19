@@ -189,12 +189,4 @@ public class KakaoService {
             doc.optString("distance", null)
         );
     }
-
-
-
-
-
-
-
-
 }

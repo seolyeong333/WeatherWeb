@@ -5,8 +5,6 @@ import PlaceHeader from "../../components/PlaceDetail/PlaceHeader";
 import PlaceWeatherSection from "../../components/PlaceDetail/PlaceWeatherSection";
 import PlaceInfoSection from "../../components/PlaceDetail/PlaceInfoSection";
 import ReportModal from "../../components/PlaceDetail/ReportModal";
-import OpinionForm from "../../components/PlaceDetail/OpinionForm";
-import OpinionList from "../../components/PlaceDetail/OpinionList";
 import { getCurrentWeather } from "../../api/weather";
 import "../../styles/TodayPlace/PlaceDetail.css";
 

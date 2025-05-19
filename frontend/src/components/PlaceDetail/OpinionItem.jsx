@@ -1,25 +1,21 @@
 import React from "react";
+import "../../styles/PlaceDetail/OpinionItem.css";
 
 function OpinionItem({ opinion, onLike, onDislike, onReport }) {
   const fullStars = "★".repeat(opinion.rating);
   const emptyStars = "☆".repeat(5 - opinion.rating);
 
   return (
-    <li className="list-group-item">
-      <div className="d-flex justify-content-between">
-        <strong>{opinion.content}</strong>
-        <div className="text-warning" style={{ fontSize: "1.1rem" }}>
-          {fullStars}{emptyStars}
+    <li className="opinion-item">
+      <div className="opinion-top">
+        <div className="opinion-stars">{fullStars}{emptyStars}</div>
+        <div className="opinion-meta">
+          <span>{opinion.createdAt?.substring(2, 16)}</span>
+          <button className="report-btn" onClick={() => onReport(opinion.opinionId)}>🚨</button>
         </div>
       </div>
-
-      <div className="d-flex gap-2 mt-1 small text-muted align-items-center">
-        <span>👍 {opinion.likes}</span>
-        <span>👎 {opinion.dislikes}</span>
-        <span>🕒 {opinion.createdAt?.substring(2, 16)}</span>
-        <button className="btn btn-sm btn-outline-success" onClick={() => onLike(opinion.opinionId)}>👍</button>
-        <button className="btn btn-sm btn-outline-danger" onClick={() => onDislike(opinion.opinionId)}>👎</button>
-        <button className="btn btn-sm btn-outline-warning" onClick={() => onReport(opinion.opinionId)}>🚨</button>
+      <div className="opinion-content">
+        <p>{opinion.content}</p>
       </div>
     </li>
   );
