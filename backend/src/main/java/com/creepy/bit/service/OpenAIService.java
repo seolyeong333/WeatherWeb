@@ -85,6 +85,7 @@ public class OpenAIService {
         ResponseEntity<Map> response = restTemplate.postForEntity(url, request, Map.class);
         List<Map<String, Object>> choices = (List<Map<String, Object>>) response.getBody().get("choices");
         Map<String, Object> message = (Map<String, Object>) choices.get(0).get("message");
+        System.out.println((String) message.get("content"));
         return (String) message.get("content");
 
     } catch (HttpClientErrorException.TooManyRequests e) {
