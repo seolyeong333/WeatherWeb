@@ -12,9 +12,11 @@ import com.creepy.bit.domain.WeatherMessageDto;
 import com.creepy.bit.domain.FashionColorsDto;
 import com.creepy.bit.domain.TarotCardDto;
 import com.creepy.bit.domain.TarotColorDto;
+import com.creepy.bit.domain.TarotPlayLogsDto;
 
 import org.apache.ibatis.annotations.Mapper;
 import java.util.List;
+import java.time.LocalDate;
 import org.apache.ibatis.annotations.Param;
 
 @Mapper
@@ -157,7 +159,19 @@ public interface MainMapper {
     
 
     // 운세 페이지
-    List<TarotCardDto> getCardsByIds(int categoryId, List<Integer> cardIds);
+    // 타로 카드 정보 가져오기
+    List<TarotCardDto> getCardsByIds(List<Integer> cardIds);
 
+    // 타로 카드 추천 색 가져오기
     List<TarotColorDto> getColorsByCardId(int cardId);
+
+    // 당일 플레이 여부 확인
+    int countPlayLogsToday(int userId, LocalDate today);
+
+    // 플레이 결과 저장 
+    void insertPlayLog(TarotPlayLogsDto log);
+
+    // 내 플레이 결과 가져오기
+    List<TarotPlayLogsDto> getPlayMyLogs(int userId);
+
 }

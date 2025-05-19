@@ -10,7 +10,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/weather")  // 모든 날씨 관련 API는 이 경로(/api/weather)로 시작
-@CrossOrigin(origins = "http://localhost:5173")     // 프론트엔드(React 등)에서 호출 가능하게 CORS 허용
 public class WeatherController {
 
     @Autowired

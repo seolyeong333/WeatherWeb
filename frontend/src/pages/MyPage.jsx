@@ -8,6 +8,7 @@ import ConfirmModal from "../components/MyPage/ConfirmModal";
 import WeatherOverlay from "../components/MyPage/WeatherOverlay";
 import UserInfoTab from "../components/MyPage/UserInfoTab";
 import ChangePasswordTab from "../components/MyPage/ChangePasswordTab";
+import TodayTarotResultTab from "../components/MyPage/TodayTarotResultTab";
 import OpinionTab from "../components/MyPage/OpinionTab";
 import ReportTab from "../components/MyPage/ReportTab";
 import BookmarkTab from "../components/MyPage/BookmarkTab";
@@ -94,6 +95,9 @@ function MyPage() {
                 <Nav.Link eventKey="reports"><FaExclamationCircle /> 신고 내역</Nav.Link>
               </Nav.Item>
               <Nav.Item>
+                <Nav.Link eventKey="tarot">🃏 오늘의 타로</Nav.Link>
+              </Nav.Item>
+              <Nav.Item>
                 <Nav.Link eventKey="alarms"><FaBell /> 알림 설정</Nav.Link>
               </Nav.Item>
             </Nav>
@@ -126,6 +130,7 @@ function MyPage() {
             {activeTab === "bookmark" && <BookmarkTab userInfo={userInfo} />}
             {activeTab === "opinions" && <OpinionTab userInfo={userInfo} />}
             {activeTab === "reports" && <ReportTab userInfo={userInfo} />}
+            {activeTab === "tarot" && <TodayTarotResultTab userId={userInfo?.userId} />}
             {activeTab === "alarms" &&   <>
               <AlarmTab userInfo={userInfo} />
               <AlarmListTab userId={userInfo?.userId} />

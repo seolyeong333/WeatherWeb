@@ -48,11 +48,13 @@ public class OpenAIService {
                 .map(color -> color.get("colorName"))
                 .reduce((a, b) -> a + ", " + b)
                 .orElse("");
-            builder.append(String.format(" 👉 연관된 색상: %s\n", colorList));
+            builder.append(String.format(" 연관된 색상: %s\n", colorList));
         }
     }
 
     builder.append("\n이 카드들을 종합해서 오늘 하루를 위한 감성적이고 통합적인 운세 메시지를 한 문단으로 한국어로 써줘.");
+
+    System.out.println(builder.toString());
 
     return callOpenAI(builder.toString());
 }
@@ -63,6 +65,9 @@ public class OpenAIService {
     String url = "https://api.openai.com/v1/chat/completions";
     HttpHeaders headers = new HttpHeaders();
     headers.setContentType(MediaType.APPLICATION_JSON);
+     String apiKey = openAIProperties.getApiKey();
+    System.out.println("🔑 현재 API 키: " + apiKey);  
+  
     headers.setBearerAuth(openAIProperties.getApiKey());
 
     Map<String, Object> body = new HashMap<>();
