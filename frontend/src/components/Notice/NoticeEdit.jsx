@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import "../../styles/notice.css";
-
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 function NoticeEdit({ id, onBack }) {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
 
   useEffect(() => {
-    fetch(`http://localhost:8080/api/notices/${id}`)
+    fetch(`${API_BASE_URL}/api/notices/${id}`)
       .then(res => res.json())
       .then(data => {
         setTitle(data.title);
@@ -18,7 +18,7 @@ function NoticeEdit({ id, onBack }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const res = await fetch(`http://localhost:8080/api/notices/${id}`, {
+    const res = await fetch(`${API_BASE_URL}/api/notices/${id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ noticeId: id, title, content }),

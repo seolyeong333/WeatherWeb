@@ -2,6 +2,7 @@
 import { Card } from "react-bootstrap";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 function BookmarkTab({ userInfo }) {
   const [bookmarks, setBookmarks] = useState([]);
@@ -14,7 +15,7 @@ function BookmarkTab({ userInfo }) {
       const token = localStorage.getItem("token");
 
       try {
-        const res = await fetch("http://localhost:8080/api/bookmarks", {
+        const res = await fetch(`${API_BASE_URL}/api/bookmarks`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

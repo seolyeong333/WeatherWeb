@@ -9,7 +9,8 @@ import view4col from "../assets/view-4col.png";
 import { getCurrentWeather} from "../api/weather";
 import Header from "../components/Header";
 import "../styles/TodayLook.css";
- 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 function TodayLook() {
   const navigate = useNavigate();
   const todayColor = getTodayColor(); // 오늘 날짜로 고정된 색상 하나 추출
@@ -123,7 +124,7 @@ useEffect(() => {
     setLoading(true);
     const encodedColor = encodeURIComponent(selectedColorName);
     fetch(
-      `http://localhost:8080/api/crawl/onthelook?color=${encodedColor}&gender=${gender}&type=${type}`
+      `${API_BASE_URL}/api/crawl/onthelook?color=${encodedColor}&gender=${gender}&type=${type}`
     )
       .then((res) => res.json())
       .then((data) => {

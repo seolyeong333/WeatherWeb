@@ -5,6 +5,7 @@ import { useNavigate, useLocation, useSearchParams } from "react-router-dom";
 import Lottie from "lottie-react";
 import loadingAnimation from "../../assets/loading.json"; // 애니메이션 파일
 import "../../styles/TodayPlace/TodayPlaceList.css";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 function TodayPlaceList() {
   const navigate = useNavigate();
@@ -34,7 +35,7 @@ function TodayPlaceList() {
         const lon = pos.coords.longitude;
         const categoryCode = categoryCodeMap[category] || "AT4";
   
-        let url = `http://localhost:8080/api/kakao/places?lat=${lat}&lon=${lon}`;
+        let url = `${API_BASE_URL}/api/kakao/places?lat=${lat}&lon=${lon}`;
         if (keyword) {
           url += `&keyword=${encodeURIComponent(keyword)}`;
           setSelectedCategory(null);
@@ -53,8 +54,8 @@ function TodayPlaceList() {
             data.map(async (place) => {
               try {
                 const [imageRes, ratingRes] = await Promise.all([
-                  fetch(`http://localhost:8080/api/google/image?name=${encodeURIComponent(place.placeName)}&lat=${place.y}&lon=${place.x}`),
-                  fetch(`http://localhost:8080/api/google/rating?name=${encodeURIComponent(place.placeName)}&lat=${place.y}&lon=${place.x}`)
+                  fetch(`${API_BASE_URL}/api/google/image?name=${encodeURIComponent(place.placeName)}&lat=${place.y}&lon=${place.x}`),
+                  fetch(`${API_BASE_URL}/api/google/rating?name=${encodeURIComponent(place.placeName)}&lat=${place.y}&lon=${place.x}`)
                 ]);
           
                 const imageUrl = await imageRes.text();
@@ -89,7 +90,7 @@ function TodayPlaceList() {
     const token = localStorage.getItem("token");
     if (!token) return;
     try {
-      const res = await fetch("http://localhost:8080/api/bookmarks", {
+      const res = await fetch(`${API_BASE_URL}/api/bookmarks`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const bookmarks = await res.json();
@@ -130,7 +131,7 @@ function TodayPlaceList() {
     try {
       if (bookmarkId) {
         // ✅ 북마크 삭제
-        const res = await fetch(`http://localhost:8080/api/bookmarks/${bookmarkId}`, {
+        const res = await fetch(`${API_BASE_URL}/api/bookmarks/${bookmarkId}`, {
           method: "DELETE",
           headers: { Authorization: `Bearer ${token}` },
         });
@@ -139,7 +140,7 @@ function TodayPlaceList() {
         }
       } else {
         // ✅ 북마크 추가
-        const res = await fetch("http://localhost:8080/api/bookmarks", {
+        const res = await fetch(`${API_BASE_URL}/api/bookmarks`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

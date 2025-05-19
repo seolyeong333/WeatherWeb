@@ -1,4 +1,5 @@
 import { useState } from "react";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 function SocialSignup({ email, provider, nickname, onClose }) {
   const [formData, setFormData] = useState({
@@ -38,7 +39,7 @@ function SocialSignup({ email, provider, nickname, onClose }) {
     if (error) return setErrorMessage(error);
 
     try {
-      const res = await fetch("http://localhost:8080/api/users", {
+      const res = await fetch(`${API_BASE_URL}/api/users`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
