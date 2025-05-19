@@ -106,17 +106,17 @@ useEffect(() => {
     "반바지": "shorts", //
     "샌들": "sandals", //
     "린넨 셔츠": "linen-shirt", //
-    "양산": "parasol",
+    "양산": "parasol", //
     "선글라스": "sunglasses",
     "민소매": "sleeveless", //
     "장갑": "gloves",
     "맨투맨": "sweatshirt",
     "선크림": "sunscreen",
     "부츠": "boots",
-    "우산": "umbrella",
+    "우산": "umbrella", //
     "우비": "raincoat",
-    "롱슬리브": "long-sleeve",
-    "슬랙스": "slacks"
+    "롱슬리브": "long-sleeve", //
+    "슬랙스": "slacks" //
   };
   
   // 필터 변경 시 이미지 크롤링 요청
