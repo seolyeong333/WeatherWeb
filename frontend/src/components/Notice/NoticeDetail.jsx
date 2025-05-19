@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import "./notice.css";
+import "../../styles/notice.css";
 import { getUserAuth } from "../../api/jwt";
 
 

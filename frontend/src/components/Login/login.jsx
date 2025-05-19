@@ -4,7 +4,7 @@ import LoginForm from "./LoginForm";
 import SignupForm from "./SignupForm";
 import FindPassword from "./FindPassword";
 import ChangePassword from "./ChangePassword";
-import "./login.css";
+import "../../styles/Login.css";
 
 function Login({ closeLogin, setIsLoggedIn }) {
   const [mode, setMode] = useState("login"); 
@@ -62,10 +62,6 @@ function Login({ closeLogin, setIsLoggedIn }) {
         />
       </>
     )}
-
-
-
-
     </div>
   );
 }

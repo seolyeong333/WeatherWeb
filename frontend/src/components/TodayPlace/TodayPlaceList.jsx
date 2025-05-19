@@ -1,9 +1,10 @@
 // src/pages/TodayPlaceList.jsx
 import { useEffect, useState } from "react";
+import { FaRegBookmark, FaBookmark } from "react-icons/fa";
 import { useNavigate, useLocation, useSearchParams } from "react-router-dom";
 import Lottie from "lottie-react";
 import loadingAnimation from "../../assets/loading.json"; // 애니메이션 파일
-import "./TodayPlaceList.css";
+import "../../styles/TodayPlace/TodayPlaceList.css";
 
 function TodayPlaceList() {
   const navigate = useNavigate();
@@ -51,17 +52,23 @@ function TodayPlaceList() {
           const updated = await Promise.all(
             data.map(async (place) => {
               try {
-                const imageRes = await fetch(
-                  `http://localhost:8080/api/google/image?name=${encodeURIComponent(place.placeName)}&lat=${place.y}&lon=${place.x}`
-                );
+                const [imageRes, ratingRes] = await Promise.all([
+                  fetch(`http://localhost:8080/api/google/image?name=${encodeURIComponent(place.placeName)}&lat=${place.y}&lon=${place.x}`),
+                  fetch(`http://localhost:8080/api/google/rating?name=${encodeURIComponent(place.placeName)}&lat=${place.y}&lon=${place.x}`)
+                ]);
+          
                 const imageUrl = await imageRes.text();
-                return { ...place, imageUrl };
+                const ratingText = await ratingRes.text();
+                const rating = parseFloat(ratingText); // 평점 숫자 변환
+          
+                return { ...place, imageUrl, rating: isNaN(rating) ? null : rating };
               } catch (e) {
-                console.warn("이미지 로딩 실패:", place.placeName);
-                return { ...place, imageUrl: null };
+                console.warn("이미지/평점 로딩 실패:", place.placeName);
+                return { ...place, imageUrl: null, rating: null };
               }
             })
           );
+          
 
           setPlaces(updated);
         } catch (err) {
@@ -151,7 +158,7 @@ function TodayPlaceList() {
   
 
   return (
-    <div style={{ padding: "2rem" }}>
+    <div style={{ padding: "2rem", color: "black" }}>
       <div className="search">
         <input
           type="text"
@@ -160,7 +167,7 @@ function TodayPlaceList() {
           onChange={(e) => setKeyword(e.target.value)}
         />
         <button onClick={() => fetchPlaceList(selectedCategory, keyword)}>🔍</button>
-      </div>
+      </div> 
 
       <div className="label-wrapper">
         {["음식점", "카페", "관광명소"].map((label) => (
@@ -216,14 +223,22 @@ function TodayPlaceList() {
                       e.stopPropagation();
                       toggleBookmark(place);
                     }}
-                    className={`bookmark-button ${isBookmarked ? "active" : ""}`} // ⭐ 조건 클래스
+                    className="bookmark-button"
                     title="북마크"
                   >
-                    {isBookmarked ? "★" : "☆"}
+                    {isBookmarked ? (
+                      <FaBookmark size={20} color="#ffcc00" />
+                    ) : (
+                      <FaRegBookmark size={20} color="#555" />
+                    )}
                   </button>
+
                 </div>
                 <div className="place-card-footer">
                   <span>{place.phone || "📞 없음"}</span>
+                  {place.rating !== undefined && place.rating !== null && (
+                    <span style={{ marginLeft: "8px" }}>⭐ {place.rating}</span>
+                  )}
                 </div>
               </div>
             );
