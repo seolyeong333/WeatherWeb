@@ -208,3 +208,14 @@
   border-color: #5B8DEF;
   color: white;
 }
+
+.bookmark-button-inline {
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  vertical-align: middle;
+  padding-left: -2rem;  
+  transform: translateY(-1px);
+}
