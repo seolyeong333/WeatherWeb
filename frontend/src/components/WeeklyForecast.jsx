@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { getForecast } from "../api/weather";  // 🌤️ OpenWeather 5일 예보 API
 import { Card, Row, Col } from "react-bootstrap";
-import { getKoreanWeatherDescription } from "../api/weatherMapping";  // 영어 설명 → 한국어 변환
+import { getKoreanWeatherDescforWeather } from "../utils/weatherUtil";  // 영어 설명 → 한국어 변환
 import { toKST } from "../hooks/time"; // 한국 시간 변환 함수
 
 /**
@@ -38,7 +38,7 @@ function WeeklyForecast() {
           const tempMax = Math.max(...temps).toFixed(1);
           const icon = items[0].weather[0].icon; // 대표 날씨 아이콘
           const rawDesc = items[0].weather[0].description;
-          const description = getKoreanWeatherDescription(rawDesc); // 자연스러운 한국어 설명
+          const description = getKoreanWeatherDescforWeather(rawDesc); // 자연스러운 한국어 설명
 
           return {
             date,  // yyyy-mm-dd

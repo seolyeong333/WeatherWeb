@@ -9,7 +9,7 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 function TodayTarotResultTab() {
   const [logs, setLogs] = useState([]);
   const [showColorModal, setShowColorModal] = useState(false);
-  const [userColor, setUserColor] = useState({});
+  const [setUserColor] = useState({});
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -17,10 +17,9 @@ function TodayTarotResultTab() {
       const data = await fetchTodayTarotLogs();
       setLogs(data);
     };
-
     loadLogs();
   }, []);
-  
+
   if (!logs || logs.length === 0) {
     return (
       <Card className="mypage-card">

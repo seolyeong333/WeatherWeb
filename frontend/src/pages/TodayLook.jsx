@@ -1,41 +1,43 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Lottie from "lottie-react";
-import loadingAnimation from "../assets/loading.json";
+import FashionIconSection from "../components/TodayLook/FashionIconSection";
 import ColorPickerModal from "../components/ColorPickerModal";
+import Header from "../components/Header";
+import loadingAnimation from "../assets/loading.json";
+import { getKoreanWeatherDescription } from "../utils/weatherUtil";
 import { fancyName, getLuckyColor, getTodayColor } from "../api/colors";
+import { fetchTodayTarotLogs } from "../api/tarot"; 
+import { getCurrentWeather} from "../api/weather";
 import view2col from "../assets/view-2col.png";
 import view4col from "../assets/view-4col.png";
-import { getCurrentWeather} from "../api/weather";
-import Header from "../components/Header";
-import FashionIconSection from "../components/TodayLook/FashionIconSection";
-import { getKoreanWeatherDescription } from "../utils/weatherUtil"
-import { fetchTodayTarotLogs } from "../api/tarot"; 
 import "../styles/TodayLook.css";
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 function TodayLook() {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const { userColorName } = location.state || {};
-  const todayColor = getLuckyColor(userColorName) || getTodayColor(); // 오늘 날짜로 고정된 색상 하나 추출
+
   const [current, setCurrent] = useState(null);
   const [lookImages, setLookImages] = useState([]); // 받아온 코디 이미지 목록
   const [loading, setLoading] = useState(true); // 로딩 상태
+  const [viewType, setViewType] = useState("grid-4"); // "grid-2" 또는 "grid-4" 설정
+  const { userColorName } = location.state || {};
+  const todayColor = getLuckyColor(userColorName) || getTodayColor(); // 오늘 날짜로 고정된 색상 하나 추출
   const [showModal, setShowModal] = useState(false); // 색상 선택 모달 표시 여부
   const [subColorCode, setSubColorCode] = useState(todayColor.hex); // 선택된 색상의 색상 코드
   const [selectedColorName, setSelectedColorName] = useState(todayColor.name); // 선택된 색상 이름
   const [gender, setGender] = useState("MEN"); // 필터: 성별
   const [type, setType] = useState("상의"); // 필터: 종류
-  const [viewType, setViewType] = useState("grid-4"); // "grid-2" 또는 "grid-4" 설정
   const [showIcons, setShowIcons] = useState({}); // 체감온도에 따른 아이콘 출력
   const [hasResult, setHasResult] = useState(false); // 타로 봤는지
+
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const normalizeWeatherType = (rawType) => {
     if (["맑음"].includes(rawType)) return "맑음";
     if (["눈"].includes(rawType)) return "눈";
-    if (["소나기", "이슬비", "뇌우"].includes(rawType)) return "비";
-    if (["박무", "연무", "구름 많음"].includes(rawType)) return "흐림";
+    if (["소나기", "이슬비", "뇌우", "비"].includes(rawType)) return "비";
+    if (["구름 많음", "흐림"].includes(rawType)) return "흐림";
     if (["기타"].includes(rawType)) return "기타";
     return rawType;
   };
@@ -99,7 +101,6 @@ useEffect(() => {
       const data = await fetchTodayTarotLogs();
       setHasResult(data && data.length > 0);
     };
-
     loadLogs();
   }, []);
   
