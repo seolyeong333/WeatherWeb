@@ -42,4 +42,10 @@ public class OpinionService {
     public void deleteOpinion(int opinionId) {
         mainMapper.deleteOpinion(opinionId);
     }
+
+    // 장소에 대한 평균 평점 조회
+    public Double getAverageRatingByPlaceId(String placeId) {
+        return mainMapper.getAverageRatingByPlaceId(placeId);
+    }
+
 }

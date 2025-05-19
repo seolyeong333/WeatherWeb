@@ -219,3 +219,24 @@
   padding-left: -2rem;  
   transform: translateY(-1px);
 }
+.star-wrapper {
+  display: flex;
+  gap: 2px;
+}
+
+.star {
+  position: relative;
+  font-size: 22px;
+  color: #ccc; /* 기본 별색 (회색) */
+}
+
+.star::before {
+  content: '★';
+  position: absolute;
+  top: 0;
+  left: 0;
+  color: #ffcc00; /* 채워진 별 */
+  width: var(--star-percent, 0%);
+  overflow: hidden;
+  white-space: nowrap;
+}
