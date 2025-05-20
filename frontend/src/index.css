@@ -77,11 +77,3 @@ button:focus-visible {
 * {
   font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 }
-
-.small-color-modal .modal-dialog {
-  max-width: 360px !important;
-}
-
-.default-color-modal .modal-dialog {
-  max-width: 600px !important;
-}
