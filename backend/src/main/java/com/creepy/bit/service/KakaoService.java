@@ -108,7 +108,6 @@ public class KakaoService {
                 .queryParam("query", keyword)
                 .queryParam("x", lon)
                 .queryParam("y", lat)
-                .queryParam("radius", 2000)
                 .build()
                 .toUriString();
     } else {
@@ -189,12 +188,4 @@ public class KakaoService {
             doc.optString("distance", null)
         );
     }
-
-
-
-
-
-
-
-
 }

@@ -1,4 +1,3 @@
-// src/components/MyPage/ReportTab.jsx
 import { Card } from "react-bootstrap";
 import { useState, useEffect } from "react";
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
@@ -27,20 +26,29 @@ function ReportTab({ userInfo }) {
         <h5 className="fw-semibold mb-3">🚨 신고한 내역</h5>
         <p>총 <strong>{reports.length}</strong>건의 신고를 접수했습니다.</p>
         {reports.length > 0 ? (
-          <ul className="list-group list-group-flush">
-            {reports.map((report) => (
-              <li
-                key={report.reportId}
-                className="list-group-item d-flex flex-column align-items-start"
-              >
-                <div><strong>📄 신고자 고유 아이디:</strong> {report.userId}</div>
-                <div><strong>📝 내용:</strong> {report.content}</div>
-                <div><strong>❗ 신고 대상:</strong> {report.targetType}</div>
-                <div><strong>🕒 작성일:</strong> {report.createdAt?.substring(0, 16)}</div>
-                <div><strong>📌 상태:</strong> {report.status}</div>
-              </li>
-            ))}
-          </ul>
+          <ul className="list-unstyled">
+          {reports.map((report) => (
+            <li key={report.reportId} className="list-item">
+              <div className="list-header">
+                <div className="list-text">
+                  {report.targetType === "place" && (
+                    <div><strong>📍 장소 이름:</strong> {report.placeName}</div>
+                  )}
+                  <div><strong>📝 내용:</strong> {report.content}</div>
+                  <div>
+                  <strong>📌 상태:</strong>{" "}
+                  {report.status === "PENDING"
+                    ? "처리중.."
+                    : report.status === "RESOLVED"
+                    ? "처리완료"
+                    : report.status}
+                </div>
+                  <div><strong>🕒 작성일:</strong> {report.createdAt?.substring(0, 16)}</div>
+                </div>
+              </div>
+            </li>
+          ))}
+        </ul>        
         ) : (
           <p>아직 신고한 내용이 없습니다.</p>
         )}
