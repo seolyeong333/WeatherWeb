@@ -1,21 +1,40 @@
 // src/components/MyPage/UserInfoTab.jsx
-import { Button, Card } from "react-bootstrap";
+import { Button, Card, Row, Col } from "react-bootstrap";
 
 function UserInfoTab({ userInfo, setMode, setShowModal }) {
-
   return (
     <Card className="mypage-card">
       <Card.Body>
-        <h5 className="fw-semibold mb-3">👤 회원 정보</h5>
+        <h5 className="fw-bold mb-4">👤 회원 정보</h5>
         {userInfo ? (
-          <>
-            <p><strong>닉네임:</strong> {userInfo.nickname}</p>
-            <p><strong>이메일:</strong> {userInfo.email}</p>
-            <p><strong>성별:</strong> {userInfo.gender === "male" ? "남성" : userInfo.gender === "female" ? "여성" : "기타"}</p>
-            <p><strong>생일:</strong> {userInfo.birthday}</p>
-            <p><strong>가입일:</strong> {userInfo.createdAt?.substring(0, 10)}</p>
-          </>
-        ) : <p>회원 정보를 불러오는 중입니다...</p>}
+          <Row className="info-list">
+            <Col sm={6} className="mb-3">
+              <strong>닉네임</strong>
+              <p className="info-value">{userInfo.nickname}</p>
+            </Col>
+            <Col sm={6} className="mb-3">
+              <strong>이메일</strong>
+              <p className="info-value">{userInfo.email}</p>
+            </Col>
+            <Col sm={6} className="mb-3">
+              <strong>성별</strong>
+              <p className="info-value">
+                {userInfo.gender === "male" ? "남성" : userInfo.gender === "female" ? "여성" : "기타"}
+              </p>
+            </Col>
+            <Col sm={6} className="mb-3">
+              <strong>생일</strong>
+              <p className="info-value">{userInfo.birthday}</p>
+            </Col>
+            <Col sm={6} className="mb-3">
+              <strong>가입일</strong>
+              <p className="info-value">{userInfo.createdAt?.substring(0, 10)}</p>
+            </Col>
+          </Row>
+        ) : (
+          <p>회원 정보를 불러오는 중입니다...</p>
+        )}
+
         <div className="btn-group-bottom mt-4">
           <Button variant="secondary" onClick={() => {
             setMode("password");
