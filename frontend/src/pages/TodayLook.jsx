@@ -6,6 +6,7 @@ import ColorPickerModal from "../components/ColorPickerModal";
 import Header from "../components/Header";
 import loadingAnimation from "../assets/loading.json";
 import { getKoreanWeatherDescription } from "../utils/weatherUtil";
+import { getSeasonalMessage } from "../utils/getSeasonalMsg";
 import { fancyName, getLuckyColor, getTodayColor } from "../api/colors";
 import { fetchTodayTarotLogs } from "../api/tarot";
 import { getCurrentWeather } from "../api/weather";
@@ -16,17 +17,15 @@ import "../styles/TodayLook.css";
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 function TodayLook() {
+
   const navigate = useNavigate();
-  const location = useLocation(); // <--- useLocation() 호출을 여기로 이동
+  const location = useLocation();
 
   const [current, setCurrent] = useState(null);
   const [lookImages, setLookImages] = useState([]); // 받아온 코디 이미지 목록
   const [loading, setLoading] = useState(true); // 로딩 상태
   const [viewType, setViewType] = useState("grid-4"); // "grid-2" 또는 "grid-4" 설정
-
-  // location이 초기화된 후 사용
   const { userColorName } = location.state || {};
-
   const todayColor = getLuckyColor(userColorName) || getTodayColor(); // 오늘 날짜로 고정된 색상 하나 추출
   const [showModal, setShowModal] = useState(false); // 색상 선택 모달 표시 여부
   const [subColorCode, setSubColorCode] = useState(todayColor.hex); // 선택된 색상의 색상 코드
@@ -137,7 +136,7 @@ function TodayLook() {
                   : `${fancyName(todayColor.name)} & ${fancyName(selectedColorName)}`}
               </p>
               <p style={{ margin: 0, fontSize: "0.9rem", color: "#666" }}>
-                봄날의 따사로운 햇살과 어울리는 오늘의 색상
+                { getSeasonalMessage() }
               </p>
             </div>
           </div>

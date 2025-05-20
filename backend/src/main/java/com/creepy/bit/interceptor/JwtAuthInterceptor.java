@@ -23,10 +23,12 @@ public class JwtAuthInterceptor implements HandlerInterceptor {
             String token = authHeader.replace("Bearer ", "");
 
             if (jwtUtil.validateToken(token)) {
+                int userId = jwtUtil.getUserId(token);
                 String email = jwtUtil.getEmail(token);
                 String nickname = jwtUtil.getNickname(token);
                 String auth = jwtUtil.getAuth(token);
 
+                request.setAttribute("userId", userId);
                 request.setAttribute("email", email);
                 request.setAttribute("nickname", nickname);
                 request.setAttribute("auth", auth);

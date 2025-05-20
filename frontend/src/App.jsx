@@ -1,23 +1,31 @@
-// ✅ src/App.jsx
+// src/App.jsx
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import MainPage from "./pages/MainPage";
-import LoginSuccess from "./pages/LoginSuccess";
-import MyPage from "./pages/MyPage";
-import AdminPage from "./pages/AdminPage";
+import { toast } from "react-toastify";
+import CustomToastContainer from "./components/CustomToastContainer";
+import { WeatherProvider } from "./components/WeatherContext";
+import useAlarmSSE from "./hooks/useAlarmSSE";
+import TodayWeatherPage from "./pages/TodayWeatherPage";
 import TodayPlace from "./pages/TodayPlace";
 import TodayTarot from "./pages/TodayTarot";
-import { WeatherProvider } from "./components/WeatherContext";
 import TodayLook from "./pages/TodayLook";
-import TodayWeatherPage from "./pages/TodayWeatherPage";
 import NoticePage from "./pages/NoticePage"; 
+import MyPage from "./pages/MyPage";
+import AdminPage from "./pages/AdminPage";
 import SocialSignup from "./pages/SocialSignup";
+import LoginSuccess from "./pages/LoginSuccess";
 
 function App() {
+  const token = localStorage.getItem("token");
+
+  useAlarmSSE(token, (msg) => {
+    toast.info(msg);
+  });
+
   return (
-    <WeatherProvider> {/* ✅ 전체 앱을 감싸줌 */}
+    <WeatherProvider>
+      <CustomToastContainer />
       <BrowserRouter>
         <Routes>
-          <Route path="/main" element={<MainPage />} />
           <Route path="/kakaologinsuccess" element={<LoginSuccess/>} />
           <Route path="/googleloginsuccess" element={<LoginSuccess/>} />
           <Route path="/naverloginsuccess" element={<LoginSuccess/>} />
@@ -26,7 +34,7 @@ function App() {
           <Route path="/today-place/*" element={<TodayPlace />} />
           <Route path="/today-look" element={<TodayLook />} />
           <Route path="/horoscope/*" element={<TodayTarot />} />
-          <Route path="/today-weather" element={<TodayWeatherPage />} />
+          <Route path="/" element={<TodayWeatherPage />} />
           <Route path="/notice" element={<NoticePage />} />
           <Route path="/socialsignup" element={<SocialSignup />} />
         </Routes>

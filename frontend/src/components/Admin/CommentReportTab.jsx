@@ -93,7 +93,7 @@ function CommentReportTab({ onReportClick }) {
                 <td>{report.reporterNickname}</td>
                 <td>{report.content}</td>
                 <td>{report.commentText}</td>
-                <td>
+                <td style={{ whiteSpace: "nowrap" }}>
                   <button
                     className="btn btn-info btn-sm me-1"
                     onClick={() => handleAction(report.reportId, "보기", report.targetId, report.placeName)}
@@ -101,7 +101,7 @@ function CommentReportTab({ onReportClick }) {
                     보기
                   </button>
                   <button
-                    className="btn btn-success btn-sm me-1"
+                    className="btn btn-secondary btn-sm me-1"
                     onClick={() => handleAction(report.reportId, "무시", report.targetId)}
                   >
                     무시

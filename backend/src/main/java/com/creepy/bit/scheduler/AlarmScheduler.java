@@ -5,6 +5,7 @@ import com.creepy.bit.service.AlarmService;
 import com.creepy.bit.service.WeatherService;
 import com.creepy.bit.service.MailService;
 import com.creepy.bit.service.UserService;
+import com.creepy.bit.controller.AlarmSseController;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -12,10 +13,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
-
 import jakarta.annotation.PostConstruct;
 import jakarta.mail.MessagingException;
-
 import java.util.List;
 
 @Component
@@ -32,6 +31,9 @@ public class AlarmScheduler {
 
     @Autowired
     private UserService userService; 
+
+    @Autowired
+    private AlarmSseController alarmSseController;
 
     @Async
     @EventListener(ApplicationReadyEvent.class)
@@ -113,13 +115,21 @@ public class AlarmScheduler {
                     </div>
                 """.formatted(currentWeather, currentAir);
 
-                try {
-                    mailService.sendGeneralMail(to, subject, content);  // 🔁 일반 메시지 전송용 메서드로 변경
+               try {
+                    mailService.sendGeneralMail(to, subject, content);
                     System.out.println("📨 이메일 전송 완료 → " + to);
                 } catch (MessagingException e) {
                     System.out.println("❌ 이메일 전송 실패: " + e.getMessage());
                 }
 
+                String alarmMsg = String.format("🔔 현재 날씨: %s, 공기질: %s\n(알림 설정 조건과 동일)", currentWeather, currentAir);
+
+                // 🟢 프론트에 실시간 알림도 시도
+                if (alarmSseController.hasEmitter(alarm.getUserId())) {
+                    alarmSseController.sendAlarm(alarm.getUserId(), alarmMsg);
+                } else {
+                    System.out.println("🚫 SSE emitter 없음 (프론트 미접속 상태) → userId=" + alarm.getUserId());
+                }
 
             } else {
                 System.out.println("❌ [알림 미발송] 조건 불일치");

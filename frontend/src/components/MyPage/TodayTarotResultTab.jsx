@@ -4,12 +4,11 @@ import { Card } from "react-bootstrap";
 import { fetchTodayTarotLogs } from "../../api/tarot";
 import { COLORS } from "../../api/colors";
 import ColorPickerModal from "../ColorPickerModal";
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 function TodayTarotResultTab() {
   const [logs, setLogs] = useState([]);
   const [showColorModal, setShowColorModal] = useState(false);
-  const [userColor, setUserColor] = useState(null);
+  const [userColor, setUserColor] = useState({});
   const navigate = useNavigate();
 
   useEffect(() => {

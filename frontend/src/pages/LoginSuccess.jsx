@@ -20,7 +20,7 @@ function LoginSuccess() {
     } else {
       alert("토큰 없음. 카카오 로그인 실패");
     }
-    navigate("/main"); 
+    navigate("/"); 
   }, [navigate]);
 
   return <div> <h2>로그인 처리 중입니다...</h2> </div>;

@@ -14,7 +14,7 @@
 }
 
 .header-section {
-  background: url('/forest.jpg') no-repeat center center/cover;
+  background: url('/building.jpg') no-repeat center center/cover;
   height: 360px;
   position: relative;
   color: white;
@@ -25,7 +25,7 @@
 }
 
 .header-overlay {
-  background-color: rgba(0, 0, 0, 0.4);
+  background-color: rgba(0, 0, 0, 0.5);
   padding: 40px;
   border-radius: 16px;
   text-align: center;
@@ -258,4 +258,62 @@
 .map-wrapper {
   padding: 0 1rem; /* 좌우 여백 확보 */
   box-sizing: border-box;
+}
+/* ⛈️ 천둥 번개 깜빡임 오버레이 */
+.weather-thunder-overlay {
+  position: fixed;
+  inset: 0; /* top: 0; right: 0; bottom: 0; left: 0; */
+  background: rgba(255, 255, 255, 0.7); /* 깜빡일 때의 배경색 */
+  animation: flash 8s ease-in-out infinite; /* 'flash' 애니메이션 적용 */
+  pointer-events: none;
+  z-index: 9999; /* 다른 요소들 위에 표시 (비 오버레이와 동일 레벨) */
+}
+
+/* 천둥 번쩍이는 효과 (두 번 깜빡임) */
+@keyframes flash {
+  0%, 3% { opacity: 0; }
+  4% { opacity: 1; }   /* 첫 번쩍 */
+  5% { opacity: 0; }
+
+  6%, 7% { opacity: 0; }
+  8% { opacity: 0.8; } /* 두 번째 번쩍 */
+  9% { opacity: 0; }
+
+  100% { opacity: 0; }
+}
+/* 🌧️ 비 애니메이션 오버레이 */
+.rain-overlay {
+  position: fixed;
+  inset: 0; /* top: 0; right: 0; bottom: 0; left: 0; */
+  pointer-events: none; /* 클릭 등 이벤트 무시 */
+  z-index: 9999; /* 다른 요소들 위에 표시 */
+  overflow: hidden; /* 컨테이너를 벗어나는 빗방울 숨김 */
+}
+
+/* 빗방울 애니메이션 스타일 */
+.raindrop {
+  width: 3px;
+  height: 24px;
+  background: rgba(0, 0, 255, 0.25); /* 빗방울 색상 */
+  border-radius: 1px;
+  position: absolute; /* rain-overlay 내부에서 절대 위치 */
+  top: -30px; /* 화면 위에서 시작 */
+  animation-name: fall; /* 아래 정의된 @keyframes fall 애니메이션 적용 */
+  animation-timing-function: linear; /* 일정한 속도로 떨어짐 */
+  animation-iteration-count: infinite; /* 무한 반복 */
+  pointer-events: none;
+  opacity: 0.6;
+  filter: blur(0.2px); /* 약간의 흐림 효과 */
+}
+
+/* 빗방울 낙하 애니메이션 */
+@keyframes fall {
+  0% {
+    transform: translate(0, 0); /* 시작 위치 */
+    opacity: 0.6;
+  }
+  100% {
+    transform: translate(10px, 120vh); /* 오른쪽 아래로 흐르며 화면 아래로 사라짐 (120vh) */
+    opacity: 0; /* 사라질 때 투명해짐 */
+  }
 }
