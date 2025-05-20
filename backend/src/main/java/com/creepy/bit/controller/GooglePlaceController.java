@@ -16,7 +16,7 @@ public class GooglePlaceController {
 
     // 장소 이름과 좌표(lat, lon)를 받아 대표 이미지 URL 반환
     @GetMapping("/image")
-    public String getPlaceImage(@RequestParam String name, @RequestParam double lat, @RequestParam double lon) {
-        return googlePlaceService.getPlaceImageUrl(name, lat, lon);
+    public String getPlaceImage(@RequestParam String name) {
+        return googlePlaceService.getPlaceImageUrl(name);
     }
 }

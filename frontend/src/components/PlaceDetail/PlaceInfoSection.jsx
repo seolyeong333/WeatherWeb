@@ -19,24 +19,34 @@ function PlaceInfoSection({
   return (
     <section className="section-2">
       <h3 className="place-subtitle">{place.placeName}</h3>
-      <p className="description">
-       {place.categoryName} <br />
-        📍 {place.addressName} <br />
-        🛣️ 도로명: {place.roadAddressName} <br />
-        📞 {place.phone || "전화번호 없음"} <br />
-      </p>
 
-      {averageRating !== null ? (
-        <div className="rating-text">
-          ⭐ 평점: {averageRating.toFixed(1)} &nbsp; {renderStars(averageRating)}
+      <div className="info-block">
+        <div className="info-row">
+          <span className="info-label">🏷️ 분류</span>
+          <span className="info-value">{place.categoryName}</span>
         </div>
-      ) : (
-        <p className="rating-text">⭐ 평점: 없음</p>
-      )}
+        <div className="info-row">
+          <span className="info-label">📍 지번 주소</span>
+          <span className="info-value">{place.addressName}</span>
+        </div>
+        { place.roadAddressName &&
+        <div className="info-row">
+          <span className="info-label">🛣️ 도로명 주소</span>
+          <span className="info-value">{place.roadAddressName}</span>
+        </div> }
+        {place.phone &&
+        <div className="info-row">
+          <span className="info-label">📞 전화번호</span>
+          <span className="info-value">{place.phone}</span>
+        </div> }
+      </div>
 
       <a className="kakao-link-button" href={place.placeUrl} target="_blank" rel="noreferrer">
         🔗 카카오맵에서 보기
       </a>
+
+
+
 
       <OpinionList
         opinions={opinions}

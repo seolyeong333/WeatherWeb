@@ -1,8 +1,11 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Lottie from "lottie-react";
+import loadingAnimation from "../../assets/loading.json";
 import ColorPickerModal from "../ColorPickerModal";
 import { COLORS } from "../../api/colors"; 
 import "../../styles/TarotAnimation.css";
+
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 function Result({ categoryId, selected }) {
@@ -10,13 +13,15 @@ function Result({ categoryId, selected }) {
   const [showModal, setShowModal] = useState(false);
   const [message, setMessage] = useState(""); // 🔮 감성 메시지 상태
   const [showColorModal, setShowColorModal] = useState(false);
+  const [isLoading, setIsLoading] = useState(true); // 로딩 상태 추가
+
   const resultColors = [...new Set(
     cardInfos.flatMap(c => c.colors.map(cl => cl.colorName))
-    )];
+  )];
   const modalColors = COLORS.filter(c => resultColors.includes(c.name));
   const [userColor, setUserColor] = useState({});
   const navigate = useNavigate();
-  
+
   useEffect(() => {
     const fetchResult = async () => {
       try {
@@ -32,17 +37,16 @@ function Result({ categoryId, selected }) {
         });
 
         const data = await res.json();
-        setCardInfos(data.cards);     // 카드 정보
-        setMessage(data.message);     // 감성 메시지
-        console.log("🎴 카드 정보:", data.cards);
-        console.log("🔮 감성 메시지:", data.message);
+        setCardInfos(data.cards);
+        setMessage(data.message);
       } catch (err) {
         console.error("타로 결과 요청 실패:", err);
+      } finally {
+        setIsLoading(false); // 로딩 종료
       }
     };
 
     fetchResult();
-
     const timer = setTimeout(() => setShowModal(true), 1000);
     return () => clearTimeout(timer);
   }, [categoryId, selected]);
@@ -50,11 +54,19 @@ function Result({ categoryId, selected }) {
   const handleGoToLook = () => {
     const allColors = cardInfos.flatMap((card) => card.colors.map((c) => c.colorName));
     const luckyColor = allColors[0] || "옐로우";
-
     navigate("/today-look", {
       state: { color: luckyColor },
     });
   };
+
+  if (isLoading) {
+    return (
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "70vh" }}>
+        <Lottie animationData={loadingAnimation} loop={true} style={{ width: 200, height: 200 }} />
+        <p style={{ marginTop: "1rem", fontSize: "1.1rem" }}>ONDA AI가 당신의 운세를 확인하는 중입니다...</p>
+      </div>
+    );
+  }
 
   return (
     <div style={{ textAlign: "center", padding: "3rem" }}>
@@ -96,7 +108,7 @@ function Result({ categoryId, selected }) {
 
       {showModal && (
         <div className="modal-overlay">
-          <div className="modal-content">
+          <div className="modal-content1">
             <h3 style={{ marginBottom: "2rem", fontFamily: "'Gowun Dodum', sans-serif" }}>
               🔮 오늘의 타로 메시지
             </h3>
@@ -121,13 +133,13 @@ function Result({ categoryId, selected }) {
           </div>
         </div>
       )}
-      
+
       <ColorPickerModal
         show={showColorModal}
         colors={modalColors}
         onClose={() => setShowColorModal(false)}
         onSelect={(color) => {
-          setUserColor(color); // { name, hex }
+          setUserColor(color);
           navigate('/today-look', { state: { userColorName: color.name } });
         }}
       />

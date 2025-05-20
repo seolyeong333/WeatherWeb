@@ -52,6 +52,7 @@ public class KakaoController {
     @GetMapping("/places")
     public ResponseEntity<List<KakaoMapDto>> getPlaces(@RequestParam double lat, @RequestParam double lon, @RequestParam(required = false) String category,  @RequestParam(required = false) String keyword ) {
         System.out.println("KakaoController GET /places 호출");
+        System.out.println(keyword + category);
         List<KakaoMapDto> result = kakaoService.searchPlacesByCategory(lat, lon, category, keyword);
         return ResponseEntity.ok(result);
     }

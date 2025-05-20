@@ -157,7 +157,7 @@
 }
 
 /* 모달 박스 */
-.modal-content {
+.modal-content1 {
   background: white;
   padding: 2rem 3rem;
   border-radius: 12px;
@@ -168,12 +168,12 @@
   animation: modalFadeIn 0.4s ease-in-out;
 }
 
-.modal-content h3 {
+.modal-content1 h3 {
   font-size: 1.4rem;
   margin-bottom: 1rem;
 }
 
-.modal-content button {
+.modal-content1 button {
   margin-top: 1.5rem;
   background-color: #5B8DEF;
   color: white;

@@ -14,7 +14,7 @@
 }
 
 .header-section {
-  background: url('/forest.jpg') no-repeat center center/cover;
+  background: url('/building.jpg') no-repeat center center/cover;
   height: 360px;
   position: relative;
   color: white;
@@ -25,7 +25,7 @@
 }
 
 .header-overlay {
-  background-color: rgba(0, 0, 0, 0.4);
+  background-color: rgba(0, 0, 0, 0.5);
   padding: 40px;
   border-radius: 16px;
   text-align: center;
@@ -258,4 +258,91 @@
 .map-wrapper {
   padding: 0 1rem; /* 좌우 여백 확보 */
   box-sizing: border-box;
+}
+/* ⛈️ 천둥 번개 깜빡임 오버레이 */
+.weather-thunder-overlay {
+  position: fixed;
+  inset: 0; /* top: 0; right: 0; bottom: 0; left: 0; */
+  background: rgba(255, 255, 255, 0.7); /* 깜빡일 때의 배경색 */
+  animation: flash 8s ease-in-out infinite; /* 'flash' 애니메이션 적용 */
+  pointer-events: none;
+  z-index: 9999; /* 다른 요소들 위에 표시 (비 오버레이와 동일 레벨) */
+}
+
+/* 천둥 번쩍이는 효과 (두 번 깜빡임) */
+@keyframes flash {
+  0%, 3% { opacity: 0; }
+  4% { opacity: 1; }   /* 첫 번쩍 */
+  5% { opacity: 0; }
+
+  6%, 7% { opacity: 0; }
+  8% { opacity: 0.8; } /* 두 번째 번쩍 */
+  9% { opacity: 0; }
+
+  100% { opacity: 0; }
+}
+/* 🌧️ 비 애니메이션 오버레이 */
+.rain-overlay {
+  position: fixed;
+  inset: 0; /* top: 0; right: 0; bottom: 0; left: 0; */
+  pointer-events: none; /* 클릭 등 이벤트 무시 */
+  z-index: 9999; /* 다른 요소들 위에 표시 */
+  overflow: hidden; /* 컨테이너를 벗어나는 빗방울 숨김 */
+}
+
+/* 빗방울 애니메이션 스타일 */
+.raindrop {
+  width: 3px;
+  height: 24px;
+  background: rgba(0, 0, 255, 0.25); /* 빗방울 색상 */
+  border-radius: 1px;
+  position: absolute; /* rain-overlay 내부에서 절대 위치 */
+  top: -30px; /* 화면 위에서 시작 */
+  animation-name: fall; /* 아래 정의된 @keyframes fall 애니메이션 적용 */
+  animation-timing-function: linear; /* 일정한 속도로 떨어짐 */
+  animation-iteration-count: infinite; /* 무한 반복 */
+  pointer-events: none;
+  opacity: 0.6;
+  filter: blur(0.2px); /* 약간의 흐림 효과 */
+}
+
+/* 빗방울 낙하 애니메이션 */
+@keyframes fall {
+  0% {
+    transform: translate(0, 0); /* 시작 위치 */
+    opacity: 0.6;
+  }
+  100% {
+    transform: translate(10px, 120vh); /* 오른쪽 아래로 흐르며 화면 아래로 사라짐 (120vh) */
+    opacity: 0; /* 사라질 때 투명해짐 */
+  }
+}
+/* 맨 위로 가기 버튼 스타일 */
+.scroll-to-top-button {
+  position: fixed;
+  bottom: 40px;
+  right: 40px;
+  background-color: #5B8DEF; /* 버튼 배경색 (테마에 맞게 조절하세요) */
+  color: white; /* 버튼 내부 텍스트/아이콘 색상 */
+  border: none;
+  border-radius: 50%; /* 원형 버튼 */
+  width: 50px;
+  height: 50px;
+  font-size: 20px; /* 내부 텍스트/아이콘 크기 */
+  cursor: pointer;
+  z-index: 1050; /* 다른 요소들 위에 보이도록 설정 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.2); /* 그림자 효과 */
+  transition: background-color 0.3s ease, transform 0.2s ease; /* 부드러운 전환 효과 */
+}
+
+.scroll-to-top-button:hover {
+  background-color: #4a7bdc; /* 마우스 호버 시 배경색 변경 (예시) */
+  transform: translateY(-2px); /* 살짝 위로 떠오르는 효과 */
+}
+
+.scroll-to-top-button:active {
+  transform: translateY(0); /* 클릭 시 원래 위치로 돌아오는 효과 */
 }
