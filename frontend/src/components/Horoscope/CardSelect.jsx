@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { shuffleArray } from "../../utils/shuffle";
+import "../../styles/TarotAnimation.css";
 
 function CardSelect({ categoryId, onFinish }) {
   const [selected, setSelected] = useState([]);
@@ -13,18 +14,30 @@ function CardSelect({ categoryId, onFinish }) {
       setSelected(selected.filter((i) => i !== cardId));
     } else if (selected.length < 3) {
       // 최대 3장까지 선택 가능
+      console.log("Clicked card:", cardId);
       setSelected([...selected, cardId]);
     }
   };
 
   const handleReveal = () => {
     setFlippedCards(selected);   // 선택된 카드 앞면 표시
+    console.log(selected);
     setRevealing(true);          
 
     setTimeout(() => {
       onFinish(selected);                // Result.jsx로 이동
     }, 1500); // 1.5초 후
   };
+
+  const chunkArray = (arr, size) => {
+    const result = [];
+    for (let i = 0; i < arr.length; i += size) {
+      result.push(arr.slice(i, i + size));
+    }
+    return result;
+  };
+
+  const chunkSize = shuffledCards.length === 12 ? 6 : 5;
 
   useEffect(() => {
     // categoryId별 카드 ID 범위 설정
@@ -46,7 +59,7 @@ function CardSelect({ categoryId, onFinish }) {
   }, [categoryId]);
 
   return (
-    <div style={{ textAlign: "center", padding: "2rem" }}>
+    <div style={{ position: "absolute", top: "43%", left: "50%", transform: "translate(-50%, -50%)",color: "#fff", textAlign: "center", textShadow: "0 0 25px rgba(213, 183, 15, 0.6)" }}>
       <h2 style={{ marginBottom: "3rem", fontFamily: "'Gowun Dodum', sans-serif" }}>3장의 카드를 선택하세요</h2>
       <div
         style={{
@@ -57,8 +70,18 @@ function CardSelect({ categoryId, onFinish }) {
           marginBottom: "2rem",
         }}
       >
-        {shuffledCards.map((cardId, displayIndex) => (
-          <img
+        {chunkArray(shuffledCards, chunkSize).map((row, rowIndex) => (
+        <div
+          key={rowIndex}
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            gap: "1.5rem",
+            marginBottom: "1.5rem",
+          }}
+        >
+          {row.map((cardId, displayIndex) => (
+            <img
               key={displayIndex}
               className={`tarot-card 
                 ${selected.includes(cardId) ? "selected" : ""}
@@ -73,26 +96,21 @@ function CardSelect({ categoryId, onFinish }) {
               style={{
                 width: "160px",
                 height: "225px",
-            }}
-          />
-        ))}
-      </div>
+              }}
+            />
+          ))}
+        </div>
+      ))}
 
       <button
         onClick={handleReveal}
         disabled={selected.length !== 3 || revealing}
-        style={{
-          backgroundColor: selected.length === 3 ? "#5B8DEF" : "#ccc",
-          color: "#fff",
-          padding: "0.8rem 2rem",
-          fontSize: "1rem",
-          border: "none",
-          borderRadius: "10px",
-          cursor: selected.length === 3 ? "pointer" : "not-allowed",
-        }}
+        style={{ marginBottom: "3rem", fontFamily: "'Gowun Dodum', sans-serif" }}
+        className={`tarot-result-button ${selected.length === 3 ? "active" : "inactive"}`}
       >
         결과 보기
       </button>
+    </div>
     </div>
   );
 }

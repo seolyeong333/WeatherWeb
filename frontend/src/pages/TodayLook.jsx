@@ -142,6 +142,7 @@ function TodayLook() {
           </div>
 
           <button
+            style={{ marginBottom: "1rem", fontFamily: "'Gowun Dodum', sans-serif" }}
             className="tarot-btn"
             onClick={() => {
               if (hasResult) {

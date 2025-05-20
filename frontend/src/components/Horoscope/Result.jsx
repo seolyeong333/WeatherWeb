@@ -8,7 +8,7 @@ import "../../styles/TarotAnimation.css";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-function Result({ categoryId, selectedCards }) {
+function Result({ categoryId, selected }) {
   const [cardInfos, setCardInfos] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [message, setMessage] = useState(""); // 🔮 감성 메시지 상태
@@ -33,7 +33,7 @@ function Result({ categoryId, selectedCards }) {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(selectedCards),
+          body: JSON.stringify(selected), // 카드 ID 배열 보내기
         });
 
         const data = await res.json();
@@ -49,7 +49,7 @@ function Result({ categoryId, selectedCards }) {
     fetchResult();
     const timer = setTimeout(() => setShowModal(true), 1000);
     return () => clearTimeout(timer);
-  }, [categoryId, selectedCards]);
+  }, [categoryId, selected]);
 
   const handleGoToLook = () => {
     const allColors = cardInfos.flatMap((card) => card.colors.map((c) => c.colorName));
