@@ -1,55 +1,43 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import Lottie from "lottie-react";
-import loadingAnimation from "../assets/loading.json";
-import { useNavigate } from "react-router-dom";
+import FashionIconSection from "../components/TodayLook/FashionIconSection";
 import ColorPickerModal from "../components/ColorPickerModal";
-import { COLORS, fancyName, getTodayColor } from "../api/colors";
+import Header from "../components/Header";
+import loadingAnimation from "../assets/loading.json";
+import { getKoreanWeatherDescription } from "../utils/weatherUtil";
+import { fancyName, getLuckyColor, getTodayColor } from "../api/colors";
+import { fetchTodayTarotLogs } from "../api/tarot"; 
+import { getCurrentWeather} from "../api/weather";
 import view2col from "../assets/view-2col.png";
 import view4col from "../assets/view-4col.png";
-import { getCurrentWeather} from "../api/weather";
-import Header from "../components/Header";
 import "../styles/TodayLook.css";
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 function TodayLook() {
-  const navigate = useNavigate();
-  const todayColor = getTodayColor(); // 오늘 날짜로 고정된 색상 하나 추출
+
   const [current, setCurrent] = useState(null);
   const [lookImages, setLookImages] = useState([]); // 받아온 코디 이미지 목록
   const [loading, setLoading] = useState(true); // 로딩 상태
+  const [viewType, setViewType] = useState("grid-4"); // "grid-2" 또는 "grid-4" 설정
+  const { userColorName } = location.state || {};
+  const todayColor = getLuckyColor(userColorName) || getTodayColor(); // 오늘 날짜로 고정된 색상 하나 추출
   const [showModal, setShowModal] = useState(false); // 색상 선택 모달 표시 여부
   const [subColorCode, setSubColorCode] = useState(todayColor.hex); // 선택된 색상의 색상 코드
   const [selectedColorName, setSelectedColorName] = useState(todayColor.name); // 선택된 색상 이름
   const [gender, setGender] = useState("MEN"); // 필터: 성별
   const [type, setType] = useState("상의"); // 필터: 종류
-  const [viewType, setViewType] = useState("grid-4"); // "grid-2" 또는 "grid-4" 설정
+  const [showIcons, setShowIcons] = useState({}); // 체감온도에 따른 아이콘 출력
+  const [hasResult, setHasResult] = useState(false); // 타로 봤는지
 
-  // 체감온도에 따른 아이콘 출력
-  const [showIcons, setShowIcons] = useState({});
-  // DB 날씨조건 필터
-  const weatherDescriptionMap = {
-    "튼구름": "구름 많음",
-    "맑음": "맑음",
-    "비": "비",
-    "눈": "눈",
-    "실 비": "이슬비",
-    "소나기": "소나기",
-    "천둥번개": "뇌우",
-    "연무": "흐림",
-    "흐림": "흐림",
-    "온흐림": "흐림",
-    "박무": "흐림"
-  };
-
-  function getKoreanWeatherDescription(desc) {
-    return weatherDescriptionMap[desc] || "기타";
-  }
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const normalizeWeatherType = (rawType) => {
     if (["맑음"].includes(rawType)) return "맑음";
     if (["눈"].includes(rawType)) return "눈";
-    if (["소나기", "이슬비", "뇌우"].includes(rawType)) return "비";
-    if (["박무", "연무", "구름 많음"].includes(rawType)) return "흐림";
+    if (["소나기", "이슬비", "뇌우", "비"].includes(rawType)) return "비";
+    if (["구름 많음", "흐림"].includes(rawType)) return "흐림";
     if (["기타"].includes(rawType)) return "기타";
     return rawType;
   };
@@ -58,6 +46,7 @@ useEffect(() => {
   navigator.geolocation.getCurrentPosition(async (position) => {
       const { latitude, longitude } = position.coords;
     try {
+
       const res = await getCurrentWeather(latitude, longitude);
       setCurrent(res.data);
 
@@ -88,37 +77,6 @@ useEffect(() => {
    });
   }, []);
 
-  const iconMap = {
-    "패딩": "padded-jacket",  //
-    "기모 후드": "fleece-hoodie", //
-    "귀마개": "earmuff",  //  
-    "니트": "knit", //
-    "얇은 니트": "light-knit",
-    "머플러": "muffler",  //
-    "코트": "coat", //
-    "가디건": "cardigan", //
-    "스카프": "scarf", //
-    "셔츠": "shirt",  //
-    "면바지": "cotton-pants", //
-    "얇은 셔츠": "light-shirt", //
-    "청바지": "jeans", //
-    "반팔": "short-sleeve", //
-    "반바지": "shorts", //
-    "샌들": "sandals", //
-    "린넨 셔츠": "linen-shirt", //
-    "양산": "parasol", //
-    "선글라스": "sunglasses", //
-    "민소매": "sleeveless", //
-    "장갑": "gloves", //
-    "맨투맨": "sweatshirt", //
-    "선크림": "sunscreen",
-    "부츠": "boots",  //
-    "우산": "umbrella", //
-    "우비": "raincoat", //
-    "롱슬리브": "long-sleeve", //
-    "슬랙스": "slacks" //
-  };
-  
   // 필터 변경 시 이미지 크롤링 요청
   useEffect(() => {
     setLoading(true);
@@ -137,6 +95,15 @@ useEffect(() => {
       });
   }, [selectedColorName, gender, type]);
 
+  // 타로 운세 봤으면 버튼 바꾸기
+  useEffect(() => {
+    const loadLogs = async () => {
+      const data = await fetchTodayTarotLogs();
+      setHasResult(data && data.length > 0);
+    };
+    loadLogs();
+  }, []);
+  
   return (
     <div className="today-look-wrapper">
       <Header />
@@ -145,7 +112,7 @@ useEffect(() => {
           <div style={{ display: "flex", gap: "1.5rem", alignItems: "center" }}>
             <div className="color-box-wrapper">
               <div className="color-box" style={{ backgroundColor: todayColor.hex }} />
-              <span className="color-label">오늘의 색</span>
+              <span className="color-label"> {userColorName ? "행운의 색" : "오늘의 색"} </span>
             </div>
             <div className="color-box-wrapper">
               <div
@@ -168,8 +135,13 @@ useEffect(() => {
             </div>
           </div>
 
-          <button className="tarot-btn" onClick={() => navigate("/horoscope/tarot")}>
-            타로 페이지에서 행운의 색 받기
+          <button className="tarot-btn" onClick={() => { 
+            if (hasResult) {
+                navigate("/mypage", { state: { activeTab: "tarot" } });
+              } else {
+                navigate("/horoscope/tarot");}
+            }}>
+            {hasResult ? "나의 행운의 색상 보기" : "타로 페이지에서 행운의 색 받기"}
           </button>
         </div>
 
@@ -267,29 +239,8 @@ useEffect(() => {
           </div>
         )}
 
-        {Array.isArray(showIcons) && (
-          showIcons.length === 0 ? (
-            console.log("추천 아이템이 없습니다")
-          ) : (
-          <div className="feel-temp-container">
-            {showIcons.map((item, index) => {
-              const engName = iconMap[item] || "default";
-              return (
-                <div className="feel-temp-tab" key={index}>
-                  <img
-                    src={`/icons/${engName}.png`}
-                    alt={`${item} 아이콘`}
-                    onError={(e) => (e.target.src = "/icons/default.png")}
-                  />
-                  <div className="tooltip-box">
-                    {item}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-          )
-        )}
+        <FashionIconSection showIcons={showIcons} />
+
       </section>
 
       <ColorPickerModal

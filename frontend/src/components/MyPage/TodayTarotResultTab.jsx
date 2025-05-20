@@ -1,25 +1,23 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Card } from "react-bootstrap";
+import { fetchTodayTarotLogs } from "../../api/tarot"; 
+import { COLORS } from "../../api/colors"; 
+import ColorPickerModal from "../ColorPickerModal";
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 function TodayTarotResultTab() {
   const [logs, setLogs] = useState([]);
+  const [showColorModal, setShowColorModal] = useState(false);
+  const [setUserColor] = useState({});
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchResult = async () => {
-      const token = localStorage.getItem("token");
-      try {
-        const res = await fetch(`${API_BASE_URL}/api/tarot/mylogs`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        const data = await res.json();
-        setLogs(data);
-      } catch (err) {
-        console.error("오늘의 타로 결과 불러오기 실패:", err);
-      }
+    const loadLogs = async () => {
+      const data = await fetchTodayTarotLogs();
+      setLogs(data);
     };
-
-    fetchResult();
+    loadLogs();
   }, []);
 
   if (!logs || logs.length === 0) {
@@ -36,6 +34,7 @@ function TodayTarotResultTab() {
   const todayLog = logs[0];
   const cardIds = todayLog.cardIds?.split(",") || [];
   const cardColors = todayLog.cardColors?.split(",") || [];
+  const modalColors = COLORS.filter(c => cardColors.includes(c.name));
 
   const handleImageError = (e, id) => {
     const currentSrc = e.target.src;
@@ -73,6 +72,31 @@ function TodayTarotResultTab() {
         <p style={{ whiteSpace: "pre-line", fontSize: "1rem", lineHeight: "1.6" }}>
           {todayLog.description}
         </p>
+        <div style={{ display: "flex", justifyContent: "center", marginTop: "1.5rem" }}>
+          <button
+            onClick={() => setShowColorModal(true)}
+            style={{
+              padding: "0.8rem 2rem",
+              fontSize: "1rem",
+              backgroundColor: "#5B8DEF",
+              color: "#fff",
+              border: "none",
+              borderRadius: "10px",
+              cursor: "pointer",
+            }}
+          >
+            행운의 색상 코디 확인하기
+          </button>
+        </div>
+        <ColorPickerModal
+          show={showColorModal}
+          colors={modalColors}
+          onClose={() => setShowColorModal(false)}
+          onSelect={(color) => {
+            setUserColor(color); // { name, hex }
+            navigate('/today-look', { state: { userColorName: color.name } });
+          }}
+        />
       </Card.Body>
     </Card>
   );

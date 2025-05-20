@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Lottie from "lottie-react";
 import loadingAnimation from "../../assets/loading.json";
-import { getKoreanWeatherDescription } from "../../api/weatherMapping";
+import { getKoreanWeatherDescforWeather } from "../../utils/weatherUtil";
 import "../../styles/TodayPlace/TodayPlaceMap.css";
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -114,7 +114,7 @@ function TodayPlaceMap() {
       );
       const temp = res.data.main.temp.toFixed(1);
       const desc = res.data.weather[0].description;
-      setWeather({ temp, desc: getKoreanWeatherDescription(desc) });
+      setWeather({ temp, desc: getKoreanWeatherDescforWeather(desc) });
     } catch (err) {
       console.error("날씨 정보 실패:", err);
       setWeather(null);
