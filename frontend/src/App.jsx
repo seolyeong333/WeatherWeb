@@ -1,6 +1,5 @@
 // ✅ src/App.jsx
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import MainPage from "./pages/MainPage";
 import LoginSuccess from "./pages/LoginSuccess";
 import MyPage from "./pages/MyPage";
 import AdminPage from "./pages/AdminPage";
@@ -17,7 +16,6 @@ function App() {
     <WeatherProvider> {/* ✅ 전체 앱을 감싸줌 */}
       <BrowserRouter>
         <Routes>
-          <Route path="/main" element={<MainPage />} />
           <Route path="/kakaologinsuccess" element={<LoginSuccess/>} />
           <Route path="/googleloginsuccess" element={<LoginSuccess/>} />
           <Route path="/naverloginsuccess" element={<LoginSuccess/>} />
@@ -26,7 +24,7 @@ function App() {
           <Route path="/today-place/*" element={<TodayPlace />} />
           <Route path="/today-look" element={<TodayLook />} />
           <Route path="/horoscope/*" element={<TodayTarot />} />
-          <Route path="/today-weather" element={<TodayWeatherPage />} />
+          <Route path="/" element={<TodayWeatherPage />} />
           <Route path="/notice" element={<NoticePage />} />
           <Route path="/socialsignup" element={<SocialSignup />} />
         </Routes>

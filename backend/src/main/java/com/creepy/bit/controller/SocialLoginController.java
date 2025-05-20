@@ -50,7 +50,7 @@ public class SocialLoginController {
 
             // ✅ 자동 회원가입 (최초 로그인 시)
             if (userService.checkEmail(email) == 0) {
-                String redirectUrl = "http://localhost:5173/main"
+                String redirectUrl = "http://localhost:5173/"
                     + "?mode=socialSignup"
                     + "&email=" + URLEncoder.encode(email, "UTF-8")
                     + "&nickname=" + URLEncoder.encode(nickname, "UTF-8")
@@ -92,7 +92,7 @@ public class SocialLoginController {
             // ✅ 자동 회원가입 (최초 로그인 시)
             if (userService.checkEmail(email) == 0) {
                 // 최초 로그인 → 추가 정보 입력 페이지로 리디렉션
-                String redirectUrl = "http://localhost:5173/main"
+                String redirectUrl = "http://localhost:5173/"
                 + "?mode=socialSignup"
                 + "&email=" + URLEncoder.encode(email, "UTF-8")
                 + "&nickname=" + URLEncoder.encode(nickname, "UTF-8")
@@ -153,7 +153,7 @@ public class SocialLoginController {
 
             // ✅ 자동 회원가입 (최초 로그인 시)
             if (userService.checkEmail(email) == 0) {
-                String redirectUrl = "http://localhost:5173/main"
+                String redirectUrl = "http://localhost:5173/"
                 + "?mode=socialSignup"
                 + "&email=" + URLEncoder.encode(email, "UTF-8")
                 + "&nickname=" + URLEncoder.encode(nickname, "UTF-8")

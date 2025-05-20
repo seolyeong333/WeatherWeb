@@ -1,14 +1,14 @@
 import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { getKoreanWeatherDescription } from "../utils/weatherUtil";
+import { fancyName, getLuckyColor, getTodayColor } from "../api/colors";
+import { fetchTodayTarotLogs } from "../api/tarot";
+import { getCurrentWeather } from "../api/weather";
 import Lottie from "lottie-react";
 import FashionIconSection from "../components/TodayLook/FashionIconSection";
 import ColorPickerModal from "../components/ColorPickerModal";
 import Header from "../components/Header";
 import loadingAnimation from "../assets/loading.json";
-import { getKoreanWeatherDescription } from "../utils/weatherUtil";
-import { fancyName, getLuckyColor, getTodayColor } from "../api/colors";
-import { fetchTodayTarotLogs } from "../api/tarot";
-import { getCurrentWeather } from "../api/weather";
 import view2col from "../assets/view-2col.png";
 import view4col from "../assets/view-4col.png";
 import "../styles/TodayLook.css";
