@@ -7,20 +7,26 @@ import Header from "../components/Header";
 import loadingAnimation from "../assets/loading.json";
 import { getKoreanWeatherDescription } from "../utils/weatherUtil";
 import { fancyName, getLuckyColor, getTodayColor } from "../api/colors";
-import { fetchTodayTarotLogs } from "../api/tarot"; 
-import { getCurrentWeather} from "../api/weather";
+import { fetchTodayTarotLogs } from "../api/tarot";
+import { getCurrentWeather } from "../api/weather";
 import view2col from "../assets/view-2col.png";
 import view4col from "../assets/view-4col.png";
 import "../styles/TodayLook.css";
+
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 function TodayLook() {
+  const navigate = useNavigate();
+  const location = useLocation(); // <--- useLocation() 호출을 여기로 이동
 
   const [current, setCurrent] = useState(null);
   const [lookImages, setLookImages] = useState([]); // 받아온 코디 이미지 목록
   const [loading, setLoading] = useState(true); // 로딩 상태
   const [viewType, setViewType] = useState("grid-4"); // "grid-2" 또는 "grid-4" 설정
+
+  // location이 초기화된 후 사용
   const { userColorName } = location.state || {};
+
   const todayColor = getLuckyColor(userColorName) || getTodayColor(); // 오늘 날짜로 고정된 색상 하나 추출
   const [showModal, setShowModal] = useState(false); // 색상 선택 모달 표시 여부
   const [subColorCode, setSubColorCode] = useState(todayColor.hex); // 선택된 색상의 색상 코드
@@ -29,9 +35,6 @@ function TodayLook() {
   const [type, setType] = useState("상의"); // 필터: 종류
   const [showIcons, setShowIcons] = useState({}); // 체감온도에 따른 아이콘 출력
   const [hasResult, setHasResult] = useState(false); // 타로 봤는지
-
-  const navigate = useNavigate();
-  const location = useLocation();
 
   const normalizeWeatherType = (rawType) => {
     if (["맑음"].includes(rawType)) return "맑음";
@@ -42,40 +45,38 @@ function TodayLook() {
     return rawType;
   };
 
-useEffect(() => {
-  navigator.geolocation.getCurrentPosition(async (position) => {
+  useEffect(() => {
+    navigator.geolocation.getCurrentPosition(async (position) => {
       const { latitude, longitude } = position.coords;
-    try {
+      try {
+        const res = await getCurrentWeather(latitude, longitude);
+        setCurrent(res.data);
 
-      const res = await getCurrentWeather(latitude, longitude);
-      setCurrent(res.data);
+        const rawDesc = res.data.weather[0].description;
+        const desc = getKoreanWeatherDescription(rawDesc);
+        const weatherType = normalizeWeatherType(desc);
+        const feelsLike = res.data.main.feels_like;
 
-      const rawDesc = res.data.weather[0].description;
-      const desc = getKoreanWeatherDescription(rawDesc);
-      const weatherType = normalizeWeatherType(desc);
-      const feelsLike = res.data.main.feels_like;
+        // const token = localStorage.getItem("token"); // 토큰은 현재 사용되지 않는 것으로 보여 주석 처리
 
-      const token = localStorage.getItem("token");
-
-      const response = await fetch(
-        `${API_BASE_URL}/api/weather/recommend?weatherType=${weatherType}&feelsLike=${feelsLike}`
-      );
+        const response = await fetch(
+          `${API_BASE_URL}/api/weather/recommend?weatherType=${weatherType}&feelsLike=${feelsLike}`
+        );
         const data = await response.json();
         if (Array.isArray(data.itemSuggestionList)) {
-          console.log( "weatherType : " + weatherType + " feelsLike : " + feelsLike);
-          console.log("추천 아이템:", data.itemSuggestion);
+          console.log("weatherType : " + weatherType + " feelsLike : " + feelsLike);
+          console.log("추천 아이템:", data.itemSuggestionList); // data.itemSuggestion -> data.itemSuggestionList로 수정 (API 응답에 따라 다를 수 있음)
           setShowIcons(data.itemSuggestionList);
-
         } else {
-          console.warn("추천 아이템이 없습니다.");
-          setShowIcons(["셔츠, 청바지"]);
-
+          console.warn("추천 아이템이 없습니다. 기본값을 사용합니다.");
+          setShowIcons(["셔츠", "청바지"]); // 기본값을 배열 형태로 수정 (setShowIcons가 배열을 기대하는 경우)
         }
       } catch (err) {
         console.error("추천 API 요청 중 오류:", err);
+        setShowIcons(["자켓", "슬랙스"]); // 에러 시 기본 아이콘 설정
       }
-   });
-  }, []);
+    });
+  }, []); // 빈 배열을 의존성으로 전달하여 마운트 시 한 번만 실행
 
   // 필터 변경 시 이미지 크롤링 요청
   useEffect(() => {
@@ -91,6 +92,7 @@ useEffect(() => {
       })
       .catch((err) => {
         console.error("크롤링 실패:", err);
+        setLookImages([]); // 에러 발생 시 빈 배열로 설정
         setLoading(false);
       });
   }, [selectedColorName, gender, type]);
@@ -98,12 +100,17 @@ useEffect(() => {
   // 타로 운세 봤으면 버튼 바꾸기
   useEffect(() => {
     const loadLogs = async () => {
-      const data = await fetchTodayTarotLogs();
-      setHasResult(data && data.length > 0);
+      try {
+        const data = await fetchTodayTarotLogs();
+        setHasResult(data && data.length > 0);
+      } catch (err) {
+        console.error("타로 로그 로딩 실패:", err);
+        setHasResult(false);
+      }
     };
     loadLogs();
   }, []);
-  
+
   return (
     <div className="today-look-wrapper">
       <Header />
@@ -135,12 +142,16 @@ useEffect(() => {
             </div>
           </div>
 
-          <button className="tarot-btn" onClick={() => { 
-            if (hasResult) {
+          <button
+            className="tarot-btn"
+            onClick={() => {
+              if (hasResult) {
                 navigate("/mypage", { state: { activeTab: "tarot" } });
               } else {
-                navigate("/horoscope/tarot");}
-            }}>
+                navigate("/horoscope/tarot");
+              }
+            }}
+          >
             {hasResult ? "나의 행운의 색상 보기" : "타로 페이지에서 행운의 색 받기"}
           </button>
         </div>
@@ -202,7 +213,6 @@ useEffect(() => {
           </div>
         </div>
 
-
         {loading ? (
           <div style={{ textAlign: "center", padding: "3rem" }}>
             <div style={{ maxWidth: "200px", margin: "0 auto" }}>
@@ -240,7 +250,6 @@ useEffect(() => {
         )}
 
         <FashionIconSection showIcons={showIcons} />
-
       </section>
 
       <ColorPickerModal
