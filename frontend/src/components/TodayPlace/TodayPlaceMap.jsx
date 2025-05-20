@@ -197,91 +197,58 @@ function TodayPlaceMap() {
   };
 
   return (
-    <div style={{ height: "80vh", display: "flex", flexDirection: "column" }}>
-      <main style={{ flex: 1, position: "relative" }}>
-        <div ref={mapRef} style={{ width: "100%", height: "100%", borderRadius: "0 0 0 10px", zIndex: 1 }} />
+    <div className="map-container">
+  <main className="map-wrapper">
+    <div ref={mapRef} className="kakao-map" />
 
-        {/* 카테고리 버튼 */}
+    <div className="weather-recommend-box">
+      <div className="weather-box">
+        <h5>🌤️ 오늘의 날씨</h5>
+        <p>{regionName}</p>
+        <p>{weather ? `${weather.temp}°C / ${weather.desc}` : "날씨 정보 없음"}</p>
+      </div>
 
-        {/* 오른쪽 날씨 & 추천 박스 */}
-        <div style={{ position: "absolute", right: "20px", top: "20px", width: "240px", display: "flex", flexDirection: "column", gap: "1rem", zIndex: 10 }}>
+      <div className="recommend-box">
+        <h5>📍 추천 플레이스</h5>
 
-          {/* 날씨 정보 박스 */}
-          <div style={{ backgroundColor: "#fff", padding: "1rem", borderRadius: "10px", boxShadow: "0 2px 6px rgba(0,0,0,0.1)" }}>
-            <h5 style={{ marginBottom: "0.5rem" }}>🌤️ 오늘의 날씨</h5>
-            <p>{regionName}</p>
-            <p>{weather ? `${weather.temp}°C / ${weather.desc}` : "날씨 정보 없음"}</p>
+        {fitList.length > 1 && (
+          <div className="recommend-keywords">
+            {fitList
+              .slice(1)
+              .filter((fit, idx, arr) => arr.indexOf(fit) === idx)
+              .map((fit, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => loadRecommendedPlaces(selectedLocation.lat, selectedLocation.lon, fit)}
+                  className="keyword-button"
+                >
+                  {fit}
+                </button>
+              ))}
           </div>
+        )}
 
-          {/* 추천 장소 리스트 */}
-          <div style={{ backgroundColor: "#fff", padding: "1rem", borderRadius: "10px", boxShadow: "0 2px 6px rgba(0,0,0,0.1)", textAlign: "center" }}>
-            <h5>📍 추천 플레이스</h5>
-            
-            {fitList.length > 1 && (
-            <div
-              style={{
-                marginTop: "1rem",
-                padding: "0.5rem",
-                backgroundColor: "#fff",
-                borderRadius: "10px",
-                boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
-                display: "flex",
-                flexWrap: "wrap",
-                justifyContent: "center",
-                gap: "0.5rem",
-              }}
-            >
-              {fitList
-                .slice(1)
-                .filter((fit, idx, arr) => arr.indexOf(fit) === idx)
-                .map((fit, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => loadRecommendedPlaces(selectedLocation.lat, selectedLocation.lon, fit)}
-                    style={{
-                      padding: "6px 12px",
-                      borderRadius: "20px",
-                      border: "1px solid rgba(0,0,0,0.1)",
-                      backgroundColor: "#ffffff",
-                      color: "#333",
-                      fontSize: "0.85rem",
-                      cursor: "pointer",
-                      whiteSpace: "nowrap",
-                      boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
-                    }}
-                  >
-                    {fit}
-                  </button>
-                ))}
-            </div>
-          )}
-            {loading ? (
-              <>
-                <Lottie animationData={loadingAnimation} loop={true} style={{ width: 100, height: 100, margin: "0 auto" }} />
-                <p style={{ fontSize: "0.95rem", color: "#555" }}>ONDA AI의 추천 장소 정보를 불러오는 중입니다…</p>
-              </>
-            ) : (
-              <div style={{ maxHeight: "160px", overflowY: "auto" }}>
-                <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
-                  {places.map((place, idx) => (
-                    <li
-                      key={idx}
-                      onClick={() => handlePlaceClick(place)}
-                      style={{ cursor: "pointer", padding: "4px 0", color: "#0077cc" }}
-                    >
-                      {idx + 1}. {place.placeName}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-            {/* 추천 키워드 버튼 (추천 장소 박스 아래) */}
-        
-
+        {loading ? (
+          <>
+            <Lottie animationData={loadingAnimation} loop={true} style={{ width: 100, height: 100, margin: "0 auto" }} />
+            <p className="loading-text">ONDA AI의 추천 장소 정보를 불러오는 중입니다…</p>
+          </>
+        ) : (
+          <div className="recommend-list">
+            <ul>
+              {places.map((place, idx) => (
+                <li key={idx} onClick={() => handlePlaceClick(place)}>
+                  {idx + 1}. {place.placeName}
+                </li>
+              ))}
+            </ul>
           </div>
-        </div>
-      </main>
+        )}
+      </div>
     </div>
+  </main>
+</div>
+
   );
 }
 
