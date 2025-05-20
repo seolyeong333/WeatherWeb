@@ -1,16 +1,36 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom"; // ✅ 추가
-import { getUserAuth } from "../../api/jwt";
+import { useNavigate } from "react-router-dom";
+import { Modal, Button as BsButton } from "react-bootstrap"; // ✅ Modal과 Button import
+import { getUserAuth } from "../../api/jwt"; // getUserAuth는 현재 코드에서 사용되지 않지만, 필요시 유지
+
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-function CommentReportTab({ onReportClick }) {
+function CommentReportTab({ onReportClick }) { // onReportClick prop은 현재 사용되지 않음
   const [reports, setReports] = useState([]);
-  const navigate = useNavigate(); // ✅ 네비게이터 훅 사용
+  const navigate = useNavigate();
+
+  // ✅ 모달 상태 추가
+  const [showModal, setShowModal] = useState(false);
+  const [modalTitle, setModalTitle] = useState("");
+  const [modalMessage, setModalMessage] = useState("");
+
+  // ✅ 모달 제어 함수
+  const handleCloseModal = () => setShowModal(false);
+  const handleShowModal = (title, message) => {
+    setModalTitle(title);
+    setModalMessage(message);
+    setShowModal(true);
+  };
 
   useEffect(() => {
     const fetchOpinionReports = async () => {
       try {
         const token = localStorage.getItem("token");
+        if (!token) { // 기본적 토큰 존재 여부 확인 (선택적)
+          handleShowModal("인증 오류", "로그인이 필요합니다. 다시 로그인해주세요.");
+          // navigate("/login"); // 로그인 페이지로 리디렉션
+          return;
+        }
         const res = await fetch(`${API_BASE_URL}/api/admin/reports/opinions`, {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -18,56 +38,74 @@ function CommentReportTab({ onReportClick }) {
         });
 
         if (!res.ok) {
-          throw new Error("신고 데이터를 불러오는 데 실패했습니다.");
+          if (res.status === 401 || res.status === 403) {
+            handleShowModal("인증 오류", "세션이 만료되었거나 권한이 없습니다. 다시 로그인해주세요.");
+            // navigate("/login"); // 로그인 페이지로 리디렉션
+          } else {
+            handleShowModal("오류", "신고 데이터를 불러오는 데 실패했습니다.");
+          }
+          throw new Error(`HTTP error! status: ${res.status}`);
         }
 
         const data = await res.json();
         const transformed = data.map((r) => ({
           ...r,
           commentText: r.opinionContent,
-          placeName: r.placeName,
+          placeName: r.placeName, // API 응답에 placeName이 있다고 가정
         }));
-
         setReports(transformed);
       } catch (error) {
         console.error("🚨 한줄평 신고 로드 실패:", error);
+        // 위에서 이미 모달을 통해 사용자에게 알렸을 수 있으므로, 중복 알림 방지 또는 다른 처리
+        if (!showModal) { // 이미 다른 모달이 떠있지 않은 경우에만
+            handleShowModal("로드 실패", "한줄평 신고 목록을 불러오지 못했습니다.");
+        }
       }
     };
 
     fetchOpinionReports();
-  }, []);
+  }, [navigate, showModal]); // navigate, showModal을 의존성 배열에 추가 (showModal은 중복 모달 방지용)
 
   const handleAction = async (reportId, action, opinionId, placeName) => {
     if (action === "보기") {
-      // ✅ 상세페이지로 이동 (placeName을 state로 전달)
       navigate("/today-place/place-detail", { state: { placeName } });
       return;
     }
 
-    if (action === "무시") {
-      const token = localStorage.getItem("token");
-      await fetch(`${API_BASE_URL}/api/admin/reports/${reportId}/status?status=RESOLVED`, {
-        method: "PATCH",
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      alert("무시 처리 완료");
+    const token = localStorage.getItem("token");
+    if (!token) {
+        handleShowModal("인증 오류", "로그인이 필요합니다. 다시 로그인해주세요.");
+        return;
     }
 
-    if (action === "삭제") {
-      const token = localStorage.getItem("token");
+    let wasActionSuccessful = false;
 
-      await fetch(`${API_BASE_URL}/api/admin/reports/opinions/${opinionId}/delete?reportId=${reportId}`, {
-        method: "PATCH",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+    try {
+      if (action === "무시") {
+        const res = await fetch(`${API_BASE_URL}/api/admin/reports/${reportId}/status?status=RESOLVED`, {
+          method: "PATCH",
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (!res.ok) throw new Error("무시 처리 API 실패");
+        handleShowModal("처리 완료", "해당 신고가 무시 처리되었습니다.");
+        wasActionSuccessful = true;
+      } else if (action === "삭제") {
+        const res = await fetch(`${API_BASE_URL}/api/admin/reports/opinions/${opinionId}/delete?reportId=${reportId}`, {
+          method: "PATCH",
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (!res.ok) throw new Error("삭제 처리 API 실패");
+        handleShowModal("처리 완료", "해당 한줄평이 삭제 처리되었습니다.");
+        wasActionSuccessful = true;
+      }
+    } catch (error) {
+      console.error(`🚨 ${action} 처리 실패:`, error);
+      handleShowModal("처리 오류", `${action} 처리 중 오류가 발생했습니다.`);
+    }
 
-  alert("삭제 처리 완료");
-}
-
-
-    setReports((prev) => prev.filter((r) => r.reportId !== reportId));
+    if (wasActionSuccessful) {
+      setReports((prev) => prev.filter((r) => r.reportId !== reportId));
+    }
   };
 
   return (
@@ -118,6 +156,19 @@ function CommentReportTab({ onReportClick }) {
           </tbody>
         </table>
       )}
+
+      {/* ✅ 알림용 Modal 컴포넌트 */}
+      <Modal show={showModal} onHide={handleCloseModal} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>{modalTitle}</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>{modalMessage}</Modal.Body>
+        <Modal.Footer>
+          <BsButton variant="secondary" onClick={handleCloseModal}>
+            닫기
+          </BsButton>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 }

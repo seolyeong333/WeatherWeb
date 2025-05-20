@@ -108,7 +108,7 @@ function Result({ categoryId, selectedCards }) {
 
       {showModal && (
         <div className="modal-overlay">
-          <div className="modal-content">
+          <div className="modal-content1">
             <h3 style={{ marginBottom: "2rem", fontFamily: "'Gowun Dodum', sans-serif" }}>
               🔮 오늘의 타로 메시지
             </h3>
