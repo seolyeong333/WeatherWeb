@@ -22,14 +22,18 @@ public class AlarmService {
     }
     
     public List<AlarmDto> getAllAlarms() {
-    return mainMapper.selectAll();
+      return mainMapper.selectAll();
     }
 
     public void deleteAlarm(int alarmId) {
         mainMapper.deleteAlarm(alarmId);
     }
 
-    public void updateAlarm(int alarmId, String conditionType, String value) {
-        mainMapper.updateAlarm(alarmId, conditionType, value);
+    public void updateAlarm(AlarmDto alarmDto) {
+       mainMapper.updateAlarm(alarmDto);
+    }
+
+    public Integer findDuplicateAlarm(AlarmDto alarmDto){
+       return mainMapper.findDuplicateAlarm(alarmDto);
     }
 }

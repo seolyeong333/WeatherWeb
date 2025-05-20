@@ -15,12 +15,16 @@ function PlaceWeatherSection({ place, weather, message, fitList }) {
         <p className="weather-message">{message}</p>
         {fitList.length > 0 && (
           <div className="recommend-tags">
-            <span className="recommend-label">웨더핏 추천:</span>
-            {fitList.map((name) => (
+            <span className="recommend-label">
+              웨더핏 추천 [{fitList[0]}]:
+            </span>
+            {fitList.slice(1).map((name) => (
               <button
                 className="fit-tag"
                 key={name}
-                onClick={() => navigate(`/today-place/list?keyword=${encodeURIComponent(name)}`)}
+                onClick={() =>
+                  navigate(`/today-place/list?keyword=${encodeURIComponent(name)}`)
+                }
               >
                 {name}
               </button>

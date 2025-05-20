@@ -1,3 +1,4 @@
+/* 검색창 */
 .search {
   display: flex;
   align-items: center;
@@ -28,14 +29,45 @@
   border-radius: 50%;
 }
 
-.label-wrapper {
-  margin-bottom: 1rem;
+/* 오늘의 추천 + 카테고리 버튼 전체 묶음 */
+.recommend-toolbar {
   display: flex;
-  gap: 0.5rem;
   flex-wrap: wrap;
-  justify-content: center;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 1rem;
 }
 
+/* 왼쪽: 오늘의 추천 장소 */
+.today-fitlist {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.fit-label {
+  font-weight: bold;
+  margin-right: 6px;
+}
+
+/* 오른쪽: 고정 카테고리 */
+.category-list {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.divider {
+  margin: 0 8px;
+  font-weight: bold;
+  color: #666;
+}
+
+/* 버튼 스타일 공통 */
 .label-button {
   padding: 0.4rem 0.8rem;
   border-radius: 30px;
@@ -50,12 +82,17 @@
   transition: all 0.2s ease;
 }
 
+.label-button:hover {
+  background-color: #f0f0f0;
+}
+
 .label-button.selected {
   background-color: #333;
   color: #fff;
   border: none;
 }
 
+/* 카드 레이아웃 */
 .card-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -64,7 +101,7 @@
 
 .place-card {
   background-color: #e0e0e0;
-  height: 280px; /* 이미지 포함 높이 증가 */
+  height: 280px;
   border-radius: 10px;
   position: relative;
   padding: 1rem;
@@ -108,34 +145,30 @@
   color: #333;
 }
 
-.bookmark-button {
-  background: none;
-  border: none;
-  font-size: 1.2rem;
-  cursor: pointer;
-  padding: 2px;
-}
-
-.loading-container {
-  text-align: center;
-  padding: 2rem;
-  color: #666;
-}
-.no-results {
-  text-align: center;
-  font-size: 1.2rem;
-  color: #666;
-  padding: 2rem;
-}
+/* 북마크 */
 .bookmark-button {
   font-size: 1.6rem;
   background: none;
   border: none;
   cursor: pointer;
-  color: gray; /* 기본 별 색 */
-  padding: 0 0 0 0.5rem;
+  color: gray;
+  padding-left: 0.5rem;
 }
 
 .bookmark-button.active {
-  color: gold; /* 북마크된 경우 노란 별 */
+  color: gold;
+}
+
+/* 로딩 및 결과 없음 */
+.loading-container {
+  text-align: center;
+  padding: 2rem;
+  color: #666;
+}
+
+.no-results {
+  text-align: center;
+  font-size: 1.2rem;
+  color: #666;
+  padding: 2rem;
 }

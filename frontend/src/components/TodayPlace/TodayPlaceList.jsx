@@ -1,20 +1,24 @@
-// TodayPlaceList.jsx
 import { useEffect, useState } from "react";
 import { FaRegBookmark, FaBookmark } from "react-icons/fa";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useLocation, useSearchParams } from "react-router-dom";
 import Lottie from "lottie-react";
+import axios from "axios";
 import loadingAnimation from "../../assets/loading.json";
+import { getCurrentWeather } from "../../api/weather";
+import { getKoreanWeatherDescription } from "../../utils/weatherUtil";
 import "../../styles/TodayPlace/TodayPlaceList.css";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 function TodayPlaceList() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const [fitList, setFitList] = useState([]);
   const [keyword, setKeyword] = useState("");
   const [places, setPlaces] = useState([]);
   const [loading, setLoading] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(null);
-  const [bookmarkedMap, setBookmarkedMap] = useState({}); // 북마크 상태 저장
+  const [bookmarkedMap, setBookmarkedMap] = useState({});
   const [searchParams] = useSearchParams();
   const keywordFromQuery = searchParams.get("keyword");
 
@@ -24,39 +28,70 @@ function TodayPlaceList() {
     "관광명소": "AT4",
   };
 
-  // 장소 목록 가져오기 (카테고리 또는 키워드 기반)
+  const fetchWeatherFitList = (lat, lon) => {
+    getCurrentWeather(lat, lon).then((res) => {
+      const data = res.data;
+      const weatherType = getKoreanWeatherDescription(data.weather[0].description);
+
+      axios
+        .get(`${API_BASE_URL}/api/weather/message`, {
+          params: { weatherType, feelsLike: data.main.feels_like },
+        })
+        .then((res) => {
+          const fit = res.data.weatherFit?.split(",") || [];
+          setFitList(fit);
+        })
+        .catch(() => {
+          setFitList([]);
+        });
+    });
+  };
+
   const fetchPlaceList = async (category = "AT4", keyword = "") => {
     setLoading(true);
-
     navigator.geolocation.getCurrentPosition(
       async (pos) => {
         const lat = pos.coords.latitude;
         const lon = pos.coords.longitude;
         const categoryCode = categoryCodeMap[category] || "AT4";
 
+        fetchWeatherFitList(lat, lon); // 🔥 날씨 fit 리스트도 같이 가져오기
+
         let url = `${API_BASE_URL}/api/kakao/places?lat=${lat}&lon=${lon}`;
         if (keyword) {
           url += `&keyword=${encodeURIComponent(keyword)}`;
-          setSelectedCategory(null); // 키워드 검색 시 카테고리 선택 해제
+          setSelectedCategory(null);
         } else {
           url += `&category=${encodeURIComponent(categoryCode)}`;
         }
 
         try {
           const res = await fetch(url);
-          const data = await res.json();
+          let data = await res.json();
 
-          // 각 장소에 대해 이미지만 병렬로 가져옴 (평점 제외)
           const updated = await Promise.all(
             data.map(async (place) => {
               try {
-                const imageRes = await fetch(
-                  `${API_BASE_URL}/api/google/image?name=${encodeURIComponent(place.placeName)}&lat=${place.y}&lon=${place.x}`
-                );
+                const [imageRes, ratingRes] = await Promise.all([
+                  fetch(
+                    `${API_BASE_URL}/api/google/image?name=${encodeURIComponent(
+                      place.placeName
+                    )}&lat=${place.y}&lon=${place.x}`
+                  ),
+                  fetch(`${API_BASE_URL}/api/opinions/rating?placeId=${place.id}`),
+                ]);
+
                 const imageUrl = await imageRes.text();
-                return { ...place, imageUrl };
-              } catch {
-                return { ...place, imageUrl: null };
+                const rating = await ratingRes.json();
+
+                return {
+                  ...place,
+                  imageUrl,
+                  rating: isNaN(rating) || rating === null ? 0 : rating,
+                };
+              } catch (e) {
+                console.warn("이미지/평점 로딩 실패:", place.placeName);
+                return { ...place, imageUrl: null, rating: null };
               }
             })
           );
@@ -68,18 +103,16 @@ function TodayPlaceList() {
           setLoading(false);
         }
       },
-      () => {
-        console.error("위치 접근 실패");
+      (err) => {
+        console.error("위치 접근 실패:", err);
         setLoading(false);
       }
     );
   };
 
-  // 로그인된 유저의 북마크 목록 불러오기
   const fetchBookmarks = async () => {
     const token = localStorage.getItem("token");
     if (!token) return;
-
     try {
       const res = await fetch(`${API_BASE_URL}/api/bookmarks`, {
         headers: { Authorization: `Bearer ${token}` },
@@ -95,7 +128,6 @@ function TodayPlaceList() {
     }
   };
 
-  // 컴포넌트 마운트 시 북마크 + 장소 목록 로딩
   useEffect(() => {
     fetchBookmarks();
     if (keywordFromQuery) {
@@ -106,30 +138,28 @@ function TodayPlaceList() {
     }
   }, [keywordFromQuery]);
 
-  // 카테고리 버튼 클릭 시 장소 검색
   const handleCategoryClick = (category) => {
     setSelectedCategory(category);
     fetchPlaceList(category);
   };
 
-  // 북마크 추가/삭제 토글
   const toggleBookmark = async (place) => {
     const token = localStorage.getItem("token");
-    if (!token) return alert("로그인 후 이용 가능합니다.");
-
     const placeKey = place.id;
     const bookmarkId = bookmarkedMap[placeKey];
 
+    if (!token) return alert("로그인 후 이용 가능합니다.");
+
     try {
       if (bookmarkId) {
-        // 북마크 삭제
         const res = await fetch(`${API_BASE_URL}/api/bookmarks/${bookmarkId}`, {
           method: "DELETE",
           headers: { Authorization: `Bearer ${token}` },
         });
-        if (res.ok) await fetchBookmarks();
+        if (res.ok) {
+          await fetchBookmarks();
+        }
       } else {
-        // 북마크 추가
         const res = await fetch(`${API_BASE_URL}/api/bookmarks`, {
           method: "POST",
           headers: {
@@ -138,7 +168,9 @@ function TodayPlaceList() {
           },
           body: JSON.stringify({ placeId: placeKey, placeName: place.placeName }),
         });
-        if (res.ok) await fetchBookmarks();
+        if (res.ok) {
+          await fetchBookmarks();
+        }
       }
     } catch (err) {
       console.error("북마크 처리 실패:", err);
@@ -147,7 +179,6 @@ function TodayPlaceList() {
 
   return (
     <div style={{ padding: "2rem", color: "black" }}>
-      {/* 검색 입력창 */}
       <div className="search">
         <input
           type="text"
@@ -158,27 +189,55 @@ function TodayPlaceList() {
         <button onClick={() => fetchPlaceList(selectedCategory, keyword)}>🔍</button>
       </div>
 
-      {/* 카테고리 버튼 */}
-      <div className="label-wrapper">
-        {["음식점", "카페", "관광명소"].map((label) => (
+      {fitList.length > 0 && (
+  <div className="recommend-toolbar">
+    <div className="today-fitlist">
+      <span className="fit-label">
+        오늘의 추천 장소 [{fitList[0].split(":")[0]}] :
+      </span>
+
+      {/* 중복 없이 버튼 출력 */}
+      {fitList
+        .slice(1)
+        .filter((fit, idx, arr) => arr.indexOf(fit) === idx) // 중복 제거
+        .map((fit, idx) => (
           <button
-            key={label}
-            onClick={() => handleCategoryClick(label)}
-            className={`label-button ${selectedCategory === label ? "selected" : ""}`}
+            key={idx}
+            onClick={() => {
+              setKeyword(fit);
+              fetchPlaceList("", fit);
+            }}
+            className="label-button"
           >
-            <span style={{ marginRight: "5px" }}>
-              {categoryCodeMap[label] === "FD6"
-                ? "🍽️"
-                : categoryCodeMap[label] === "CE7"
-                ? "☕"
-                : "🌳"}
-            </span>
-            {label}
+            {fit}
           </button>
         ))}
-      </div>
+    </div>
 
-      {/* 로딩 중 화면 */}
+        {/* 오른쪽: 고정 카테고리 */}
+        <div className="category-list">
+          {["음식점", "카페", "관광명소"].map((label) => (
+            <button
+              key={label}
+              onClick={() => handleCategoryClick(label)}
+              className={`label-button ${selectedCategory === label ? "selected" : ""}`}
+            >
+              <span style={{ marginRight: "5px" }}>
+                {categoryCodeMap[label] === "FD6"
+                  ? "🍽️"
+                  : categoryCodeMap[label] === "CE7"
+                  ? "☕"
+                  : "🌳"}
+              </span>
+              {label}
+            </button>
+          ))}
+        </div>
+      </div>
+      
+      )}
+
+
       {loading ? (
         <div className="loading-container">
           <Lottie animationData={loadingAnimation} loop={true} style={{ width: 200, height: 200 }} />
@@ -211,7 +270,7 @@ function TodayPlaceList() {
                   {place.placeName}
                   <button
                     onClick={(e) => {
-                      e.stopPropagation(); // 부모 클릭 막기
+                      e.stopPropagation();
                       toggleBookmark(place);
                     }}
                     className="bookmark-button"
@@ -226,6 +285,9 @@ function TodayPlaceList() {
                 </div>
                 <div className="place-card-footer">
                   <span>{place.phone || "📞 없음"}</span>
+                  {place.rating !== undefined && place.rating !== null && (
+                    <span style={{ marginLeft: "8px" }}>⭐ {place.rating.toFixed(1)}</span>
+                  )}
                 </div>
               </div>
             );

@@ -29,8 +29,8 @@
     </insert>
 
     <select id="getPlayMyLogs" resultType="com.creepy.bit.domain.TarotPlayLogsDto">
-        SELECT * FROM tarot_play_logs
-        WHERE userId = #{userId}
+            SELECT * FROM tarot_play_logs
+            WHERE userId = #{userId} AND DATE(isPlay) = CURDATE()
     </select>
 
 </mapper>

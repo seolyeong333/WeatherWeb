@@ -5,13 +5,14 @@ import Lottie from "lottie-react";
 import loadingAnimation from "../../assets/loading.json";
 import { getKoreanWeatherDescforWeather } from "../../utils/weatherUtil";
 import "../../styles/TodayPlace/TodayPlaceMap.css";
+
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 function TodayPlaceMap() {
   const mapRef = useRef(null);
   const mapInstanceRef = useRef(null);
   const userMarkerRef = useRef(null);
-  const currentInfoRef = useRef(null);
+  const clickMarkerRef = useRef(null); // ✅ 클릭 마커 분리
   const placeMarkersRef = useRef([]);
   const labelOverlaysRef = useRef([]);
   const showMarkRef = useRef("");
@@ -39,18 +40,17 @@ function TodayPlaceMap() {
       center: new window.kakao.maps.LatLng(37.5665, 126.978),
       level: 5,
     });
-
     mapInstanceRef.current = map;
 
+    // ✅ 지도 클릭 시 클릭 마커만 생성
     window.kakao.maps.event.addListener(map, "click", async function (mouseEvent) {
       const latLng = mouseEvent.latLng;
       const lat = latLng.getLat();
       const lon = latLng.getLng();
 
-      if (userMarkerRef.current) userMarkerRef.current.setMap(null);
-
+      if (clickMarkerRef.current) clickMarkerRef.current.setMap(null);
       const marker = new window.kakao.maps.Marker({ map, position: latLng });
-      userMarkerRef.current = marker;
+      clickMarkerRef.current = marker;
 
       const regionCode = await getAddressFromKakao(lat, lon);
 
@@ -61,6 +61,7 @@ function TodayPlaceMap() {
       }
     });
 
+    // ✅ 초기 내 위치 마커 생성
     navigator.geolocation.getCurrentPosition(async (pos) => {
       const lat = pos.coords.latitude;
       const lon = pos.coords.longitude;
@@ -128,8 +129,8 @@ function TodayPlaceMap() {
     setLoading(true);
     try {
       const url = category
-        ? `http://localhost:8080/api/kakao/places?lat=${lat}&lon=${lon}&category=${category}`
-        : `http://localhost:8080/api/kakao/places?lat=${lat}&lon=${lon}`;
+        ? `${API_BASE_URL}/api/kakao/places?lat=${lat}&lon=${lon}&category=${category}`
+        : `${API_BASE_URL}/api/kakao/places?lat=${lat}&lon=${lon}`;
 
       const res = await fetch(url);
       const json = await res.json();
@@ -231,21 +232,19 @@ function TodayPlaceMap() {
                 <p style={{ fontSize: "0.95rem", color: "#555" }}>ONDA AI의 추천 장소 정보를 불러오는 중입니다…</p>
               </>
             ) : (
-              <>
-                <div style={{ maxHeight: "160px", overflowY: "auto" }}>
-                  <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
-                    {places.map((place, idx) => (
-                      <li
-                        key={idx}
-                        onClick={() => handlePlaceClick(place)}
-                        style={{ cursor: "pointer", padding: "4px 0", color: "#0077cc" }}
-                      >
-                        {idx + 1}. {place.placeName}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </>
+              <div style={{ maxHeight: "160px", overflowY: "auto" }}>
+                <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
+                  {places.map((place, idx) => (
+                    <li
+                      key={idx}
+                      onClick={() => handlePlaceClick(place)}
+                      style={{ cursor: "pointer", padding: "4px 0", color: "#0077cc" }}
+                    >
+                      {idx + 1}. {place.placeName}
+                    </li>
+                  ))}
+                </ul>
+              </div>
             )}
           </div>
         </div>

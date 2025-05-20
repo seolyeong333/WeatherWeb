@@ -108,7 +108,7 @@ public class UserController {
     public ResponseEntity<UserRequestDto> getUserInfo(HttpServletRequest request) {
         System.out.println("UserController GET /info 호출");
 
-        // 1️⃣ 헤더에서 토큰 추출
+        // 헤더에서 토큰 추출
         String authHeader = request.getHeader("Authorization");
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
@@ -116,13 +116,13 @@ public class UserController {
 
         String token = authHeader.substring(7); // "Bearer " 제외
 
-        // 2️⃣ 토큰에서 이메일 추출
+        // 토큰에서 이메일 추출
         String email = jwtUtil.getEmail(token);
         if (email == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        // 3️⃣ 이메일로 사용자 정보 조회
+        // 이메일로 사용자 정보 조회
         UserRequestDto user = userService.userData(email);
 
         if (user != null) {

@@ -4,9 +4,9 @@ import { Navbar, Nav, Button } from "react-bootstrap";
 import { FaBars } from "react-icons/fa";
 import { motion } from "framer-motion";
 import Login from "./Login/login.jsx";
-
-// ✅ 공통 JWT 유틸 import
+// 공통 JWT 유틸 import
 import { isLoggedIn as checkLogin, getUserAuth } from "../api/jwt";
+import { toast } from "react-toastify";
 
 function Header() {
   const navigate = useNavigate();
