@@ -25,40 +25,42 @@ function TodayWeatherPage() {
   const [regionName, setRegionName] = useState("");
   const [airData, setAirData] = useState(null);
 
-  // 애니메이션 상태
   const [shouldShowRainAnimation, setShouldShowRainAnimation] = useState(false);
   const [shouldShowThunderFlash, setShouldShowThunderFlash] = useState(false);
 
-  // 테스트 모드 관련 상태
   const [isTestModeEnabled, setIsTestModeEnabled] = useState(false);
   const [forceRainInTestMode, setForceRainInTestMode] = useState(false);
   const [forceThunderInTestMode, setForceThunderInTestMode] = useState(false);
 
   const [showSocialSignup, setShowSocialSignup] = useState(false);
   const [socialInfo, setSocialInfo] = useState(null);
-  const navigate = useNavigate();
 
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const [showScrollTopButton, setShowScrollTopButton] = useState(false);
+
+  // --- useEffect Hooks ---
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const mode = params.get("mode");
-  
     if (mode === "socialSignup") {
       const email = params.get("email");
       const provider = params.get("provider");
       const nickname = params.get("nickname") || "";
-  
       setSocialInfo({ email, provider, nickname });
       setShowSocialSignup(true);
+      navigate("/", { replace: true });
     }
-  }, [location]);
-  
+  }, [location, navigate]);
+
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const token = params.get("token");
     if (token) {
       localStorage.setItem("token", token);
-      alert("소셜 로그인 성공!");
-      navigate("/main", { replace: true });  // URL에서 token 제거
+      navigate("/", { replace: true });
+      window.location.reload();
     }
   }, [location, navigate]);
 
@@ -69,34 +71,18 @@ function TodayWeatherPage() {
       setCoord({ lat, lon });
       const data = await fetchWeatherData(lat, lon);
       setWeatherData(data);
-
       try {
-        const airRes = await axios.get(
-          `https://api.openweathermap.org/data/2.5/air_pollution/forecast?lat=${lat}&lon=${lon}&appid=4f673522ff69c4d615b1e593ce6fa16b` // 사용자의 API 키로 변경
-        );
+        const airRes = await axios.get(`https://api.openweathermap.org/data/2.5/air_pollution/forecast?lat=${lat}&lon=${lon}&appid=4f673522ff69c4d615b1e593ce6fa16b`); // API 키
         setAirData(airRes.data);
-      } catch (err) {
-        console.error("🌫️ 미세먼지 예보 데이터 호출 실패:", err);
-      }
-
+      } catch (err) { console.error("🌫️ 미세먼지 예보 데이터 호출 실패:", err); }
       try {
-        const res = await axios.get(
-          `https://dapi.kakao.com/v2/local/geo/coord2regioncode.json?x=${lon}&y=${lat}`,
-          {
-            headers: {
-              Authorization: "KakaoAK e7c76873999ef901948568fdbf33233b", // 사용자의 API 키로 변경
-            },
-          }
-        );
+        const res = await axios.get(`https://dapi.kakao.com/v2/local/geo/coord2regioncode.json?x=${lon}&y=${lat}`,
+          { headers: { Authorization: "KakaoAK e7c76873999ef901948568fdbf33233b" } }); // API 키
         if (res.data.documents.length > 0) {
           const region = res.data.documents[0];
-          setRegionName(
-            `${region.region_1depth_name} ${region.region_2depth_name} ${region.region_3depth_name}`
-          );
+          setRegionName(`${region.region_1depth_name} ${region.region_2depth_name} ${region.region_3depth_name}`);
         }
-      } catch (err) {
-        console.error("📍 카카오 주소 변환 실패:", err);
-      }
+      } catch (err) { console.error("📍 카카오 주소 변환 실패:", err); }
     });
   }, []);
 
@@ -105,43 +91,50 @@ function TodayWeatherPage() {
       setShouldShowRainAnimation(forceRainInTestMode);
       setShouldShowThunderFlash(forceThunderInTestMode);
     } else {
-      let showRain = false;
-      let showThunder = false;
-
+      let showRain = false; let showThunder = false;
       if (weatherData?.current?.weather?.[0]) {
         const condition = weatherData.current.weather[0];
         const main = condition.main.toLowerCase();
         const iconGroup = condition.icon.substring(0, 2);
-
         if (main.includes("thunderstorm") || iconGroup === "11") {
-          showThunder = true;
-          showRain = true;
+          showThunder = true; showRain = true;
         } else if (main.includes("rain") || main.includes("drizzle") || iconGroup === "10" || iconGroup === "09") {
           showRain = true;
         }
       }
-      setShouldShowRainAnimation(showRain);
-      setShouldShowThunderFlash(showThunder);
+      setShouldShowRainAnimation(showRain); setShouldShowThunderFlash(showThunder);
     }
   }, [weatherData, isTestModeEnabled, forceRainInTestMode, forceThunderInTestMode]);
 
   useEffect(() => {
     const container = document.getElementById("rain-overlay");
     if (shouldShowRainAnimation && container) {
-      container.innerHTML = "";
-      const numRaindrops = 80;
+      container.innerHTML = ""; const numRaindrops = 80;
       for (let i = 0; i < numRaindrops; i++) {
-        const drop = document.createElement("div");
-        drop.className = "raindrop";
+        const drop = document.createElement("div"); drop.className = "raindrop";
         drop.style.left = `${Math.random() * 100}%`;
         drop.style.animationDelay = `${Math.random().toFixed(2)}s`;
         drop.style.animationDuration = `${(0.8 + Math.random()).toFixed(2)}s`;
         container.appendChild(drop);
       }
-    } else if (container) {
-      container.innerHTML = "";
-    }
+    } else if (container) { container.innerHTML = ""; }
   }, [shouldShowRainAnimation]);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.pageYOffset > 300) {
+        setShowScrollTopButton(true);
+      } else {
+        setShowScrollTopButton(false);
+      }
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   if (!weatherData || !airData) {
     return (
@@ -167,22 +160,11 @@ function TodayWeatherPage() {
       <WeatherDetailSummary dailySummary={weatherData.daily[0]} />
 
       <div className="chart-grid">
-        <div className="chart-item">
-          <HourlyWeatherChart hourlyData={weatherData.hourly} />
-        </div>
-        <div className="chart-item">
-          <h2 className="chart-title">ㅤ지역별 날씨</h2>
-          {coord && <MapSection lat={coord.lat} lon={coord.lon} />}
-        </div>
-        <div className="chart-item">
-          <DailyWeatherChart dailyData={weatherData.daily} />
-        </div>
-        <div className="chart-item">
-          <AirPollutionChart airPollutionData={airData} />
-        </div>
-        <div className="chart-item full-width">
-          <WeeklyForecast dailyData={weatherData.daily} />
-        </div>
+        <div className="chart-item"> <HourlyWeatherChart hourlyData={weatherData.hourly} /> </div>
+        <div className="chart-item"> <h2 className="chart-title">ㅤ지역별 날씨</h2> {coord && <MapSection lat={coord.lat} lon={coord.lon} />} </div>
+        <div className="chart-item"> <DailyWeatherChart dailyData={weatherData.daily} /> </div>
+        <div className="chart-item"> <AirPollutionChart airPollutionData={airData} /> </div>
+        <div className="chart-item full-width"> <WeeklyForecast dailyData={weatherData.daily} /> </div>
       </div>
 
       <div style={{
@@ -192,7 +174,7 @@ function TodayWeatherPage() {
         borderTop: '1px solid #e0e0e0',
         backgroundColor: '#f9f9f9'
       }}>
-        <h4 style={{ marginBottom: '15px' }}>애니메이션 테스트 모드</h4>
+        <h4 style={{ marginBottom: '15px' }}>⚙️ 애니메이션 테스트 모드</h4>
         <button
           onClick={() => setIsTestModeEnabled(prev => !prev)}
           style={{
@@ -241,23 +223,35 @@ function TodayWeatherPage() {
             : "실제 날씨에 따라 애니메이션이 자동으로 표시됩니다."
           }
         </div>
-        
       </div>
+      
       {showSocialSignup && socialInfo && (
-            <div className="modal-overlay">
-              <div className="modal-content">
-                <SocialSignup
-                  email={socialInfo.email}
-                  provider={socialInfo.provider}
-                  nickname={socialInfo.nickname}
-                  onClose={() => {
-                    setShowSocialSignup(false);
-                    navigate("/", { replace: true }); // URL 정리
-                  }}
-                />
-              </div>
-            </div>
-          )}
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <SocialSignup
+              email={socialInfo.email}
+              provider={socialInfo.provider}
+              nickname={socialInfo.nickname}
+              onClose={() => {
+                setShowSocialSignup(false);
+                setSocialInfo(null);
+              }}
+            />
+          </div>
+        </div>
+      )}
+
+      {showScrollTopButton && (
+        <button
+          onClick={scrollToTop}
+          className="scroll-to-top-button"
+          aria-label="맨 위로 가기"
+          title="맨 위로 가기"
+        >
+          {/* <FaArrowUp /> */}
+          ↑
+        </button>
+      )}
     </div>
   );
 }

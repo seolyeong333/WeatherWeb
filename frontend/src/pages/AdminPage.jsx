@@ -37,7 +37,7 @@ function AdminPage() {
         </Modal.Header>
         <Modal.Body>관리자 권한이 없거나 로그인되지 않았습니다.</Modal.Body>
         <Modal.Footer>
-          <Button variant="primary" onClick={() => navigate("/main")}>
+          <Button variant="primary" onClick={() => navigate("/")}>
             메인으로 이동
           </Button>
         </Modal.Footer>
