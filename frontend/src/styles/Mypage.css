@@ -56,13 +56,6 @@ button.btn {
   justify-content: center;
 }
 
-.modal-content {
-  padding: 0;           /* 내부 여백 제거 */
-  background: transparent;
-  box-shadow: none;
-  border: none;
-}
-
 /* ✅ 북마크 리스트 항목 디자인 */
 .list-item {
   border-radius: 12px;

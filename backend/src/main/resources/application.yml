@@ -36,4 +36,3 @@ logging:
   level:
     root: INFO
     com.project: DEBUG
-
