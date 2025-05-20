@@ -9,8 +9,9 @@ import { COLORS } from "../api/colors"; // 🎨 색상 목록 (이름 + HEX) imp
 
 function ColorPickerModal({ show, onClose, onSelect, colors=COLORS }) {
   return (
+    <>
     <Modal show={show} onHide={onClose} centered 
-      dialogClassName={colors.length <= 3 ? "small-color-modal" : "default-color-modal"}
+      dialogClassName={colors.length <= 3 ? "modal-sm" : ""}
     >
       {/* 모달 상단 헤더 */}
       <Modal.Header closeButton>
@@ -21,10 +22,14 @@ function ColorPickerModal({ show, onClose, onSelect, colors=COLORS }) {
       <Modal.Body>
         <div
           style={{
+            backgroundColor: "white",
+            borderRadius: "0 0 8px 8px",
+            padding: "4px",
             display: "grid",
             gridTemplateColumns: `repeat(${colors.length <= 3 ? colors.length : 5}, 1fr)`,
             gap: "1.2rem",
             justifyItems: "center", // 가운데 정렬
+            wordBreak: "keep-all" 
           }}
         >
           {colors.map((color) => (
@@ -60,6 +65,17 @@ function ColorPickerModal({ show, onClose, onSelect, colors=COLORS }) {
         </div>
       </Modal.Body>
     </Modal>
+
+    <style>
+    {`
+      .modal-content {
+        background-color: white !important;
+        box-shadow: 0 10px 30px rgba(0, 0, 0.2, 0.2);
+        border: none;
+      }
+    `}
+    </style>
+    </>
   );
 }
 

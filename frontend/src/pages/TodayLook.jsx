@@ -6,6 +6,7 @@ import ColorPickerModal from "../components/ColorPickerModal";
 import Header from "../components/Header";
 import loadingAnimation from "../assets/loading.json";
 import { getKoreanWeatherDescription } from "../utils/weatherUtil";
+import { getSeasonalMessage } from "../utils/getSeasonalMsg";
 import { fancyName, getLuckyColor, getTodayColor } from "../api/colors";
 import { fetchTodayTarotLogs } from "../api/tarot"; 
 import { getCurrentWeather} from "../api/weather";
@@ -15,6 +16,9 @@ import "../styles/TodayLook.css";
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 function TodayLook() {
+
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const [current, setCurrent] = useState(null);
   const [lookImages, setLookImages] = useState([]); // 받아온 코디 이미지 목록
@@ -29,9 +33,6 @@ function TodayLook() {
   const [type, setType] = useState("상의"); // 필터: 종류
   const [showIcons, setShowIcons] = useState({}); // 체감온도에 따른 아이콘 출력
   const [hasResult, setHasResult] = useState(false); // 타로 봤는지
-
-  const navigate = useNavigate();
-  const location = useLocation();
 
   const normalizeWeatherType = (rawType) => {
     if (["맑음"].includes(rawType)) return "맑음";
@@ -130,7 +131,7 @@ useEffect(() => {
                   : `${fancyName(todayColor.name)} & ${fancyName(selectedColorName)}`}
               </p>
               <p style={{ margin: 0, fontSize: "0.9rem", color: "#666" }}>
-                봄날의 따사로운 햇살과 어울리는 오늘의 색상
+                { getSeasonalMessage() }
               </p>
             </div>
           </div>
