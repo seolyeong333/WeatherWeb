@@ -15,9 +15,11 @@ import com.creepy.bit.domain.TarotColorDto;
 import com.creepy.bit.domain.TarotPlayLogsDto;
 
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+
 import java.util.List;
 import java.time.LocalDate;
-import org.apache.ibatis.annotations.Param;
+
 
 @Mapper
 public interface MainMapper {
@@ -112,7 +114,10 @@ public interface MainMapper {
     void deleteAlarm(int alarmId);
     
     // 알림 수정
-    void updateAlarm(int alarmId, String conditionType, String value);
+    void updateAlarm(AlarmDto alarmDto);
+
+    // 미세먼지 알림 중복 확인
+    Integer findDuplicateAlarm(AlarmDto alarmDto);
 
     // Report
     // 신고 
@@ -147,7 +152,6 @@ public interface MainMapper {
     void insertFlaggedPlace(String placeName);
 
     void updatePlaceReportStatus(String placeName); // 🔹 추가
-
     
     int isPlaceFlagged(String placeName);
 

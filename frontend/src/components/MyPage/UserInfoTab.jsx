@@ -11,25 +11,25 @@ function UserInfoTab({ userInfo, setMode, setShowModal }) {
           <>
             <p><strong>닉네임:</strong> {userInfo.nickname}</p>
             <p><strong>이메일:</strong> {userInfo.email}</p>
-            <p><strong>성별:</strong> {userInfo.gender}</p>
+            <p><strong>성별:</strong> {userInfo.gender === "male" ? "남성" : userInfo.gender === "female" ? "여성" : "기타"}</p>
             <p><strong>생일:</strong> {userInfo.birthday}</p>
             <p><strong>가입일:</strong> {userInfo.createdAt?.substring(0, 10)}</p>
           </>
         ) : <p>회원 정보를 불러오는 중입니다...</p>}
-        <div className="mt-3">
-        <Button variant="secondary" className="px-4" onClick={() => {
-          setMode("password"); // 모드 지정
-          setShowModal(true);  // 비밀번호 확인 모달 열기
-        }} >
-        비밀번호 변경
-      </Button>
-        <Button variant="primary" className="me-2 px-4" onClick={() => {
+        <div className="btn-group-bottom mt-4">
+          <Button variant="secondary" onClick={() => {
+            setMode("password");
+            setShowModal(true);
+          }}>
+            비밀번호 변경
+          </Button>
+          <Button variant="primary" onClick={() => {
             setMode("edit");
             setShowModal(true);
-        }}>
+          }}>
             정보 수정
           </Button>
-          <Button variant="outline-danger" className="px-4" onClick={() => {
+          <Button variant="outline-danger" onClick={() => {
             setMode("delete");
             setShowModal(true);
           }}>

@@ -6,29 +6,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-
-import com.creepy.bit.domain.KakaoMapDto;
 import com.creepy.bit.service.GooglePlaceService;
 
 @RestController
-@RequestMapping("/api/google")  // 이 컨트롤러의 API는 "/api/google"로 시작됨
+@RequestMapping("/api/google")  // 이 컨트롤러는 "/api/google"로 시작하는 요청을 처리함
 public class GooglePlaceController {
 
     @Autowired
-    private GooglePlaceService googlePlaceService;  // 위치 조회 로직을 처리할 서비스
+    private GooglePlaceService googlePlaceService;  // 장소 이미지 관련 서비스
 
+    // 장소 이름과 좌표(lat, lon)를 받아 대표 이미지 URL 반환
     @GetMapping("/image")
     public String getPlaceImage(@RequestParam String name, @RequestParam double lat, @RequestParam double lon) {
-        System.out.println("GooglePlaceController /image GET 호출");
         return googlePlaceService.getPlaceImageUrl(name, lat, lon);
     }
-
-    @GetMapping("/rating")
-    public double getPlaceRating(@RequestParam String name, @RequestParam double lat, @RequestParam double lon) {
-        System.out.println("GooglePlaceController /rating GET 호출");
-        return googlePlaceService.getPlaceRating(name, lat, lon);
-    }
-
-
 }

@@ -59,11 +59,8 @@ function PlaceDetail() {
       let percent = 0;
       if (rating >= i) percent = 100;
       else if (rating + 1 > i) percent = (rating - (i - 1)) * 100;
-
       stars.push(
-        <span key={i} className="star" style={{ "--star-percent": `${percent}%` }}>
-          ★
-        </span>
+        <span key={i} className="star" style={{ "--star-percent": `${percent}%` }}>★</span>
       );
     }
     return <div className="star-wrapper">{stars}</div>;

@@ -42,19 +42,24 @@ function BookmarkTab({ userInfo }) {
       <Card.Body>
         <h5 className="fw-semibold mb-3">📌 내가 저장한 북마크</h5>
         {bookmarks.length > 0 ? (
-          <ul className="list-group list-group-flush">
-            {bookmarks.map((bookmark) => (
-              <li
-                key={bookmark.bookmarkId}
-                onClick={() => handleBookmarkClick(bookmark.placeName)} // ✅ 클릭 시 상세페이지 이동
-                className="list-group-item d-flex flex-column align-items-start"
-                style={{ cursor: "pointer" }}
-              >
-                <div><strong>📍 장소 이름:</strong> {bookmark.placeName}</div>
-                <div><strong>🕒 저장일:</strong> {bookmark.createdAt?.slice(0, 10)}</div>
-              </li>
-            ))}
-          </ul>
+          <ul className="list-unstyled">
+          {bookmarks.map((bookmark) => (
+            <li key={bookmark.bookmarkId} className="list-item">
+              <div className="list-header">
+                <div className="list-text">
+                  <div><strong>📍 장소 이름:</strong> {bookmark.placeName}</div>
+                  <div><strong>🕒 저장일:</strong> {bookmark.createdAt?.slice(0, 10)}</div>
+                </div>
+                <button
+                  className="btn btn-outline-primary btn-sm"
+                  onClick={() => handleBookmarkClick(bookmark.placeName)}
+                >
+                  상세 보기
+                </button>
+              </div>
+            </li>
+          ))}
+        </ul>
         ) : (
           <p>북마크한 장소가 없습니다.</p>
         )}

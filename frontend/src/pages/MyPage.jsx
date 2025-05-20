@@ -16,7 +16,7 @@ import EditUserInfo from "../components/MyPage/EditUserInfo";
 import AlarmTab from "../components/MyPage/AlarmTab";
 import AlarmListTab from "../components/MyPage/AlarmListTab";
 import { FaBell } from "react-icons/fa";
-import { FaUser, FaCommentDots, FaExclamationCircle } from "react-icons/fa";
+import { FaUser, FaCommentDots, FaExclamationCircle, FaHatWizard } from "react-icons/fa";
 import "../styles/Mypage.css";
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -98,7 +98,7 @@ function MyPage() {
                 <Nav.Link eventKey="reports"><FaExclamationCircle /> 신고 내역</Nav.Link>
               </Nav.Item>
               <Nav.Item>
-                <Nav.Link eventKey="tarot">🃏 오늘의 타로</Nav.Link>
+                <Nav.Link eventKey="tarot"><FaHatWizard/> 오늘의 타로</Nav.Link>
               </Nav.Item>
               <Nav.Item>
                 <Nav.Link eventKey="alarms"><FaBell /> 알림 설정</Nav.Link>
