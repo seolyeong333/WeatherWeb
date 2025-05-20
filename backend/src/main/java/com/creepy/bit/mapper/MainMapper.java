@@ -114,7 +114,10 @@ public interface MainMapper {
     void deleteAlarm(int alarmId);
     
     // 알림 수정
-    void updateAlarm(int alarmId, String conditionType, String value);
+    void updateAlarm(AlarmDto alarmDto);
+
+    // 미세먼지 알림 중복 확인
+    Integer findDuplicateAlarm(AlarmDto alarmDto);
 
     // Report
     // 신고 

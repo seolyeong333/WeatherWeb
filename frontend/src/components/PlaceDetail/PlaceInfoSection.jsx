@@ -20,9 +20,10 @@ function PlaceInfoSection({
     <section className="section-2">
       <h3 className="place-subtitle">{place.placeName}</h3>
       <p className="description">
+       {place.categoryName} <br />
         📍 {place.addressName} <br />
-        📞 {place.phone || "전화번호 없음"} <br />
         🛣️ 도로명: {place.roadAddressName} <br />
+        📞 {place.phone || "전화번호 없음"} <br />
       </p>
 
       {averageRating !== null ? (

@@ -33,28 +33,25 @@ function OpinionTab({ userInfo }) {
       <Card.Body>
         <h5 className="fw-semibold mb-3">💬 내가 남긴 한줄평</h5>
         {opinions.length > 0 ? (
-          <ul className="list-group list-group-flush">
-            {opinions.map((opinion) => (
-              <li
-                key={opinion.opinionId}
-                onClick={() => handleOpinionClick(opinion.placeName)} // ✅ 클릭 시 이동
-                className="list-group-item d-flex flex-column align-items-start"
-                style={{ cursor: "pointer" }}
-              >
-                <div>
-                  <strong>📍 장소 이름:</strong> {opinion.placeName}
-                </div>
-                <div>
-                  <strong>💬 내용:</strong> {opinion.content}
-                </div>
-                <div className="d-flex gap-3 mt-1">
-                  <span>👍 {opinion.likes}</span>
-                  <span>👎 {opinion.dislikes}</span>
-                  <span>🕒 {opinion.createdAt?.substring(0, 16)}</span>
-                </div>
-              </li>
-            ))}
-          </ul>
+         <ul className="list-unstyled">
+         {opinions.map((opinion) => (
+           <li key={opinion.opinionId} className="list-item">
+             <div className="list-header">
+               <div className="list-text">
+                 <div><strong>📍 장소 이름:</strong> {opinion.placeName}</div>
+                 <div><strong>💬 내용:</strong> {opinion.content}</div>
+                 <div><strong>🕒 작성일: </strong> {opinion.createdAt?.substring(0, 16)} </div>
+               </div>
+               <button
+                 className="btn btn-outline-primary btn-sm"
+                 onClick={() => handleOpinionClick(opinion.placeName)}
+               >
+                 상세 보기
+               </button>
+             </div>
+           </li>
+         ))}
+       </ul>       
         ) : (
           <p>작성한 한줄평이 없습니다.</p>
         )}

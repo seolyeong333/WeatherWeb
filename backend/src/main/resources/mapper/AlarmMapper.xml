@@ -18,16 +18,18 @@
     SELECT * FROM alarms
   </select>
 
-
   <delete id="deleteAlarm" parameterType="int">
     DELETE FROM alarms WHERE alarmId = #{alarmId}
   </delete>
 
-  <update id="updateAlarm">
-    UPDATE alarms
-    SET conditionType = #{conditionType},
-        weatherCondition = #{value} 
+  <update id="updateAlarm" parameterType="com.creepy.bit.domain.AlarmDto">
+    UPDATE alarms SET conditionType = #{conditionType}, weatherCondition = #{weatherCondition} 
     WHERE alarmId = #{alarmId}
   </update>
+
+  <select id="findDuplicateAlarm" resultType="int">
+    SELECT alarmId FROM alarms WHERE userId = #{userId}
+    AND airCondition = #{airCondition} 
+  </select>
 
 </mapper>

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { getCurrentWeather, getAirPollution, getForecast } from "../api/weather";
 import axios from "axios";
-import { getKoreanWeatherDescription } from "../api/weatherMapping";
+import { getKoreanWeatherDescforWeather } from "../utils/weatherUtil";
 import { toKST } from "../hooks/time";
 
 // 날씨 설명에 따라 카드 배경색 클래스 매핑
@@ -55,7 +55,7 @@ function WeatherBox({
         setCurrent(res.data);
 
         const rawDesc = res.data.weather[0].description;
-        const desc = overrideWeather || getKoreanWeatherDescription(rawDesc);
+        const desc = overrideWeather || getKoreanWeatherDescforWeather(rawDesc);
 
         // 각 상태값 부모에 전달
         if (setIsRainy) setIsRainy(desc.includes("비") || desc.includes("소나기"));
@@ -110,7 +110,7 @@ function WeatherBox({
 
   // 설명 변환 및 스타일 계산
   const rawDesc = current.weather[0].description;
-  const currentDesc = overrideWeather || getKoreanWeatherDescription(rawDesc);
+  const currentDesc = overrideWeather || getKoreanWeatherDescforWeather(rawDesc);
   const currentCardClass = getCardColorClass(currentDesc);
   const currentAnimClass = getAnimationClass(currentDesc);
 
@@ -177,7 +177,7 @@ function WeatherBox({
       <h6 className="mb-3">🕘 향후 6시간 예보</h6>
       <div className="row g-3">
         {forecast.map((f, i) => {
-          const desc = getKoreanWeatherDescription(f.weather[0].description);
+          const desc = getKoreanWeatherDescforWeather(f.weather[0].description);
           const cardColor = getCardColorClass(desc);
           return (
             <div key={i} className="col-md-6">

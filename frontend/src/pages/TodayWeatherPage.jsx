@@ -5,7 +5,7 @@ import ChartDataLabels from "chartjs-plugin-datalabels";
 import axios from "axios";
 import Lottie from "lottie-react";
 import loadingAnimation from "../assets/loading.json"; // 경로는 프로젝트 구조에 맞게 조정
-import { getKoreanWeatherDescription } from "../api/weatherMapping";
+import { getKoreanWeatherDescforWeather } from "../utils/weatherUtil";
 import MapSection from "../components/MapSection"; // 경로는 위치에 따라 조정
 import WeeklyForecast from "../components/WeeklyForecast"; // 경로는 위치에 따라 조정
 import { Chart as ChartJS, LineElement, BarElement, CategoryScale, LinearScale, PointElement, Tooltip, Legend} from "chart.js";
@@ -101,7 +101,7 @@ function TodayWeatherPage() {
     const rawDesc = weatherData.current.weather[0].description;
     const icon = weatherData.current.weather[0].icon;
     const emoji = getWeatherEmoji(icon);
-    const description = getKoreanWeatherDescription(rawDesc); // ✅ 한글 표현 매핑
+    const description = getKoreanWeatherDescforWeather(rawDesc); // ✅ 한글 표현 매핑
 
     // ✅ 미세먼지 수치
     const pm10 = weatherData.pollution?.[0]?.components.pm10;
@@ -493,7 +493,7 @@ const renderDailyChart = () => {
   const today = weatherData.daily[0];
 
   const rawDesc = today.weather.description;
-  const desc = getKoreanWeatherDescription(rawDesc);  // ✅ 한국어 표현으로 변환
+  const desc = getKoreanWeatherDescforWeather(rawDesc);  // ✅ 한국어 표현으로 변환
 
   const max = Math.round(today.temp_max);
   const min = Math.round(today.temp_min);

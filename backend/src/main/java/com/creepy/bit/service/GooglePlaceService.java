@@ -58,10 +58,16 @@ public class GooglePlaceService {
         ResponseEntity<String> response = restTemplate.getForEntity(findPlaceUrl, String.class);
         JSONObject json = new JSONObject(response.getBody());
         JSONArray candidates = json.getJSONArray("candidates");
-
+/*
         if (candidates.length() == 0) {
             System.out.println("❌ 후보 없음 (place_id 못 찾음)");
             return crawlGoogleMapImageWithSelenium(placeName); // fallback
+        }
+*/
+// 임시 방편 이라는거
+        if (candidates == null || candidates.length() == 0) {
+            System.out.println("❌ 후보 없음 (place_id 못 찾음)");
+            return DEFAULT_IMAGE_URL; // 또는 fallback 이미지 크롤링
         }
 
         String placeId = candidates.getJSONObject(0).getString("place_id");
@@ -93,11 +99,13 @@ public class GooglePlaceService {
                 return imageUrl;
             }
         }
-
+/*
         System.out.println("⚠️ 사진 없음 → Selenium fallback");
         String imageUrl = crawlGoogleMapImageWithSelenium(placeName);
         imageCache.put(placeName, imageUrl);
         return imageUrl;
+*/
+        return DEFAULT_IMAGE_URL;
 
     } catch (Exception e) {
         System.out.println("❗ 이미지 조회 중 오류 발생");

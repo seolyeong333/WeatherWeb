@@ -5,22 +5,13 @@ import PlaceHeader from "../../components/PlaceDetail/PlaceHeader";
 import PlaceWeatherSection from "../../components/PlaceDetail/PlaceWeatherSection";
 import PlaceInfoSection from "../../components/PlaceDetail/PlaceInfoSection";
 import ReportModal from "../../components/PlaceDetail/ReportModal";
+import { getKoreanWeatherDescription } from "../../utils/weatherUtil";
 import { getCurrentWeather } from "../../api/weather";
 import "../../styles/TodayPlace/PlaceDetail.css";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const opinionReasons = ["욕설", "광고", "도배", "개인정보 노출", "기타"];
 const placeReasons = ["정보 오류", "부적절한 장소", "폐업/이전", "기타"];
-
-const weatherDescriptionMap = {
-  "구름 많음": "흐림", "튼구름": "흐림", "맑음": "맑음", "비": "비", "눈": "눈", "구름조금": "흐림",
-  "보통 비": "비", "강한 비": "비", "실 비": "이슬비", "소나기": "소나기", "천둥번개": "뇌우",
-  "연무": "흐림", "흐림": "흐림", "온흐림": "흐림", "박무": "흐림"
-};
-
-function getKoreanWeatherDescription(desc) {
-  return weatherDescriptionMap[desc] || "기타";
-}
 
 function PlaceDetail() {
   const { state } = useLocation();
@@ -68,11 +59,8 @@ function PlaceDetail() {
       let percent = 0;
       if (rating >= i) percent = 100;
       else if (rating + 1 > i) percent = (rating - (i - 1)) * 100;
-
       stars.push(
-        <span key={i} className="star" style={{ "--star-percent": `${percent}%` }}>
-          ★
-        </span>
+        <span key={i} className="star" style={{ "--star-percent": `${percent}%` }}>★</span>
       );
     }
     return <div className="star-wrapper">{stars}</div>;
