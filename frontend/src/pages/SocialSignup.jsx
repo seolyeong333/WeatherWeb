@@ -112,6 +112,7 @@ function SocialSignup({ email, provider, nickname, onClose }) {
           onChange={changeHandler}
           className="form-control mb-3"
           required
+          max="9999-12-31"
         />
 
         {errorMessage && (
