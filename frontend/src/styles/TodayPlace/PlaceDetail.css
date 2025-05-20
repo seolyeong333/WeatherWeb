@@ -89,6 +89,8 @@
 }
 
 .recommend-tags {
+  margin-top: -1rem;
+  margin-bottom: 1rem;
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;

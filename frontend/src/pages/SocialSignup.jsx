@@ -59,7 +59,20 @@ function SocialSignup({ email, provider, nickname, onClose }) {
   };
 
   return (
-    <div className="loginModal">
+    <div className="loginModal" style={{
+      backgroundColor: "white",
+      color: "black",
+      padding: "2rem",
+      borderRadius: "1rem",
+      boxShadow: "0 4px 16px rgba(0, 0, 0.2, 0.2)",
+      position: "fixed",
+      top: "50%",
+      left: "50%",
+      transform: "translate(-50%, -50%)",
+      zIndex: 9999,
+      width: "400px",
+      maxWidth: "400px",
+    }}>
       <div className="logo">
         <span style={{ color: "#333" }}>ON</span>
         <img src="/onda-favicon.png" alt="ONDA 로고" />

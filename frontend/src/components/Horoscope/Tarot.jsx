@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import "../../styles/TarotAnimation.css";
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-function Intro({ onStart }) {
+function Intro({ onStart, onShufflingStart }) {
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [isShuffling, setIsShuffling] = useState(false);
   const [step, setStep] = useState("gather"); // 'gather' | 'swap'
@@ -62,6 +62,10 @@ function Intro({ onStart }) {
       setShuffleImageIndex(selectedIndex);
       setIsShuffling(true);
       setStep("gather");
+
+      if (onShufflingStart) {
+        onShufflingStart();
+      }
     } catch (err) {
       console.error("타로 체크 실패:", err);
       alert("서버 오류로 타로를 시작할 수 없습니다.");
@@ -87,26 +91,15 @@ function Intro({ onStart }) {
                 : `/tarot/tarot-back${n}.png`
             }
             alt={`카드${n}`}
-            className={`tarot-card ${selectedCategory === index + 1 ? "selected" : ""}`}
+            className={`tarot-card ${selectedCategory === index + 1 && !isShuffling ? "selected" : ""}`}
             onClick={() => handleCardClick(index)}
           />
         ))}
       </div>
 
       {!isShuffling && (
-        <button
-          onClick={handleStart}
-          style={{
-            marginTop: "3rem",
-            padding: "0.8rem 2rem",
-            fontSize: "1rem",
-            backgroundColor: "#5B8DEF",
-            color: "#fff",
-            border: "none",
-            borderRadius: "10px",
-            cursor: "pointer",
-          }}
-        >
+        <button style={{ marginTop: "2.5rem", fontFamily: "'Gowun Dodum', sans-serif" }}
+          className="tarot-btn" onClick={handleStart}>
           {selectedCategory ? `${getCategoryName(selectedCategory)} 타로 Start` : "카드를 선택하세요"}
         </button>
       )}

@@ -13,6 +13,8 @@ function Shuffle({onComplete}) {
   return (
     <div
       style={{
+        color: "#fff",
+        textShadow: "0 0 25px rgba(213, 183, 15, 0.6)",
         textAlign: "center",
         padding: "5rem 2rem",
         minHeight: "60vh",
