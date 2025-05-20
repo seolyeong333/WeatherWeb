@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom"; // ✅ Link 추가 import
 import { Navbar, Nav, Button } from "react-bootstrap";
 import { FaBars } from "react-icons/fa";
 import { motion } from "framer-motion";
@@ -23,8 +23,8 @@ function Header() {
 
   const handleLogout = () => {
     localStorage.removeItem("token");
-    setIsLoggedIn(false); // 로그인 상태만 갱신하면 됨
-    navigate("/main");
+    setIsLoggedIn(false);
+    navigate("/");
   };
 
   return (
@@ -33,20 +33,28 @@ function Header() {
         <Button variant="link" className="text-dark me-3" onClick={toggleMenu}>
           <FaBars size={20} />
         </Button>
-        <button onClick={() => toast("🔔 테스트 알림입니다!")}>테스트 알림</button>
-        <Navbar.Brand href="#" className="fw-bold">
+
+        {/* ▼▼▼ 로고/브랜드 클릭 시 홈으로 이동하도록 수정 ▼▼▼ */}
+        <Navbar.Brand
+          as={Link} // ✅ react-router-dom의 Link 컴포넌트로 동작하도록 설정
+          to="/"      // ✅ 클릭 시 이동할 경로를 홈("/")으로 설정
+          className="fw-bold"
+          style={{ textDecoration: 'none', color: 'inherit' }} // 기본 링크 스타일 제거
+        >
           <div className="d-flex align-items-center">
             <span style={{ fontSize: "1.2rem", fontWeight: 600 }}>ON</span>
             <img src="/onda-favicon.png" alt="ONDA 로고" style={{ height: "33px", margin: "0 5px" }} />
             <span style={{ fontSize: "1.2rem", fontWeight: 600 }}>DA</span>
           </div>
         </Navbar.Brand>
+        {/* ▲▲▲ 로고/브랜드 수정 완료 ▲▲▲ */}
 
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="mx-auto">
-            <Nav.Link href="/main">홈</Nav.Link>
-            <Nav.Link href="/today-weather">오늘의 날씨</Nav.Link>
+            {/* 다른 Nav.Link 들도 Link 컴포넌트로 변경하면 더 부드러운 SPA 네비게이션이 됩니다. */}
+            {/* 예: <Nav.Link as={Link} to="/">오늘의 날씨</Nav.Link> */}
+            <Nav.Link href="/">오늘의 날씨</Nav.Link>
             <Nav.Link href="/today-place">오늘의 장소</Nav.Link>
             <Nav.Link href="/today-look">오늘의 코디</Nav.Link>
             <Nav.Link href="/horoscope/tarot">오늘의 운세</Nav.Link>
@@ -72,6 +80,7 @@ function Header() {
 
       <div className="rainbow-animated-bar"></div>
 
+      {/* ... (나머지 사이드 메뉴, 로그인 모달 코드는 동일) ... */}
       {menuOpen && (
         <>
           <div
@@ -84,11 +93,12 @@ function Header() {
             style={{ width: "220px", height: "100vh", zIndex: 1000 }}
           >
             <Nav className="flex-column">
-              <Nav.Link href="#">Home</Nav.Link>
-              <Nav.Link href="#">Favorites</Nav.Link>
-              <Nav.Link href="#">Review</Nav.Link>
-              <Nav.Link href="#">Settings</Nav.Link>
-              <Nav.Link href="#">About</Nav.Link>
+              {/* 사이드 메뉴의 링크들도 필요하다면 react-router-dom의 Link로 변경할 수 있습니다. */}
+              <Nav.Link as={Link} to="/" onClick={closeMenu}>Home</Nav.Link>
+              <Nav.Link href="#" onClick={closeMenu}>Favorites</Nav.Link>
+              <Nav.Link href="#" onClick={closeMenu}>Review</Nav.Link>
+              <Nav.Link href="#" onClick={closeMenu}>Settings</Nav.Link>
+              <Nav.Link href="#" onClick={closeMenu}>About</Nav.Link>
             </Nav>
           </div>
         </>
