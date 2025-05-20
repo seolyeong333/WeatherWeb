@@ -213,9 +213,9 @@ function TodayPlaceList() {
           </button>
         ))}
     </div>
+
         {/* 오른쪽: 고정 카테고리 */}
         <div className="category-list">
-          <span className="divider">|</span>
           {["음식점", "카페", "관광명소"].map((label) => (
             <button
               key={label}
