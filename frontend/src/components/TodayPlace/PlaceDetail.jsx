@@ -5,8 +5,10 @@ import PlaceHeader from "../../components/PlaceDetail/PlaceHeader";
 import PlaceWeatherSection from "../../components/PlaceDetail/PlaceWeatherSection";
 import PlaceInfoSection from "../../components/PlaceDetail/PlaceInfoSection";
 import ReportModal from "../../components/PlaceDetail/ReportModal";
+import PlaceImage from "../../components/PlaceDetail/PlaceImage";
 import { getKoreanWeatherDescription } from "../../utils/weatherUtil";
 import { getCurrentWeather } from "../../api/weather";
+import { Modal, Button } from "react-bootstrap";
 import "../../styles/TodayPlace/PlaceDetail.css";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
@@ -20,6 +22,7 @@ function PlaceDetail() {
   const [weather, setWeather] = useState({ temp: 0, feeling: 0 });
   const [message, setMessage] = useState("로딩 중...");
   const [fitList, setFitList] = useState([]);
+  const [imageUrl, setImageUrl] = useState(null);
   const [opinion, setOpinion] = useState("");
   const [rating, setRating] = useState(0);
   const [opinions, setOpinions] = useState([]);
@@ -30,6 +33,27 @@ function PlaceDetail() {
   const [bookmarkId, setBookmarkId] = useState(null);
   const [flagged, setFlagged] = useState(false);
   const [averageRating, setAverageRating] = useState(null);
+
+  // 모달 상태
+  const [showModal, setShowModal] = useState(false);
+  const [modalMessage, setModalMessage] = useState("");
+  const showModalMessage = (message) => {
+    setModalMessage(message);
+    setShowModal(true);
+  };
+
+  const fetchImageUrl = async () => {
+    if (!place?.placeName) return;
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/google/image?name=${encodeURIComponent(place.placeName)}`);
+      const url = await res.text();
+      setImageUrl(url);
+    } catch (err) {
+      console.error("대표 이미지 로딩 실패:", err);
+      setImageUrl("/no-image.jpg"); // fallback
+    }
+  };
+  
 
   const fetchAverageRating = async () => {
     if (!place?.id) return;
@@ -65,6 +89,12 @@ function PlaceDetail() {
     }
     return <div className="star-wrapper">{stars}</div>;
   };
+
+  useEffect(() => {
+    if (place?.placeName) {
+      fetchImageUrl();
+    }
+  }, [place]);
 
   useEffect(() => {
     if (place) return;
@@ -139,7 +169,7 @@ function PlaceDetail() {
 
   const toggleBookmark = async () => {
     const token = localStorage.getItem("token");
-    if (!token) return alert("로그인이 필요합니다.");
+    if (!token) return showModalMessage("로그인이 필요합니다.");
     try {
       if (isBookmarked && bookmarkId) {
         await fetch(`${API_BASE_URL}/api/bookmarks/${bookmarkId}`, {
@@ -159,13 +189,13 @@ function PlaceDetail() {
         await refreshBookmark();
       }
     } catch {
-      alert("북마크 처리 중 오류 발생");
+      showModalMessage("북마크 처리 중 오류 발생");
     }
   };
 
   const handleOpinionSubmit = async ({ content, rating }) => {
     const token = localStorage.getItem("token");
-    if (!token) return alert("로그인이 필요합니다.");
+    if (!token) return showModalMessage("로그인이 필요합니다.");
     try {
       await fetch(`${API_BASE_URL}/api/opinions`, {
         method: "POST",
@@ -181,18 +211,18 @@ function PlaceDetail() {
           isPublic: true,
         }),
       });
-      alert("등록 완료!");
+      showModalMessage("등록 완료!");
       setOpinion("");
       fetchOpinions();
       fetchAverageRating();
     } catch {
-      alert("등록 중 오류 발생");
+      showModalMessage("등록 중 오류 발생");
     }
   };
 
   const handleLikeDislike = async (id, type) => {
     const token = localStorage.getItem("token");
-    if (!token) return alert("로그인이 필요합니다.");
+    if (!token) return showModalMessage("로그인이 필요합니다.");
     try {
       const res = await fetch(`${API_BASE_URL}/api/opinions/${id}/${type}`, {
         method: "PATCH",
@@ -202,10 +232,10 @@ function PlaceDetail() {
         fetchOpinions();
         fetchAverageRating();
       } else {
-        alert(`${type === "like" ? "좋아요" : "싫어요"} 실패`);
+        showModalMessage(`${type === "like" ? "좋아요" : "싫어요"} 실패`);
       }
     } catch {
-      alert("처리 실패");
+      showModalMessage("처리 실패");
     }
   };
 
@@ -224,7 +254,7 @@ function PlaceDetail() {
   const handleReport = async (reason) => {
     setShowReportModal(false);
     const token = localStorage.getItem("token");
-    if (!token) return alert("로그인이 필요합니다.");
+    if (!token) return showModalMessage("로그인이 필요합니다.");
     try {
       const res = await fetch(`${API_BASE_URL}/api/reports`, {
         method: "POST",
@@ -240,10 +270,10 @@ function PlaceDetail() {
         }),
       });
       const message = await res.text();
-      if (res.ok) alert("신고가 접수되었습니다.");
-      else alert(message);
+      if (res.ok) showModalMessage("신고가 접수되었습니다.");
+      else showModalMessage(message);
     } catch {
-      alert("신고 중 오류 발생");
+      showModalMessage("신고 중 오류 발생");
     }
   };
 
@@ -262,7 +292,11 @@ function PlaceDetail() {
         isBookmarked={isBookmarked}
         toggleBookmark={toggleBookmark}
         openPlaceReportModal={openPlaceReportModal}
+        averageRating={averageRating}
+        renderStars={renderStars}
       />
+
+      <PlaceImage place={place} />
 
       <PlaceWeatherSection
         place={place}
@@ -293,6 +327,17 @@ function PlaceDetail() {
         type={currentReportType}
         reasons={currentReportType === "place" ? placeReasons : opinionReasons}
       />
+
+      <Modal show={showModal} onHide={() => setShowModal(false)} centered>
+        <Modal.Body className="text-center py-4">
+          <p>{modalMessage}</p>
+          <div className="mt-3">
+            <Button variant="primary" onClick={() => setShowModal(false)}>
+              확인
+            </Button>
+          </div>
+        </Modal.Body>
+      </Modal>
     </div>
   );
 }

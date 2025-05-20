@@ -20,7 +20,7 @@ public class GooglePlaceService {
     private static final String DEFAULT_IMAGE_URL = "https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg";
 
     // 장소 이름을 받아 이미지 URL을 반환
-    public String getPlaceImageUrl(String placeName, double lat, double lon) {
+    public String getPlaceImageUrl(String placeName) {
         // 캐시에 있으면 바로 반환
         if (imageCache.containsKey(placeName)) {
             return imageCache.get(placeName);

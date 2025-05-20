@@ -12,9 +12,9 @@ import OpinionTab from "../components/MyPage/OpinionTab";
 import ReportTab from "../components/MyPage/ReportTab";
 import BookmarkTab from "../components/MyPage/BookmarkTab";
 import EditUserInfo from "../components/MyPage/EditUserInfo";
-import AlarmTab from "../components/MyPage/AlarmTab";
-import AlarmListTab from "../components/MyPage/AlarmListTab";
-import { FaBell, FaUser, FaCommentDots, FaExclamationCircle, FaHatWizard } from "react-icons/fa";
+import AlarmManagerTab from "../components/MyPage/AlarmManagerTab";
+import { FaBell } from "react-icons/fa";
+import { FaUser, FaCommentDots, FaExclamationCircle, FaHatWizard } from "react-icons/fa";
 import "../styles/Mypage.css";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
@@ -177,11 +177,8 @@ function MyPage() {
             {activeTab === "opinions" && <OpinionTab userInfo={userInfo} />}
             {activeTab === "reports" && <ReportTab userInfo={userInfo} />}
             {activeTab === "tarot" && <TodayTarotResultTab userId={userInfo?.userId} />}
-            {activeTab === "alarms" && userInfo && (
-              <>
-                <AlarmTab userInfo={userInfo} fetchUserInfo={fetchUserInfo} />
-              </>
-            )}
+            {activeTab === "alarms" && <AlarmManagerTab userInfo={userInfo} />}
+
           </Col>
         </Row>
       </div>

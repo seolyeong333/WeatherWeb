@@ -110,3 +110,14 @@ button.btn {
   align-items: center;
   justify-content: center;
 }
+
+/* ✅ 회원정보 항목 스타일 */
+.info-list .info-value {
+  margin: 4px 0 0;
+  font-size: 16px;
+  color: #333;
+  background-color: #f7f8fa;
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+}
