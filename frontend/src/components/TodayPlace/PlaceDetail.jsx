@@ -5,6 +5,7 @@ import PlaceHeader from "../../components/PlaceDetail/PlaceHeader";
 import PlaceWeatherSection from "../../components/PlaceDetail/PlaceWeatherSection";
 import PlaceInfoSection from "../../components/PlaceDetail/PlaceInfoSection";
 import ReportModal from "../../components/PlaceDetail/ReportModal";
+import PlaceImage from "../../components/PlaceDetail/PlaceImage";
 import { getKoreanWeatherDescription } from "../../utils/weatherUtil";
 import { getCurrentWeather } from "../../api/weather";
 import { Modal, Button } from "react-bootstrap";
@@ -21,6 +22,7 @@ function PlaceDetail() {
   const [weather, setWeather] = useState({ temp: 0, feeling: 0 });
   const [message, setMessage] = useState("로딩 중...");
   const [fitList, setFitList] = useState([]);
+  const [imageUrl, setImageUrl] = useState(null);
   const [opinion, setOpinion] = useState("");
   const [rating, setRating] = useState(0);
   const [opinions, setOpinions] = useState([]);
@@ -39,6 +41,19 @@ function PlaceDetail() {
     setModalMessage(message);
     setShowModal(true);
   };
+
+  const fetchImageUrl = async () => {
+    if (!place?.placeName) return;
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/google/image?name=${encodeURIComponent(place.placeName)}`);
+      const url = await res.text();
+      setImageUrl(url);
+    } catch (err) {
+      console.error("대표 이미지 로딩 실패:", err);
+      setImageUrl("/no-image.jpg"); // fallback
+    }
+  };
+  
 
   const fetchAverageRating = async () => {
     if (!place?.id) return;
@@ -74,6 +89,12 @@ function PlaceDetail() {
     }
     return <div className="star-wrapper">{stars}</div>;
   };
+
+  useEffect(() => {
+    if (place?.placeName) {
+      fetchImageUrl();
+    }
+  }, [place]);
 
   useEffect(() => {
     if (place) return;
@@ -275,6 +296,7 @@ function PlaceDetail() {
         renderStars={renderStars}
       />
 
+      <PlaceImage place={place} />
 
       <PlaceWeatherSection
         place={place}

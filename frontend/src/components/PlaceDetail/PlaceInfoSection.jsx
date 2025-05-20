@@ -29,14 +29,16 @@ function PlaceInfoSection({
           <span className="info-label">📍 지번 주소</span>
           <span className="info-value">{place.addressName}</span>
         </div>
+        { place.roadAddressName &&
         <div className="info-row">
           <span className="info-label">🛣️ 도로명 주소</span>
           <span className="info-value">{place.roadAddressName}</span>
-        </div>
+        </div> }
+        {place.phone &&
         <div className="info-row">
           <span className="info-label">📞 전화번호</span>
-          <span className="info-value">{place.phone || "없음"}</span>
-        </div>
+          <span className="info-value">{place.phone}</span>
+        </div> }
       </div>
 
       <a className="kakao-link-button" href={place.placeUrl} target="_blank" rel="noreferrer">
