@@ -188,60 +188,61 @@ function TodayPlaceList() {
 
   return (
     <div style={{ padding: "2rem", color: "black" }}>
-            {fitList.length > 0 && (
-        <div className="recommend-toolbar">
-          <div className="today-fitlist">
-            <span className="fit-label">
-              오늘의 추천 장소 [{fitList[0].split(":")[0]}] :
-            </span>
-            {fitList
-              .slice(1)
-              .filter((fit, idx, arr) => arr.indexOf(fit) === idx)
-              .map((fit, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => {
-                    setKeyword(fit);
-                    fetchPlaceList("", fit);
-                  }}
-                  className="label-button"
-                >
-                  {fit}
-                </button>
-              ))}
-          </div>
-
-        </div>
-      )}
-      <div className="search">
-        <input
-          type="text"
-          placeholder="장소 이름 검색"
-          value={keyword}
-          onChange={(e) => setKeyword(e.target.value)}
-        />
-        <button onClick={() => fetchPlaceList(selectedCategory, keyword)}>🔍</button>
-      </div>
-      
-          <div className="category-list">
-            {["음식점", "카페", "관광명소"].map((label) => (
+      {fitList.length > 0 && (
+      <div className="recommend-toolbar">
+        <div className="today-fitlist">
+          <span className="fit-label">
+            ONDA 추천 오늘의 장소 :
+          </span>
+          {/* 중복 없이 버튼 출력 */}
+          {fitList
+            .slice(1)
+            .filter((fit, idx, arr) => arr.indexOf(fit) === idx) // 중복 제거
+            .map((fit, idx) => (
               <button
-                key={label}
-                onClick={() => handleCategoryClick(label)}
-                className={`label-button ${selectedCategory === label ? "selected" : ""}`}
+                key={idx}
+                onClick={() => {
+                  setKeyword(fit);
+                  fetchPlaceList("", fit);
+                }}
+                className="label-button"
               >
-                <span style={{ marginRight: "5px" }}>
-                  {categoryCodeMap[label] === "FD6"
-                    ? "🍽️"
-                    : categoryCodeMap[label] === "CE7"
-                    ? "☕"
-                    : "🌳"}
-                </span>
-                {label}
+                {fit}
               </button>
             ))}
-          </div>
-
+        </div>
+      </div>
+          )}
+        <div className="search">
+          <input
+            type="text"
+            placeholder={`   ${fitList[0]?.split(":")[0] || "  장소 이름 검색"}`}
+            value={keyword}
+            onChange={(e) => setKeyword(e.target.value)}
+          />
+          <button onClick={() => fetchPlaceList(selectedCategory, keyword)}>🔍</button>
+        </div>
+          
+      <div className="recommend-toolbar">
+        <div className="category-list">
+          {["음식점", "카페", "관광명소"].map((label) => (
+            <button
+              key={label}
+              onClick={() => handleCategoryClick(label)}
+              className={`label-button ${selectedCategory === label ? "selected" : ""}`}
+            >
+              <span style={{ marginRight: "5px" }}>
+                {categoryCodeMap[label] === "FD6"
+                  ? "🍽️"
+                  : categoryCodeMap[label] === "CE7"
+                  ? "☕"
+                  : "🌳"}
+              </span>
+              {label}
+            </button>
+          ))}
+        </div>
+      </div>
 
       {loading ? (
         <div className="loading-container">
