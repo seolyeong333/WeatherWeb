@@ -1,6 +1,4 @@
-import React from "react";
 import iconMap from "../../utils/iconMap"; // 아이콘 매칭 유틸
-import "../../styles/TodayLook.css";
 
 const FashionIconSection = ({ showIcons }) => {
   if (!Array.isArray(showIcons)) return null;

@@ -159,7 +159,7 @@ function TodayLook() {
         <hr style={{ margin: "1.5rem 0" }} />
 
         <h4 style={{ marginBottom: "1rem", fontFamily: "'Gowun Dodum', sans-serif" }}>
-          오늘의 색상의 추천 코디
+          오늘의 색상 추천 코디
         </h4>
 
         {/* 필터 + 뷰 토글 영역 전체 */}
