@@ -179,3 +179,80 @@
   border-radius: 12px;
   background-color: rgba(255, 255, 255, 0); /* 완전 투명 */
 }
+.custom-place-marker {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  cursor: pointer;
+  font-family: 'Arial', sans-serif;
+}
+
+.marker-circle {
+  background-color: #3B82F6;
+  color: white;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+  font-size: 14px;
+}
+
+.marker-label {
+  background: white;
+  padding: 2px 6px;
+  margin-top: 4px;
+  border-radius: 8px;
+  font-size: 12px;
+  white-space: nowrap;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+}
+
+.circle-only-marker {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transform: translate(-0%, 100%); /* 📍 중심 정렬 */
+}
+
+.circle-number {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #3B82F6;
+  color: white;
+  font-weight: bold;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.circle-name {
+  background: white;
+  padding: 3px 8px;
+  margin-top: 4px;
+  border-radius: 8px;
+  font-size: 12px;
+  white-space: nowrap;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.circle-name {
+  position: absolute;
+  top: -25px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 12px;
+  background: white;
+  padding: 2px 6px;
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  white-space: nowrap;
+}

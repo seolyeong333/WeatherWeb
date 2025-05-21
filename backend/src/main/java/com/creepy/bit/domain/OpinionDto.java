@@ -13,7 +13,5 @@ public class OpinionDto {
     private String content;
     private int rating;
     private boolean isPublic;
-    private int likes;
-    private int dislikes;
     private String createdAt;
 }

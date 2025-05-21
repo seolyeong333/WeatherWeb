@@ -247,7 +247,6 @@ function TodayWeatherPage() {
       
       {showSocialSignup && socialInfo && (
         <div className="modal-overlay">
-          <div className="modal-content">
             <SocialSignup
               email={socialInfo.email}
               provider={socialInfo.provider}
@@ -257,7 +256,6 @@ function TodayWeatherPage() {
                 setSocialInfo(null);
               }}
             />
-          </div>
         </div>
       )}
 

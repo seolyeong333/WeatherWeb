@@ -31,6 +31,7 @@ function ChangePasswordTab({ userInfo, onSuccess, setShowEditComponent }) {
         setError("");
         setNewPw(""); setConfirmPw("");
         onSuccess?.();
+        
         setShowEditComponent();
       } else {
         const msg = await res.text();
