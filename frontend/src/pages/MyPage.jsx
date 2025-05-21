@@ -129,7 +129,7 @@ function MyPage() {
     <>
       <WeatherOverlay />
       <Header />
-
+    <div className="mypage-wrapper">
       <div className="mypage-wrapper container mt-5 mb-5">
         <h2 className="fw-bold mb-4">👤 마이페이지</h2>
         <Row>
@@ -196,6 +196,7 @@ function MyPage() {
 
           </Col>
         </Row>
+      </div>
       </div>
       <PasswordCheckModal
         show={showPasswordCheckModal}

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useLocation } from "react-router-dom";
 import { Navbar, Nav, Button } from "react-bootstrap";
 import { FaBars } from "react-icons/fa";
 import { motion } from "framer-motion";
@@ -10,6 +10,7 @@ import { isLoggedIn as checkLogin, getUserAuth, getUserNickname } from "../api/j
 
 function Header() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [isLoggedIn, setIsLoggedIn] = useState(checkLogin());
   const [menuOpen, setMenuOpen] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
@@ -58,14 +59,24 @@ function Header() {
 
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
-          <Nav className="mx-auto">
-            <Nav.Link as={Link} to="/" className="main-nav-link">오늘의 날씨</Nav.Link>
-            <Nav.Link as={Link} to="/today-place" className="main-nav-link">오늘의 장소</Nav.Link>
-            <Nav.Link as={Link} to="/today-look" className="main-nav-link">오늘의 코디</Nav.Link>
-            <Nav.Link as={Link} to="/horoscope/tarot" className="main-nav-link">오늘의 운세</Nav.Link>
-            <Nav.Link as={Link} to="/notice" className="main-nav-link">공지사항</Nav.Link>
+          <Nav className="mx-auto" style={{ fontWeight: location.pathname === "/" ? "bold" : "normal" }}>
+            <Nav.Link as={Link} to="/" className="main-nav-link" style={{ fontWeight: location.pathname === "/" ? "bold" : "normal" }}>
+              오늘의 날씨
+            </Nav.Link>
+            <Nav.Link as={Link} to="/today-place" className="main-nav-link" style={{ fontWeight: location.pathname === "/today-place" ? "bold" : "normal" }}>
+              오늘의 장소
+            </Nav.Link>
+            <Nav.Link as={Link} to="/today-look" className="main-nav-link" style={{ fontWeight: location.pathname === "/today-look" ? "bold" : "normal" }}>
+              오늘의 코디
+            </Nav.Link>
+            <Nav.Link as={Link} to="/horoscope/tarot" className="main-nav-link" style={{ fontWeight: location.pathname === "/horoscope/tarot" ? "bold" : "normal" }}>
+              오늘의 운세
+            </Nav.Link>
+            <Nav.Link as={Link} to="/notice" className="main-nav-link" style={{ fontWeight: location.pathname === "/notice" ? "bold" : "normal" }}>
+              공지사항
+            </Nav.Link>
             {isLoggedIn && (
-              <Nav.Link as={Link} to={isAdmin ? "/admin" : "/mypage"} className="main-nav-link">
+              <Nav.Link as={Link} to={isAdmin ? "/admin" : "/mypage"} className="main-nav-link" style={{ fontWeight: location.pathname.startsWith(isAdmin ? "/admin" : "/mypage") ? "bold" : "normal" }}>
                 {isAdmin ? "관리자페이지" : "마이페이지"}
               </Nav.Link>
             )}
@@ -73,7 +84,7 @@ function Header() {
 
           {isLoggedIn ? (
             <>
-             <span className="me-3 fw-semibold text-dark">{nickname}</span>
+             <span className="me-3 fw-semibold text-dark">{nickname} 님</span>
              <Button variant="outline-secondary" size="sm" className="header-action-button" onClick={handleLogoutAndCloseMenu}>
               로그아웃
             </Button>
