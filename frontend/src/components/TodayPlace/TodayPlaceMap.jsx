@@ -1,5 +1,3 @@
-// src/components/TodayPlace/TodayPlaceMap.jsx
-
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -15,6 +13,7 @@ function TodayPlaceMap() {
   const mapInstanceRef = useRef(null);
   const userMarkerRef = useRef(null);
   const clickMarkerRef = useRef(null);
+  const placeMarkersRef = useRef([]);
   const labelOverlaysRef = useRef([]);
   const showMarkRef = useRef("");
 
@@ -38,7 +37,7 @@ function TodayPlaceMap() {
     });
     mapInstanceRef.current = map;
 
-    window.kakao.maps.event.addListener(map, "click", async function (mouseEvent) {
+    window.kakao.maps.event.addListener(map, "click", async (mouseEvent) => {
       const latLng = mouseEvent.latLng;
       const lat = latLng.getLat();
       const lon = latLng.getLng();
@@ -48,6 +47,7 @@ function TodayPlaceMap() {
       clickMarkerRef.current = marker;
 
       const regionCode = await getAddressFromKakao(lat, lon);
+
       if (regionCode !== lastRegionCode) {
         setSelectedLocation({ lat, lon });
         setLastRegionCode(regionCode);
@@ -88,11 +88,13 @@ function TodayPlaceMap() {
     try {
       const res = await axios.get(
         `https://dapi.kakao.com/v2/local/geo/coord2regioncode.json?x=${lon}&y=${lat}`,
-        { headers: { Authorization: `KakaoAK e7c76873999ef901948568fdbf33233b` } }
+        { headers: { Authorization: "KakaoAK e7c76873999ef901948568fdbf33233b" } }
       );
       if (res.data.documents.length > 0) {
         const region = res.data.documents[0];
-        setRegionName(`${region.region_1depth_name} ${region.region_2depth_name} ${region.region_3depth_name}`);
+        setRegionName(
+          `${region.region_1depth_name} ${region.region_2depth_name} ${region.region_3depth_name}`
+        );
         return region.code;
       }
     } catch (err) {
@@ -143,30 +145,34 @@ function TodayPlaceMap() {
       const json = await res.json();
       setPlaces(json);
 
+      placeMarkersRef.current.forEach((m) => m.setMap(null));
+      placeMarkersRef.current = [];
       labelOverlaysRef.current.forEach((l) => l.setMap(null));
       labelOverlaysRef.current = [];
 
       json.forEach((place, idx) => {
         const position = new window.kakao.maps.LatLng(place.y, place.x);
 
+        const markerEl = document.createElement("div");
+        markerEl.className = "circle-only-marker";
+        markerEl.innerHTML = `
+          <div class="circle-number">${idx + 1}</div>
+          <div class="circle-name">${place.placeName}</div>
+        `;
+
+        markerEl.addEventListener("click", () => {
+          navigate("/today-place/place-detail", {
+            state: { placeName: place.placeName, place },
+          });
+        });
+
         const overlay = new window.kakao.maps.CustomOverlay({
-          map,
           position,
-          yAnchor: 0.85, // ⬅ 더 정확한 중앙 하단 정렬
+          yAnchor: 1.8,
           zIndex: 3,
-          content: `
-            <div class="circle-only-marker" onclick="document.dispatchEvent(new CustomEvent('marker-click-${idx}'))">
-              <div class="circle-number">${idx + 1}</div>
-              <div class="circle-name">${place.placeName}</div>
-            </div>
-          `,
+          content: markerEl,
         });
-        
-
-        document.addEventListener(`marker-click-${idx}`, () => {
-          navigate("/today-place/place-detail", { state: { placeName: place.placeName, place } });
-        });
-
+        overlay.setMap(map);
         labelOverlaysRef.current.push(overlay);
       });
     } catch (err) {
@@ -189,12 +195,15 @@ function TodayPlaceMap() {
   }, [fitList, selectedLocation]);
 
   const handlePlaceClick = (place) => {
-    navigate("/today-place/place-detail", { state: { placeName: place.placeName, place } });
+    navigate("/today-place/place-detail", {
+      state: { placeName: place.placeName, place },
+    });
   };
+  
 
   return (
     <div className="map-container">
-      <main className="map-wrapper">
+      <main className="map-wrapper">0
         <div className="map-category-buttons">
           {["음식점", "카페", "관광명소"].map((label, idx) => (
             <button
@@ -205,7 +214,11 @@ function TodayPlaceMap() {
                 loadRecommendedPlaces(selectedLocation.lat, selectedLocation.lon, label)
               }
             >
-              {label === "음식점" ? "🍽️ 음식점" : label === "카페" ? "☕ 카페" : "🌳 관광명소"}
+              {label === "음식점"
+                ? "🍽️ 음식점"
+                : label === "카페"
+                ? "☕ 카페"
+                : "🌳 관광명소"}
             </button>
           ))}
         </div>
@@ -216,12 +229,13 @@ function TodayPlaceMap() {
           <div className="weather-box">
             <h5>🌤️ 오늘의 날씨</h5>
             <p>{regionName}</p>
-            <p>{weather ? `${weather.temp}°C / ${weather.desc}` : "날씨 정보 없음"}</p>
+            <h5 style={{ marginTop: "-0.4rem" }}>
+              {weather ? `${weather.temp}°C / ${weather.desc}` : "날씨 정보 없음"}
+            </h5>
           </div>
 
           <div className="recommend-box">
-            <h5>📍 날씨 기반 추천 플레이스</h5>
-
+            <h5>ONDA 추천 플레이스</h5>
             {fitList.length > 1 && (
               <div className="recommend-keywords">
                 {fitList
@@ -240,7 +254,9 @@ function TodayPlaceMap() {
                   ))}
               </div>
             )}
+          </div>
 
+          <div className="recommend-box">
             {loading ? (
               <>
                 <Lottie
@@ -248,7 +264,9 @@ function TodayPlaceMap() {
                   loop={true}
                   style={{ width: 100, height: 100, margin: "0 auto" }}
                 />
-                <p className="loading-text">ONDA AI의 추천 장소 정보를 불러오는 중입니다…</p>
+                <p className="loading-text">
+                  ONDA AI의 추천 장소 정보를 불러오는 중입니다…
+                </p>
               </>
             ) : (
               <div className="recommend-list">

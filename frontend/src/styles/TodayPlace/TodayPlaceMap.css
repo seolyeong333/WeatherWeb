@@ -53,14 +53,25 @@
   border-radius: 10px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.4);
+  margin-right: 0.7rem;
+  text-align: center;
 }
 
 /* ✅ 추천 박스 제목 정리 */
-.recommend-box h5 {
-  font-size: 1.1rem;
+.recommend-box h5,
+.weather-box h5 {
+  font-family: 'Gowun Dodum', sans-serif;
+  font-size: 1.2rem;
   font-weight: 600;
+  text-shadow: 0 0 0.5px #000;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 0.6rem;
   color: #222;
-  margin-bottom: 0.8rem;
+  margin-bottom: 0.3rem;
+}
+
+.weather-box p {
+  margin-top: 0.7rem;
 }
 
 /* ✅ 키워드 버튼 정리 */
@@ -78,8 +89,6 @@
 /* ✅ 키워드 버튼 스타일 통일 */
 .keyword-button,
 .map-category-button {
-  padding: 6px 12px;
-  font-size: 0.85rem;
   font-weight: 500;
   background-color: white;
   color: #333;
@@ -89,6 +98,16 @@
   transition: background-color 0.2s ease;
   white-space: nowrap;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.map-category-button {
+  padding: 7px 13px;
+  font-size: 1.1em;
+}
+
+.keyword-button {
+  padding: 5px 10px;
+  font-size: 0.95em;
 }
 
 .keyword-button:hover,
@@ -195,25 +214,34 @@
 
 .circle-only-marker {
   position: relative;
-  width: 0;
-  height: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transform: translate(-0%, 100%); /* 📍 중심 정렬 */
 }
 
 .circle-number {
-  position: absolute;
-  left: -15px;
-  top: -60px; /* 👈 위로 조금 더 올림 */
-  width: 30px;
-  height: 30px;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
   background: #3B82F6;
   color: white;
+  font-weight: bold;
+  font-size: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: bold;
-  font-size: 14px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.circle-name {
+  background: white;
+  padding: 3px 8px;
+  margin-top: 4px;
+  border-radius: 8px;
+  font-size: 12px;
+  white-space: nowrap;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
 .circle-name {
