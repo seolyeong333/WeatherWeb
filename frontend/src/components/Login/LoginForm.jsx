@@ -2,20 +2,21 @@ import { useState } from "react";
 import { Form, Button, Modal } from "react-bootstrap";
 import { FaGoogle } from "react-icons/fa";
 import { SiKakaotalk, SiNaver } from "react-icons/si";
+
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 function LoginForm({ closeLogin, setIsLoggedIn, setMode }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  // ✅ 모달 상태 추가
-  const [modalMessage, setModalMessage] = useState("");
+  // ✅ 모달 상태
   const [showModal, setShowModal] = useState(false);
-  const handleCloseModal = () => setShowModal(false);
-
-  const showAlert = (message) => {
-    setModalMessage(message);
-    setShowModal(true);
+  const [modalMessage, setModalMessage] = useState("");
+  const handleCloseModal = () => {
+    setShowModal(false);
+    if (modalMessage.includes("성공")) {
+      closeLogin?.(); // 성공 시 모달 닫은 뒤 로그인창도 닫기
+    }
   };
 
   const submitHandler = async (e) => {
@@ -29,17 +30,19 @@ function LoginForm({ closeLogin, setIsLoggedIn, setMode }) {
 
       if (res.ok) {
         const result = await res.json();
-        showAlert(`로그인 성공! 환영합니다, ${result.nickname}님`);
         localStorage.setItem("token", result.token);
         setIsLoggedIn(true);
-        closeLogin?.();
+        setModalMessage(`로그인 성공! 환영합니다, ${result.nickname}님`);
+        setShowModal(true);
       } else {
         const err = await res.text();
-        showAlert(err);
+        setModalMessage(err);
+        setShowModal(true);
       }
     } catch (err) {
       console.error(err);
-      showAlert("서버 오류");
+      setModalMessage("서버 오류");
+      setShowModal(true);
     }
   };
 
@@ -113,6 +116,7 @@ function LoginForm({ closeLogin, setIsLoggedIn, setMode }) {
         </a>
       </div>
 
+      {/* ✅ 모달 UI */}
       <Modal show={showModal} onHide={handleCloseModal} centered>
         <Modal.Header closeButton>
           <Modal.Title>알림</Modal.Title>
