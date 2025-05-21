@@ -1,7 +1,10 @@
 import { useState } from "react";
-import { Form, Button, Modal } from "react-bootstrap";
+import { Form, Button }
+from "react-bootstrap";
 import { FaGoogle } from "react-icons/fa";
 import { SiKakaotalk, SiNaver } from "react-icons/si";
+import { toast } from 'react-toastify'; 
+import 'react-toastify/dist/ReactToastify.css'; 
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -9,18 +12,12 @@ function LoginForm({ closeLogin, setIsLoggedIn, setMode }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  // ✅ 모달 상태
-  const [showModal, setShowModal] = useState(false);
-  const [modalMessage, setModalMessage] = useState("");
-  const handleCloseModal = () => {
-    setShowModal(false);
-    if (modalMessage.includes("성공")) {
-      closeLogin?.(); // 성공 시 모달 닫은 뒤 로그인창도 닫기
-    }
-  };
-
   const submitHandler = async (e) => {
     e.preventDefault();
+    if (!email.trim() || !password.trim()) {
+      toast.warn("이메일과 비밀번호를 모두 입력해주세요."); 
+      return;
+    }
     try {
       const res = await fetch(`${API_BASE_URL}/api/users/login`, {
         method: "POST",
@@ -32,17 +29,15 @@ function LoginForm({ closeLogin, setIsLoggedIn, setMode }) {
         const result = await res.json();
         localStorage.setItem("token", result.token);
         setIsLoggedIn(true);
-        setModalMessage(`로그인 성공! 환영합니다, ${result.nickname}님`);
-        setShowModal(true);
+        toast.success(`로그인 성공! 환영합니다, ${result.nickname}님`); // ✅ 성공 토스트
+        closeLogin?.(); // 성공 후 즉시 로그인 창 닫기
       } else {
-        const err = await res.text();
-        setModalMessage(err);
-        setShowModal(true);
+        const errText = await res.text();
+        toast.error(errText || "아이디 또는 비밀번호를 확인해주세요."); // ✅ 에러 토스트
       }
     } catch (err) {
-      console.error(err);
-      setModalMessage("서버 오류");
-      setShowModal(true);
+      console.error("로그인 API 요청 오류:", err);
+      toast.error("로그인 중 서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요."); // ✅ 에러 토스트
     }
   };
 
@@ -70,64 +65,56 @@ function LoginForm({ closeLogin, setIsLoggedIn, setMode }) {
   return (
     <>
       <Form onSubmit={submitHandler}>
-        <Form.Control
-          type="email"
-          placeholder="이메일"
-          className="mb-3"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
-        <Form.Control
-          type="password"
-          placeholder="비밀번호"
-          className="mb-3"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
+        <Form.Group className="mb-3" controlId="loginFormEmail">
+            <Form.Label visuallyHidden>이메일</Form.Label>
+            <Form.Control
+                type="email"
+                placeholder="이메일"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+            />
+        </Form.Group>
+        <Form.Group className="mb-3" controlId="loginFormPassword">
+            <Form.Label visuallyHidden>비밀번호</Form.Label>
+            <Form.Control
+                type="password"
+                placeholder="비밀번호"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+            />
+        </Form.Group>
         <Button type="submit" variant="dark" className="w-100 mb-3">
           로그인
         </Button>
       </Form>
 
-      <div className="mb-4">
-        <Button onClick={handleGoogleLogin} className="w-100 mb-2" variant="light">
+      <div className="mb-4 text-center">
+        <p className="text-muted" style={{fontSize: '0.9rem', marginBottom: '0.75rem'}}></p>
+        <Button onClick={handleGoogleLogin} className="w-100 mb-2 social-login-btn google-login-btn" variant="light">
           <FaGoogle className="me-2" /> 구글 계정으로 로그인
         </Button>
-        <Button onClick={handleKakaoLogin} className="w-100 mb-2" style={{ backgroundColor: "#FEE500", color: "#000" }}>
+        <Button onClick={handleKakaoLogin} className="w-100 mb-2 social-login-btn kakao-login-btn" style={{ backgroundColor: "#FEE500", color: "#191919", borderColor: '#FEE500' }}>
           <SiKakaotalk className="me-2" /> 카카오 계정으로 로그인
         </Button>
-        <Button onClick={handleNaverLogin} className="w-100" style={{ backgroundColor: "#03C75A", color: "#fff" }}>
+        <Button onClick={handleNaverLogin} className="w-100 social-login-btn naver-login-btn" style={{ backgroundColor: "#03C75A", color: "#fff", borderColor: '#03C75A' }}>
           <SiNaver className="me-2" /> 네이버 계정으로 로그인
         </Button>
       </div>
 
-      <div style={{ fontSize: "0.9rem" }}>
-        회원이 아니신가요?{" "}
-        <a href="#" onClick={() => setMode("signup")}>
+      <div className="text-center" style={{ fontSize: "0.9rem" }}>
+        <span className="me-2">회원이 아니신가요?</span>
+        <a href="#" onClick={(e) => { e.preventDefault(); setMode("signup"); }}>
           회원가입
         </a>
       </div>
-      <div style={{ fontSize: "0.9rem" }}>
-        비밀번호를 잊으셨나요?{" "}
-        <a href="#" onClick={() => setMode("findPassword")}>
+      <div className="text-center mt-2" style={{ fontSize: "0.9rem" }}>
+        <span className="me-2">비밀번호를 잊으셨나요?</span>
+        <a href="#" onClick={(e) => { e.preventDefault(); setMode("findPassword"); }}>
           비밀번호 찾기
         </a>
       </div>
-
-      {/* ✅ 모달 UI */}
-      <Modal show={showModal} onHide={handleCloseModal} centered>
-        <Modal.Header closeButton>
-          <Modal.Title>알림</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>{modalMessage}</Modal.Body>
-        <Modal.Footer>
-          <Button variant="primary" onClick={handleCloseModal}>
-            확인
-          </Button>
-        </Modal.Footer>
-      </Modal>
     </>
   );
 }
