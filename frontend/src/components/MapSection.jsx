@@ -46,31 +46,64 @@ const getColorByTemp = (temp) => {
   return "#C94C4C";
 };
 
+const adjustedCoords = new Set();
+function adjustPosition(lat, lon) {
+  let key = `${lat.toFixed(3)}-${lon.toFixed(3)}`;
+  let tries = 0;
+  while (adjustedCoords.has(key) && tries < 10) {
+    lat += (Math.random() - 0.5) * 0.06;
+    lon += (Math.random() - 0.5) * 0.06;
+    key = `${lat.toFixed(3)}-${lon.toFixed(3)}`;
+    tries++;
+  }
+  adjustedCoords.add(key);
+  return [lat, lon];
+}
+
+function applyManualOffset(loc) {
+  const offsets = {
+    "서울": [0.02, 0.01],
+    "수원": [-0.02, -0.01],
+    "인천": [0.01, -0.02],
+    "대전": [0.01, 0.02],
+    "청주": [-0.01, -0.02],
+    "전주": [0.015, -0.015],
+    "광주": [-0.015, 0.015],
+    "대구": [0.01, -0.015],
+    "울산": [-0.01, 0.01],
+    "부산": [0.02, 0.01],
+  };
+  if (offsets[loc.name]) {
+    const [latOffset, lonOffset] = offsets[loc.name];
+    loc.lat += latOffset;
+    loc.lon += lonOffset;
+  }
+  return loc;
+}
+
 function MapSection() {
   const mapContainer = useRef(null);
   const mapInstance = useRef(null);
   const overlaysRef = useRef([]);
+  const hoverOverlayRef = useRef(null);
   const [weatherData, setWeatherData] = useState([]);
   const [timeMode, setTimeMode] = useState("current");
   const [isMapReady, setIsMapReady] = useState(false);
 
-  // ✅ Kakao Maps API 로드
   useEffect(() => {
     const script = document.createElement("script");
     script.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=8bcccc0b92f918feea4dfc630cf3537e&autoload=false`;
     script.async = true;
     script.onload = () => {
-      window.kakao.maps.load(() => {
-        setIsMapReady(true); // Kakao 객체 준비 완료
-      });
+      window.kakao.maps.load(() => setIsMapReady(true));
     };
     document.head.appendChild(script);
   }, []);
 
-  // ✅ 날씨 데이터 불러오기
   useEffect(() => {
     const fetchWeather = async () => {
       const apiKey = "4f673522ff69c4d615b1e593ce6fa16b";
+      adjustedCoords.clear();
 
       const results = await Promise.all(
         locations.map(async (loc) => {
@@ -82,13 +115,15 @@ function MapSection() {
           const res = await fetch(url);
           const data = await res.json();
 
-          let temp, description;
+          let temp, description, wind, humidity;
           const targetHour = timeMode === "morning" ? 6 : 15;
           const todayDate = getTodayDateNumberKST();
 
           if (timeMode === "current") {
             temp = data.main.temp.toFixed(1);
             description = data.weather[0].description;
+            wind = data.wind?.speed?.toFixed(1) || "-";
+            humidity = data.main?.humidity || "-";
           } else {
             const match = data.list.find((item) => {
               const dtKST = toKST(item.dt_txt);
@@ -98,24 +133,31 @@ function MapSection() {
               const dtKST = toKST(item.dt_txt);
               return dtKST.getUTCDate() === todayDate;
             });
-            if (match) {
-              temp = match.main.temp.toFixed(1);
-              description = match.weather[0].description;
-            } else if (fallback) {
-              temp = fallback.main.temp.toFixed(1);
-              description = fallback.weather[0].description;
+            const selected = match || fallback;
+            if (selected) {
+              temp = selected.main.temp.toFixed(1);
+              description = selected.weather[0].description;
+              wind = selected.wind?.speed?.toFixed(1) || "-";
+              humidity = selected.main?.humidity || "-";
             } else {
               temp = "-";
               description = "정보 없음";
+              wind = "-";
+              humidity = "-";
             }
           }
 
+          const [adjLat, adjLon] = adjustPosition(loc.lat, loc.lon);
+          const offsetLoc = applyManualOffset({ ...loc, lat: adjLat, lon: adjLon });
+
           return {
-            ...loc,
+            ...offsetLoc,
             temp,
             description,
             icon: getWeatherEmoji(description.toLowerCase()),
             color: getColorByTemp(temp),
+            wind,
+            humidity,
           };
         })
       );
@@ -126,7 +168,6 @@ function MapSection() {
     fetchWeather();
   }, [timeMode]);
 
-  // ✅ 지도 및 오버레이 렌더링
   useEffect(() => {
     if (!isMapReady || !mapContainer.current) return;
 
@@ -135,12 +176,10 @@ function MapSection() {
         new window.kakao.maps.LatLng(33.0, 124.5),
         new window.kakao.maps.LatLng(39.0, 132.0)
       );
-
       const map = new window.kakao.maps.Map(mapContainer.current, {
         center: new window.kakao.maps.LatLng(36.3, 127.8),
         level: 13,
       });
-
       map.setBounds(bounds);
       map.setMaxLevel(13);
       mapInstance.current = map;
@@ -150,38 +189,63 @@ function MapSection() {
       });
     }
 
-    if (mapInstance.current && weatherData.length > 0) {
-      overlaysRef.current.forEach((overlay) => overlay.setMap(null));
-      overlaysRef.current = [];
+    overlaysRef.current.forEach((overlay) => overlay.setMap(null));
+    overlaysRef.current = [];
 
-      weatherData.forEach((loc) => {
-        const position = new window.kakao.maps.LatLng(loc.lat, loc.lon);
-        const content = `
-          <div style="
-            background: ${loc.color};
-            color: black;
-            border-radius: 20px;
-            border: 1px solid #ccc;
-            padding: 6px 10px;
-            font-size: 12px;
-            text-align: center;
-            box-shadow: 0 1px 4px rgba(0,0,0,0.3);
-            white-space: nowrap;">
-            <strong>${loc.name}</strong><br/>
-            ${loc.icon} ${loc.temp}°
-          </div>
-        `;
+    weatherData.forEach((loc) => {
+      const position = new window.kakao.maps.LatLng(loc.lat, loc.lon);
 
-        const overlay = new window.kakao.maps.CustomOverlay({
-          position,
-          content,
-          yAnchor: 1,
-        });
+      const markerEl = document.createElement("div");
+      markerEl.style.background = loc.color;
+      markerEl.style.color = "black";
+      markerEl.style.borderRadius = "20px";
+      markerEl.style.border = "1px solid #ccc";
+      markerEl.style.padding = "6px 10px";
+      markerEl.style.fontSize = "12px";
+      markerEl.style.textAlign = "center";
+      markerEl.style.boxShadow = "0 1px 4px rgba(0,0,0,0.3)";
+      markerEl.style.whiteSpace = "nowrap";
+      markerEl.innerHTML = `<strong>${loc.name}</strong><br/>${loc.icon} ${loc.temp}°`;
 
-        overlay.setMap(mapInstance.current);
-        overlaysRef.current.push(overlay);
+      const overlay = new window.kakao.maps.CustomOverlay({
+        position,
+        content: markerEl,
+        yAnchor: 1,
       });
-    }
+      overlay.setMap(mapInstance.current);
+      overlaysRef.current.push(overlay);
+
+      const tooltipEl = document.createElement("div");
+      tooltipEl.style.background = "white";
+      tooltipEl.style.padding = "6px 10px";
+      tooltipEl.style.borderRadius = "8px";
+      tooltipEl.style.border = "1px solid #ccc";
+      tooltipEl.style.boxShadow = "0 1px 4px rgba(0,0,0,0.3)";
+      tooltipEl.style.fontSize = "12px";
+      tooltipEl.style.whiteSpace = "nowrap";
+      tooltipEl.innerHTML = `
+        <strong>${loc.name}</strong><br/>
+        ${loc.icon} ${loc.description} (${loc.temp}°C)<br/>
+        💨 ${loc.wind} m/s&nbsp;&nbsp;&nbsp;💧${loc.humidity}%
+      `;
+
+      const tooltipOverlay = new window.kakao.maps.CustomOverlay({
+        position,
+        content: tooltipEl,
+        yAnchor: 1.5,
+      });
+
+      markerEl.addEventListener("mouseenter", () => {
+        if (hoverOverlayRef.current) hoverOverlayRef.current.setMap(null);
+        tooltipOverlay.setMap(mapInstance.current);
+        hoverOverlayRef.current = tooltipOverlay;
+      });
+
+      markerEl.addEventListener("mouseleave", () => {
+        tooltipOverlay.setMap(null);
+        hoverOverlayRef.current = null;
+      });
+    });
   }, [isMapReady, weatherData]);
 
   return (
@@ -207,11 +271,7 @@ function MapSection() {
         </button>
       </div>
 
-      <div
-        ref={mapContainer}
-        className="w-100"
-        style={{ height: "400px", borderRadius: "10px" }}
-      />
+      <div ref={mapContainer} className="w-100" style={{ height: "400px", borderRadius: "10px" }} />
     </div>
   );
 }
