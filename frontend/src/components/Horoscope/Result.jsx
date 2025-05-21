@@ -73,22 +73,58 @@ function Result({ categoryId, selected }) {
       <h2 style={{ marginBottom: "3rem", fontFamily: "'Gowun Dodum', sans-serif" }}>
         🧙‍♀️ 당신의 오늘의 운세 결과입니다
       </h2>
-      <div style={{ display: "flex", justifyContent: "center", gap: "2rem" }}>
-        {cardInfos.map((c, index) => (
-          <div key={index} style={{ textAlign: "center" }}>
-            <img
-              src={`/tarot/${categoryId}/${c.cardId}.png`}
-              alt={`카드 ${c.cardName}`}
-              style={{ width: "180px", height: "250px" }}
-            />
-            <div style={{ marginTop: "0.5rem", fontFamily: "'Gowun Dodum', sans-serif" }}>
-              <strong>「{c.cardName}」</strong><br />
-              {c.description} <br/>
-              🎨 {c.colors?.[0]?.colorName || "색상 없음"}
-            </div>
-          </div>
-        ))}
+      <div
+  style={{
+    display: "flex",
+    justifyContent: "space-between", // 카드 간 간격 일정하게
+    width: "660px",                  // 카드 3개 + 간격 합친 고정폭
+    margin: "0 auto"                 // 부모 기준 가운데 정렬
+  }}
+>
+  {cardInfos.map((c, index) => (
+    <div key={index} style={{ textAlign: "center", width: "200px", flexShrink: 0 }}>
+      <img
+        src={`/tarot/${categoryId}/${c.cardId}.png`}
+        alt={`카드 ${c.cardName}`}
+        style={{ width: "180px", height: "250px" }}
+      />
+      <div style={{ marginTop: "0.5rem", fontFamily: "'Gowun Dodum', sans-serif" }}>
+        <strong>「{c.cardName}」</strong><br />
+        {c.description}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: "8px",
+            marginTop: "0.5rem",
+            fontSize: "0.95rem",
+            color: "#555",
+          }}
+        >
+          {c.colors?.[0] ? (
+            <>
+              <span
+                style={{
+                  width: "14px",
+                  height: "14px",
+                  borderRadius: "50%",
+                  backgroundColor: c.colors[0].hexCode || "#ccc",
+                  border: "1px solid #aaa",
+                  display: "inline-block",
+                }}
+              ></span>
+              <span>{c.colors[0].colorName}</span>
+            </>
+          ) : (
+            <span>색상 없음</span>
+          )}
+        </div>
       </div>
+    </div>
+  ))}
+</div>
+
 
       <button
         onClick={() => setShowColorModal(true)}
@@ -107,32 +143,46 @@ function Result({ categoryId, selected }) {
       </button>
 
       {showModal && (
-        <div className="modal-overlay">
-          <div className="modal-content1">
-            <h3 style={{ marginBottom: "2rem", fontFamily: "'Gowun Dodum', sans-serif" }}>
-              🔮 오늘의 타로 메시지
-            </h3>
-            <p style={{ whiteSpace: "pre-line", fontSize: "1.1rem", lineHeight: "1.6" }}>
-              {message}
-            </p>
-            <button
-              onClick={() => setShowModal(false)}
-              style={{
-                marginTop: "2rem",
-                padding: "0.6rem 1.5rem",
-                fontSize: "0.95rem",
-                backgroundColor: "#5B8DEF",
-                color: "#fff",
-                border: "none",
-                borderRadius: "8px",
-                cursor: "pointer",
-              }}
-            >
-              확인
-            </button>
-          </div>
-        </div>
-      )}
+  <div className="modal-overlay">
+    <div
+      className="modal-content1"
+      style={{
+        maxWidth: "600px",
+        fontSize: "0.95rem",
+        lineHeight: "1.6",
+        textAlign: "left",
+        padding: "2rem",
+        backgroundColor: "white",
+        borderRadius: "12px",
+        boxShadow: "0 4px 16px rgba(0,0,0,0.2)",
+      }}
+    >
+      <h3 style={{ marginBottom: "1.5rem", textAlign: "center" }}>
+        🔮 오늘의 타로 메시지
+      </h3>
+      <p style={{ whiteSpace: "pre-line" }}>
+        {message}
+      </p>
+      <div style={{ textAlign: "center", marginTop: "2rem" }}>
+        <button
+          onClick={() => setShowModal(false)}
+          style={{
+            padding: "0.6rem 1.5rem",
+            fontSize: "0.95rem",
+            backgroundColor: "#5B8DEF",
+            color: "#fff",
+            border: "none",
+            borderRadius: "8px",
+            cursor: "pointer",
+          }}
+        >
+          확인
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
 
       <ColorPickerModal
         show={showColorModal}

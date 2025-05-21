@@ -188,13 +188,7 @@ function TodayPlaceList() {
 
   return (
     <div style={{ padding: "2rem", color: "black" }}>
-      <div className="search">
-        <input type="text" placeholder="장소 이름 검색" value={keyword} onChange={(e) => setKeyword(e.target.value)}
-        />
-        <button onClick={() => fetchPlaceList(selectedCategory, keyword)}>🔍</button>
-      </div>
-
-      {fitList.length > 0 && (
+            {fitList.length > 0 && (
         <div className="recommend-toolbar">
           <div className="today-fitlist">
             <span className="fit-label">
@@ -216,6 +210,19 @@ function TodayPlaceList() {
                 </button>
               ))}
           </div>
+
+        </div>
+      )}
+      <div className="search">
+        <input
+          type="text"
+          placeholder="장소 이름 검색"
+          value={keyword}
+          onChange={(e) => setKeyword(e.target.value)}
+        />
+        <button onClick={() => fetchPlaceList(selectedCategory, keyword)}>🔍</button>
+      </div>
+      
           <div className="category-list">
             {["음식점", "카페", "관광명소"].map((label) => (
               <button
@@ -234,8 +241,7 @@ function TodayPlaceList() {
               </button>
             ))}
           </div>
-        </div>
-      )}
+
 
       {loading ? (
         <div className="loading-container">
@@ -282,6 +288,7 @@ function TodayPlaceList() {
                     )}
                   </button>
                 </div>
+
                 <div className="place-card-footer">
                   <span>{place.phone || "📞 없음"}</span>
                   {place.rating !== undefined && place.rating !== null && (
