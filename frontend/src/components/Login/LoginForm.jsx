@@ -1,6 +1,5 @@
-// src/components/Login/LoginForm.jsx
 import { useState } from "react";
-import { Form, Button } from "react-bootstrap";
+import { Form, Button, Modal } from "react-bootstrap";
 import { FaGoogle } from "react-icons/fa";
 import { SiKakaotalk, SiNaver } from "react-icons/si";
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
@@ -8,6 +7,16 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 function LoginForm({ closeLogin, setIsLoggedIn, setMode }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
+  // ✅ 모달 상태 추가
+  const [modalMessage, setModalMessage] = useState("");
+  const [showModal, setShowModal] = useState(false);
+  const handleCloseModal = () => setShowModal(false);
+
+  const showAlert = (message) => {
+    setModalMessage(message);
+    setShowModal(true);
+  };
 
   const submitHandler = async (e) => {
     e.preventDefault();
@@ -20,21 +29,20 @@ function LoginForm({ closeLogin, setIsLoggedIn, setMode }) {
 
       if (res.ok) {
         const result = await res.json();
-        alert(`로그인 성공! 환영합니다, ${result.nickname}님`);
+        showAlert(`로그인 성공! 환영합니다, ${result.nickname}님`);
         localStorage.setItem("token", result.token);
         setIsLoggedIn(true);
         closeLogin?.();
       } else {
         const err = await res.text();
-        alert(err);
+        showAlert(err);
       }
     } catch (err) {
       console.error(err);
-      alert("서버 오류");
+      showAlert("서버 오류");
     }
   };
 
-  // ✅ Google 로그인
   const GOOGLE_CLIENT_ID = "461258083904-or440dgo67641d00i882h65fcp22bqr1.apps.googleusercontent.com";
   const GOOGLE_REDIRECT_URL = `${API_BASE_URL}/api/users/login/google`;
   const handleGoogleLogin = () => {
@@ -42,7 +50,6 @@ function LoginForm({ closeLogin, setIsLoggedIn, setMode }) {
     window.location.href = url;
   };
 
-  // ✅ Kakao 로그인
   const KAKAO_REST_API_KEY = "e6277124451eab83b9d7885e70191688";
   const KAKAO_REDIRECT_URI = `${API_BASE_URL}/api/users/login/kakao`;
   const handleKakaoLogin = () => {
@@ -50,7 +57,6 @@ function LoginForm({ closeLogin, setIsLoggedIn, setMode }) {
     window.location.href = url;
   };
 
-  // ✅ Naver 로그인
   const NAVER_CLIENT_ID = "gE7Z05siQyzYs9sQZgem";
   const NAVER_REDIRECT_URL = `${API_BASE_URL}/api/users/login/naver`;
   const handleNaverLogin = () => {
@@ -106,6 +112,18 @@ function LoginForm({ closeLogin, setIsLoggedIn, setMode }) {
           비밀번호 찾기
         </a>
       </div>
+
+      <Modal show={showModal} onHide={handleCloseModal} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>알림</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>{modalMessage}</Modal.Body>
+        <Modal.Footer>
+          <Button variant="primary" onClick={handleCloseModal}>
+            확인
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </>
   );
 }

@@ -104,16 +104,16 @@ function Header() {
                   <Nav.Link 
                     as={Link} 
                     to="/mypage" 
-                    state={{ activeTab: "bookmark" }} // ✅ MyPage의 eventKey "bookmark"와 일치
+                    state={{ activeTab: "bookmark" }} 
                     className="sidebar-nav-link" 
                     onClick={closeMenu}
                   >
-                    북마크
+                    내 북마크
                   </Nav.Link>
                   <Nav.Link 
                     as={Link} 
                     to="/mypage" 
-                    state={{ activeTab: "tarot" }}    // ✅ MyPage의 eventKey "tarot"와 일치
+                    state={{ activeTab: "tarot" }}    
                     className="sidebar-nav-link" 
                     onClick={closeMenu}
                   >
@@ -149,12 +149,12 @@ function Header() {
           <div
             className="position-fixed top-0 start-0 w-100 h-100 bg-dark bg-opacity-50"
             onClick={closeLoginModal}
-            style={{ zIndex: 1099 }}
+            style={{ zIndex: 1051 }}
           ></div>
           <motion.div
             className="bg-white p-4 rounded-5 shadow-lg position-fixed top-50 start-50 translate-middle login-modal-motion"
             style={{
-              zIndex: 1100,
+              zIndex: 1052,
               width: "100%",
               maxWidth: "450px",
               padding: "1.8rem 2rem 1.5rem 2rem",
@@ -165,7 +165,6 @@ function Header() {
             transition={{ type: "spring", stiffness: 100 }}
           >
             <button onClick={closeLoginModal} className="btn-close float-end" aria-label="Close"></button>
-            {/* Login 컴포넌트에 setIsLoggedIn을 전달하여 로그인 성공 시 상태 변경 */}
             <Login closeLogin={closeLoginModal} setIsLoggedIn={setIsLoggedIn} />
           </motion.div>
         </>
