@@ -16,25 +16,29 @@ function TodayPlace() {
         <div className="common-container">
           {/* 사이드바 */}
           <aside className="common-sidebar">
-            <ul className="sidebar-list">
-              <li className="sidebar-item">
+            <ul className="sidebar-list" style={{marginTop: "1.5rem"}}>
+              <li className="sidebar-item" style={{marginTop: "0.5rem"}}>
                 <Link
                   to="/today-place/list"
                   style={{
                     textDecoration: "none",
                     color: location.pathname.includes("list") ? "#000" : "#333",
+                    fontSize: "1.1rem",
+                    fontFamily: "Noto Sans KR",
                     fontWeight: location.pathname.includes("list") ? "bold" : "normal",
                   }}
                 >
                   목록 보기
                 </Link>
               </li>
-              <li className="sidebar-item">
+              <li className="sidebar-item" style={{marginTop: "0.5rem"}}>
                 <Link
                   to="/today-place/map"
                   style={{
                     textDecoration: "none",
                     color: location.pathname.includes("map") ? "#000" : "#333",
+                    fontSize: "1.1rem",
+                    fontFamily: "Noto Sans KR",
                     fontWeight: location.pathname.includes("map") ? "bold" : "normal",
                   }}
                 >

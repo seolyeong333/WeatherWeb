@@ -223,11 +223,11 @@ function TodayPlaceMap() {
       <div className="weather-box">
         <h5>🌤️ 오늘의 날씨</h5>
         <p>{regionName}</p>
-        <p>{weather ? `${weather.temp}°C / ${weather.desc}` : "날씨 정보 없음"}</p>
+        <h5 style={{marginTop: "-0.4rem"}}>{weather ? `${weather.temp}°C / ${weather.desc}` : "날씨 정보 없음"}</h5>
       </div>
 
       <div className="recommend-box">
-        <h5>📍 날씨 기반 추천 플레이스</h5>
+        <h5>ONDA 추천 플레이스</h5>
 
         {fitList.length > 1 && (
           <div className="recommend-keywords">
@@ -245,7 +245,8 @@ function TodayPlaceMap() {
               ))}
           </div>
         )}
-
+      </div>
+      <div className="recommend-box">
         {loading ? (
           <>
             <Lottie animationData={loadingAnimation} loop={true} style={{ width: 100, height: 100, margin: "0 auto" }} />

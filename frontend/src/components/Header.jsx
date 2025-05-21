@@ -6,13 +6,14 @@ import { motion } from "framer-motion";
 import Login from "./Login/login.jsx";
 import "../styles/Header.css";
 // 공통 JWT 유틸 import
-import { isLoggedIn as checkLogin, getUserAuth } from "../api/jwt";
+import { isLoggedIn as checkLogin, getUserAuth, getUserNickname } from "../api/jwt";
 
 function Header() {
   const navigate = useNavigate();
   const [isLoggedIn, setIsLoggedIn] = useState(checkLogin());
   const [menuOpen, setMenuOpen] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
+  const [nickname, setNickname] = useState(getUserNickname());
 
   const isAdmin = getUserAuth() === "ADMIN";
 
@@ -30,6 +31,7 @@ function Header() {
   const handleLogoutAndCloseMenu = () => {
     localStorage.removeItem("token");
     setIsLoggedIn(false);
+    setNickname(null); 
     navigate("/"); // 로그아웃 후 홈으로 이동
     closeMenu(); // 사이드바 닫기
   };
@@ -70,9 +72,13 @@ function Header() {
           </Nav>
 
           {isLoggedIn ? (
-            <Button variant="outline-secondary" size="sm" className="header-action-button" onClick={handleLogoutAndCloseMenu}>
+            <>
+             <span className="me-3 fw-semibold text-dark">{nickname}</span>
+             <Button variant="outline-secondary" size="sm" className="header-action-button" onClick={handleLogoutAndCloseMenu}>
               로그아웃
             </Button>
+            </>
+
           ) : (
             <Button variant="outline-primary" size="sm" className="header-action-button" onClick={openLoginModal}>
               로그인

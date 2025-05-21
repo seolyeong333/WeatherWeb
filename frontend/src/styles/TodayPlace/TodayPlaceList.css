@@ -2,6 +2,7 @@
 .search {
   display: flex;
   align-items: center;
+  margin-top: -1rem;
   margin-bottom: 1rem;
   color: #000;
 }
@@ -34,31 +35,32 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  justify-content: space-between;
-  gap: 12px;
+  justify-content: center;
   margin-bottom: 1rem;
 }
 
-/* 왼쪽: 오늘의 추천 장소 */
-.today-fitlist {
+.fit-label {
+  font-family: 'Gowun Dodum', sans-serif;
+  padding: 7px 13px;
+  text-align: center;
+  font-size: 1.1em;
+}
+
+.today-fitlist,
+.category-list {
   display: flex;
+  font-weight: 500;
   align-items: center;
+  background-color: transparent;
   flex-wrap: wrap;
   gap: 8px;
   white-space: nowrap;
+  margin-bottom: 1rem;
+  margin-top: -2rem;
 }
 
-.fit-label {
-  font-weight: bold;
-  margin-right: 6px;
-}
-
-/* 오른쪽: 고정 카테고리 */
 .category-list {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  white-space: nowrap;
+  margin-top: 0rem;
 }
 
 .divider {
@@ -171,4 +173,29 @@
   font-size: 1.2rem;
   color: #666;
   padding: 2rem;
+}
+.place-card-name {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: bold;
+  padding: 0.3rem 0.5rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.place-name-text {
+  flex: 1;
+  margin-right: 0.5rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bookmark-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
 }
