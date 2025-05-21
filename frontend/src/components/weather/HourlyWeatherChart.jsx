@@ -100,7 +100,6 @@ function HourlyWeatherChart({ hourlyData }) {
 
   return (
     <div className="hourly-section">
-      <h2 className="chart-title">시간별 날씨</h2>
       <div className="chart-box">
         <Line data={data} options={options} plugins={[ChartDataLabels]} />
       </div>
