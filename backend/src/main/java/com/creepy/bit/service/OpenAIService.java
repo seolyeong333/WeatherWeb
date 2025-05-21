@@ -52,7 +52,7 @@ public class OpenAIService {
         }
     }
 
-    builder.append("\n이 카드들을 종합해서 오늘 하루를 위한 감성적이고 통합적인 운세 메시지를 한 문단으로 한국어로 써줘.");
+    builder.append("\n카드 설명을 바탕으로 오늘의 운세 메시지를 300자 이내로 만들어줘. 문장은 너무 길지 않게 끊어 쓰고, 전체를 2~3개의 문단으로 나눠서 보여줘. 사용자는 웹에서 이 메시지를 바로 읽게 될 거니까, 읽기 쉽고 감성적인 말투로 요약해줘.");
 
     System.out.println(builder.toString());
 

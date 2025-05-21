@@ -6,6 +6,7 @@ import axios from "axios";
 import loadingAnimation from "../../assets/loading.json";
 import { getCurrentWeather } from "../../api/weather";
 import { getKoreanWeatherDescription } from "../../utils/weatherUtil";
+import { Modal, Button } from "react-bootstrap"; // ✅ Bootstrap 모달 추가
 import "../../styles/TodayPlace/TodayPlaceList.css";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
@@ -21,6 +22,10 @@ function TodayPlaceList() {
   const [bookmarkedMap, setBookmarkedMap] = useState({});
   const [searchParams] = useSearchParams();
   const keywordFromQuery = searchParams.get("keyword");
+
+  // ✅ 모달 상태
+  const [showModal, setShowModal] = useState(false);
+  const [modalMessage, setModalMessage] = useState("");
 
   const categoryCodeMap = {
     "음식점": "FD6",
@@ -55,7 +60,7 @@ function TodayPlaceList() {
         const lon = pos.coords.longitude;
         const categoryCode = categoryCodeMap[category] || "AT4";
 
-        fetchWeatherFitList(lat, lon); // 🔥 날씨 fit 리스트도 같이 가져오기
+        fetchWeatherFitList(lat, lon);
 
         let url = `${API_BASE_URL}/api/kakao/places?lat=${lat}&lon=${lon}`;
         if (keyword) {
@@ -148,7 +153,11 @@ function TodayPlaceList() {
     const placeKey = place.id;
     const bookmarkId = bookmarkedMap[placeKey];
 
-    if (!token) return alert("로그인 후 이용 가능합니다.");
+    if (!token) {
+      setModalMessage("로그인 후 이용할 수 있는 기능입니다.");
+      setShowModal(true);
+      return;
+    }
 
     try {
       if (bookmarkId) {
@@ -264,7 +273,7 @@ function TodayPlaceList() {
                   />
                 </div>
                 <div className="place-card-name">
-                  {place.placeName}
+                  <span className="place-name-text">{place.placeName}</span>
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
@@ -280,6 +289,7 @@ function TodayPlaceList() {
                     )}
                   </button>
                 </div>
+
                 <div className="place-card-footer">
                   <span>{place.phone || "📞 없음"}</span>
                   {place.rating !== undefined && place.rating !== null && (
@@ -291,6 +301,18 @@ function TodayPlaceList() {
           })}
         </div>
       )}
+
+      {/* ✅ Bootstrap 모달 */}
+      <Modal show={showModal} onHide={() => setShowModal(false)} centered>
+        <Modal.Body className="text-center py-4">
+          <p>{modalMessage}</p>
+          <div className="mt-3">
+            <Button variant="primary" onClick={() => setShowModal(false)}>
+              확인
+            </Button>
+          </div>
+        </Modal.Body>
+      </Modal>
     </div>
   );
 }

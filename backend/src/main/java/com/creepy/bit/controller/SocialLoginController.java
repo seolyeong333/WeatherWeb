@@ -70,7 +70,7 @@ public class SocialLoginController {
             );
 
             // ✅ 프론트로 리디렉션
-            String redirectUrl = "http://localhost:5173/kakaologinsuccess?token=" + jwt;
+            String redirectUrl = "http://localhost:5173?token=" + jwt;
             response.sendRedirect(redirectUrl);
 
             System.out.println("✅ 카카오 로그인 성공: " + email + " / " + nickname);
@@ -112,7 +112,7 @@ public class SocialLoginController {
             );
 
             // ✅ 프론트로 리디렉션
-            String redirectUrl = "http://localhost:5173/googleloginsuccess?token=" + jwt;
+            String redirectUrl = "http://localhost:5173?token=" + jwt;
             response.sendRedirect(redirectUrl);
 
             System.out.println("✅ 구글 로그인 성공: " + email + " / " + nickname);
@@ -173,7 +173,7 @@ public class SocialLoginController {
             );
 
             // ✅ 리디렉션
-            String redirectUrl = "http://localhost:5173/naverloginsuccess?token=" + jwt;
+            String redirectUrl = "http://localhost:5173?token=" + jwt;
             response.sendRedirect(redirectUrl);
 
             System.out.println("✅ 네이버 로그인 성공: " + email + " / " + nickname);
