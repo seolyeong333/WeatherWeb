@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Form, Button } from "react-bootstrap";
+import { Form, Button, Modal } from "react-bootstrap";
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 function EmailAuth({ onSuccess, onClose }) {
@@ -8,6 +8,16 @@ function EmailAuth({ onSuccess, onClose }) {
   const [emailStatus, setEmailStatus] = useState("");
   const [isCodeSent, setIsCodeSent] = useState(false);
   const [timeLeft, setTimeLeft] = useState(300);
+
+  // ✅ 모달 상태 추가
+  const [showModal, setShowModal] = useState(false);
+  const [modalMessage, setModalMessage] = useState("");
+
+  const showAlert = (msg) => {
+    setModalMessage(msg);
+    setShowModal(true);
+  };
+  const handleCloseModal = () => setShowModal(false);
 
   useEffect(() => {
     if (!isCodeSent || timeLeft <= 0) return;
@@ -22,7 +32,7 @@ function EmailAuth({ onSuccess, onClose }) {
   };
 
   const sendEmailHandler = async () => {
-    if (!email) return alert("이메일을 입력하세요.");
+    if (!email) return showAlert("이메일을 입력하세요.");
     try {
       const response = await fetch(`${API_BASE_URL}/api/users/email/auth`, {
         method: "POST",
@@ -52,15 +62,15 @@ function EmailAuth({ onSuccess, onClose }) {
       });
 
       if (res.ok) {
-        alert("인증 성공!");
+        showAlert("인증 성공!");
         onSuccess?.(email);
       } else {
         const msg = await res.text();
-        alert("인증 실패: " + msg);
+        showAlert("인증 실패: " + msg);
       }
     } catch (err) {
       console.error(err);
-      alert("서버 오류");
+      showAlert("서버 오류");
     }
   };
 
@@ -105,6 +115,19 @@ function EmailAuth({ onSuccess, onClose }) {
           ← 돌아가기
         </Button>
       </Form>
+
+      {/* ✅ 모달 UI */}
+      <Modal show={showModal} onHide={handleCloseModal} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>알림</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>{modalMessage}</Modal.Body>
+        <Modal.Footer>
+          <Button variant="primary" onClick={handleCloseModal}>
+            확인
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </>
   );
 }

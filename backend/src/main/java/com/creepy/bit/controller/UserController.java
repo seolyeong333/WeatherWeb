@@ -92,7 +92,7 @@ public class UserController {
 
         // 닉네임 중복 체크
         if (userService.checkNickname(userDto.getNickname()) > 0) {
-            response.put("error", "이미 사용 중인 닉네임입니다.");
+           
             return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
         }
 
