@@ -198,10 +198,28 @@ function TodayPlaceMap() {
 
   return (
     <div className="map-container">
-  <main className="map-wrapper">
-    <div ref={mapRef} className="kakao-map" />
+<main className="map-wrapper">
+  {/* ✅ 지도 위 좌측 상단 버튼 */}
+  <div className="map-category-buttons">
+    {["음식점", "카페", "관광명소"].map((label, idx) => (
+      <button
+        key={idx}
+        className="map-category-button"
+        onClick={() =>
+          selectedLocation &&
+          loadRecommendedPlaces(selectedLocation.lat, selectedLocation.lon, label)
+        }
+      >
+        {label === "음식점" ? "🍽️ 음식점" : label === "카페" ? "☕ 카페" : "🌳 관광명소"}
+      </button>
+    ))}
+  </div>
+
+  <div ref={mapRef} className="kakao-map" />
 
     <div className="weather-recommend-box">
+
+
       <div className="weather-box">
         <h5>🌤️ 오늘의 날씨</h5>
         <p>{regionName}</p>
@@ -209,7 +227,7 @@ function TodayPlaceMap() {
       </div>
 
       <div className="recommend-box">
-        <h5>📍 추천 플레이스</h5>
+        <h5>📍 날씨 기반 추천 플레이스</h5>
 
         {fitList.length > 1 && (
           <div className="recommend-keywords">
