@@ -158,12 +158,32 @@ function TodayWeatherPage() {
         regionName={regionName}
       />
       <WeatherDetailSummary dailySummary={weatherData.daily[0]} />
-
       <div className="chart-grid">
-        <div className="chart-item"> <HourlyWeatherChart hourlyData={weatherData.hourly} /> </div>
-        <div className="chart-item"> <h2 className="chart-title">ㅤ지역별 날씨</h2> {coord && <MapSection lat={coord.lat} lon={coord.lon} />} </div>
-        <div className="chart-item"> <DailyWeatherChart dailyData={weatherData.daily} /> </div>
-        <div className="chart-item"> <AirPollutionChart airPollutionData={airData} /> </div>
+        <div className="chart-item">
+          <div className="chart-title-wrapper">
+          <h2 className="chart-title">시간별 날씨</h2>
+          </div>
+          <HourlyWeatherChart hourlyData={weatherData.hourly} />
+        </div>
+
+        <div className="chart-item">
+          <div className="chart-title-wrapper">
+          <h2 className="chart-title">지역별 날씨</h2>
+          </div>
+          {coord && <MapSection lat={coord.lat} lon={coord.lon} />}
+        </div>
+        <div className="chart-item"> 
+          <div className="chart-title-wrapper">
+            <h2 className="chart-title">주간 날씨</h2>
+          </div>
+            <DailyWeatherChart dailyData={weatherData.daily} />
+        </div>
+        <div className="chart-item"> 
+          <div className="chart-title-wrapper">
+            <h2 className="chart-title">미세먼지 예보 (PM2.5 / PM10)</h2>
+          </div>
+            <AirPollutionChart airPollutionData={airData} />
+        </div>
         <div className="chart-item full-width"> <WeeklyForecast dailyData={weatherData.daily} /> </div>
       </div>
 

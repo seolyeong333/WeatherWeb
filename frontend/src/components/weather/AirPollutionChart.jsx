@@ -91,7 +91,6 @@ function AirPollutionChart({ airPollutionData }) {
 
   return (
     <div className="air-section">
-      <h2 className="chart-title">미세먼지 예보 (PM2.5 / PM10)</h2>
       <div className="chart-box">
         <Bar data={data} options={options} plugins={[ChartDataLabels]} />
       </div>
