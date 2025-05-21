@@ -5,6 +5,12 @@
   max-width: 960px;
 }
 
+.mypage-wrapper {
+  background-color: #FAF3E0;
+  padding-bottom: 60px;
+  min-height: 100vh;
+}
+
 /* 좌측 사이드 메뉴 (Pills 형태) */
 .nav-pills .nav-link {
   font-weight: 500;               /* 기본 글자 굵기 */
