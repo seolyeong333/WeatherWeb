@@ -3,10 +3,11 @@
 
 server:
   port: 8080   # 서버 포트 
+  address: 0.0.0.0
 
 spring:
   datasource:
-    url: jdbc:mysql://localhost:3306/weatherwebdb?useSSL=false&serverTimezone=Asia/Seoul
+    url: jdbc:mysql://localhost:3306/weatherwebdb?useSSL=false&serverTimezone=Asia/Seoul&allowPublicKeyRetrieval=true
     username: bit
     password: bit
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -34,5 +35,4 @@ mybatis:
 logging:
   level:
     root: INFO
-    com.project: DEBUG\
-    
+    com.project: DEBUG
