@@ -1,5 +1,5 @@
 // src/pages/MyPage.jsx
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef  } from "react";
 import { Nav, Row, Col, Modal, Button as BsButton } from "react-bootstrap";
 import { useNavigate, useLocation } from "react-router-dom";
 import Header from "../components/Header";
@@ -26,6 +26,7 @@ function MyPage() {
   const [mode, setMode] = useState("");
   const navigate = useNavigate();
   const location = useLocation();
+  const infoModalCallback = useRef(null);
 
   //  알림/오류 메시지 모달 상태
   const [showInfoModal, setShowInfoModal] = useState(false);
@@ -45,18 +46,29 @@ function MyPage() {
   }, [location.state]); // location.state 변경 시 마다 실행
 
   // ✅ 알림/오류 모달 제어 함수
-  const handleCloseInfoModal = () => setShowInfoModal(false);
-  const handleShowInfoModal = (title, message) => {
+  const handleCloseInfoModal = () => {
+    setShowInfoModal(false);
+    if (infoModalCallback.current) {
+      infoModalCallback.current(); // 콜백 실행
+      infoModalCallback.current = null; // 초기화
+    }
+  };
+  
+  const handleShowInfoModal = (title, message, callback) => {
     setInfoModalTitle(title);
     setInfoModalMessage(message);
     setShowInfoModal(true);
+    infoModalCallback.current = callback || null; // ✅ 이 줄 추가해야 navigate 실행됨
   };
-
+  
+  const setShowEditComponent = () => {
+    setActiveTab("info");
+  };
   const fetchUserInfo = async () => {
     try {
       const token = localStorage.getItem("token");
       if (!token) {
-        handleShowInfoModal("인증 오류", "로그인이 필요합니다. 로그인 페이지로 이동합니다.", () => navigate("/login")); // 로그인 페이지 경로는 실제 경로로
+        handleShowInfoModal("인증 오류", "로그인이 필요합니다. 로그인 페이지로 이동합니다.", () => navigate("/")); // 
         return;
       }
       const res = await fetch(`${API_BASE_URL}/api/users/info`, {
@@ -89,6 +101,8 @@ function MyPage() {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}` // DELETE 요청에도 인증 토큰 필요
         },
+        body: JSON.stringify({ email: userInfo.email, 
+        }),
       });
 
       if (!res.ok) {
@@ -161,16 +175,17 @@ function MyPage() {
                 userInfo={userInfo}
                 setUserInfo={setUserInfo}
                 fetchUserInfo={fetchUserInfo}
-                onEditSuccess={() => setActiveTab("info")} // 수정 성공 시 내 정보 탭으로
+                setShowEditComponent={setShowEditComponent} 
               />
             )}
             {activeTab === "password" && userInfo && ( // userInfo가 있을 때만 렌더링
               <ChangePasswordTab
                 userInfo={userInfo} // 현재는 사용 안하지만 필요할 수 있음
                 onPasswordChanged={() => {
-                  handleShowInfoModal("성공", "비밀번호가 변경되었습니다.");
                   setActiveTab("info");
                 }}
+                setShowEditComponent={setShowEditComponent} 
+              
               />
             )}
             {activeTab === "bookmark" && <BookmarkTab userInfo={userInfo} />}
@@ -206,14 +221,14 @@ function MyPage() {
         </Modal.Header>
         <Modal.Body>정말로 탈퇴하시겠습니까? 이 작업은 되돌릴 수 없습니다.</Modal.Body>
         <Modal.Footer>
-          <BsButton variant="secondary" onClick={() => setShowConfirmDeleteModal(false)}>
-            취소
-          </BsButton>
           <BsButton variant="danger" onClick={() => {
             setShowConfirmDeleteModal(false); // 먼저 모달을 닫고
             deleteAccount();                 // 그 다음 탈퇴 함수 실행
           }}>
-            예, 탈퇴합니다
+            탈퇴
+          </BsButton>
+          <BsButton variant="secondary" onClick={() => setShowConfirmDeleteModal(false)}>
+            취소
           </BsButton>
         </Modal.Footer>
       </Modal>

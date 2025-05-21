@@ -1,16 +1,162 @@
-/* TodayPlaceMap.css */
 .map-label {
-    padding: 4px 6px;
-    background: #fff;
-    border: 2px solid #0077cc;
-    border-radius: 50%;
-    font-size: 13px;
-    font-weight: bold;
-    color: #0077cc;
-    width: 28px;
-    height: 28px;
-    line-height: 24px;
-    text-align: center;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-  }
-  
+  padding: 4px 6px;
+  background: #fff;
+  border: 2px solid #0077cc;
+  border-radius: 50%;
+  font-size: 13px;
+  font-weight: bold;
+  color: #0077cc;
+  width: 28px;
+  height: 28px;
+  line-height: 24px;
+  text-align: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.map-container {
+  height: 80vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.map-wrapper {
+  flex: 1;
+  position: relative;
+}
+
+.kakao-map {
+  width: 100%;
+  height: 100%;
+  border-radius: 0 0 0 10px;
+  z-index: 1;
+}
+
+/* ✅ 우측 카드 컨테이너 */
+.weather-recommend-box {
+  position: absolute;
+  right: 20px;
+  top: 20px;
+  width: 240px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  z-index: 10;
+}
+
+/* ✅ 카드 스타일: 반투명 유리 효과 */
+.weather-box,
+.recommend-box {
+  background-color: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  padding: 1rem;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+/* ✅ 추천 박스 제목 정리 */
+.recommend-box h5 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #222;
+  margin-bottom: 0.8rem;
+}
+
+/* ✅ 키워드 버튼 정리 */
+.recommend-keywords {
+  margin-top: 0.5rem;
+  padding: 0.5rem;
+  background-color: transparent;
+  border-radius: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+/* ✅ 키워드 버튼 스타일 통일 */
+.keyword-button,
+.map-category-button {
+  padding: 6px 12px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  background-color: white;
+  color: #333;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  white-space: nowrap;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.keyword-button:hover,
+.map-category-button:hover {
+  background-color: #f0f0f0;
+}
+
+/* ✅ 스크롤바 커스터마이징 */
+.recommend-list {
+  max-height: 160px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #5b8def transparent;
+}
+
+.recommend-list::-webkit-scrollbar {
+  width: 8px;
+}
+
+.recommend-list::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 10px;
+}
+
+.recommend-list::-webkit-scrollbar-thumb {
+  background-color: #5b8def;
+  border-radius: 10px;
+  border: 2px solid white;
+  transition: background-color 0.3s ease;
+}
+
+.recommend-list::-webkit-scrollbar-thumb:hover {
+  background-color: #3c6bd9;
+}
+
+.recommend-list ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  font-size: 0.9rem;
+  color: #0077cc;
+}
+
+.recommend-list li {
+  cursor: pointer;
+  padding: 4px 0;
+  transition: color 0.2s;
+}
+
+.recommend-list li:hover {
+  color: #005999;
+}
+
+.loading-text {
+  font-size: 0.95rem;
+  color: #555;
+  text-align: center;
+}
+
+/* ✅ 좌측 상단 카테고리 버튼 */
+.map-category-buttons {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  z-index: 10;
+  display: flex;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 12px;
+  background-color: rgba(255, 255, 255, 0); /* 완전 투명 */
+}

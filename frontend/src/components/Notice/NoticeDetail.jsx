@@ -135,11 +135,11 @@ function NoticeDetail({ id, onBack, onEdit }) {
         </Modal.Header>
         <Modal.Body>{confirmModalMessage}</Modal.Body>
         <Modal.Footer>
-          <BsButton variant="secondary" onClick={closeConfirmModal}>
-            아니오
-          </BsButton>
           <BsButton variant="danger" onClick={handleConfirm}> {/* "예" 버튼 클릭 시 handleConfirm 실행 */}
-            예, 삭제합니다
+            삭제
+          </BsButton>
+          <BsButton variant="secondary" onClick={closeConfirmModal}>
+            취소
           </BsButton>
         </Modal.Footer>
       </Modal>
