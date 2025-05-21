@@ -6,8 +6,8 @@
 <mapper namespace="com.creepy.bit.mapper.MainMapper">
 
     <insert id="insertOpinion" parameterType="com.creepy.bit.domain.OpinionDto">
-        INSERT INTO opinions (userId, placeId, placeName, content, rating, isPublic, likes, dislikes, createdAt)
-        VALUES (#{userId}, #{placeId}, #{placeName}, #{content}, #{rating}, #{isPublic}, 0, 0, NOW())
+        INSERT INTO opinions (userId, placeId, placeName, content, rating, isPublic, createdAt)
+        VALUES (#{userId}, #{placeId}, #{placeName}, #{content}, #{rating}, #{isPublic}, NOW())
     </insert>
 
     <select id="getMyOpinions" parameterType="int" resultType="com.creepy.bit.domain.OpinionDto">

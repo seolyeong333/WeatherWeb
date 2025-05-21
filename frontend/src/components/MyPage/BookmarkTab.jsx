@@ -8,7 +8,7 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 function BookmarkTab({ userInfo }) {
   const [bookmarks, setBookmarks] = useState([]);
   const [currentPage, setCurrentPage] = useState(1); // ✅ 현재 페이지 상태
-  const itemsPerPage = 10; // ✅ 한 페이지당 항목 수
+  const itemsPerPage = 7; // ✅ 한 페이지당 항목 수
   const navigate = useNavigate();
 
   useEffect(() => {

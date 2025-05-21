@@ -51,7 +51,7 @@ public class WeatherController {
     @GetMapping("/message")
     public WeatherMessageDto getMessage(@RequestParam String weatherType, @RequestParam double feelsLike) {
         System.out.println("WeatherController GET /message 요청");
-        System.out.println(weatherType + " " +feelsLike);
+        System.out.println(weatherType + " 아니 " +feelsLike);
         WeatherMessageDto result = weatherService.getMatchedMessage(weatherType, feelsLike);
         
         if (result == null) {
