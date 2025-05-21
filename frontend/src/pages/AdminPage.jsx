@@ -50,6 +50,7 @@ function AdminPage() {
   return (
     <>
       <Header />
+      <div className="admin-wrapper">
       <div className="admin-wrapper container mt-5 mb-5">
         <h2 className="fw-bold mb-4">🛠️ 관리자 페이지</h2>
         <Row>
@@ -78,7 +79,7 @@ function AdminPage() {
             {activeTab === "comments" && <CommentReportTab onReportClick={setSelectedCommentReport} />}
           </Col>
         </Row>
-
+      </div>
         {/* 모달 */}
         <AdminUserDetailModal show={!!selectedUser} onHide={() => setSelectedUser(null)} user={selectedUser} />
         <AdminPlaceReportModal show={!!selectedPlaceReport} onHide={() => setSelectedPlaceReport(null)} report={selectedPlaceReport} />
