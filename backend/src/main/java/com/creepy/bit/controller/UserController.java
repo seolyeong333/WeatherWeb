@@ -166,12 +166,8 @@ public class UserController {
     public ResponseEntity<String> deleteUser(@RequestBody UserRequestDto userDto) {
         System.out.println("UserController DELETE 호출");
         System.out.println(userDto.getEmail());
-        if (userService.login(userDto)) {
-            userService.deleteUser(userDto.getEmail());
-            return ResponseEntity.ok("탈퇴 완료");
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("비밀번호가 일치하지 않습니다.");
-        }
+        userService.deleteUser(userDto.getEmail());
+        return ResponseEntity.ok("탈퇴 완료");
     }
 
     // 이메일 인증코드 발송

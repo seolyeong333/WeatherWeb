@@ -180,11 +180,7 @@ function TodayPlaceList() {
   return (
     <div style={{ padding: "2rem", color: "black" }}>
       <div className="search">
-        <input
-          type="text"
-          placeholder="장소 이름 검색"
-          value={keyword}
-          onChange={(e) => setKeyword(e.target.value)}
+        <input type="text" placeholder="장소 이름 검색" value={keyword} onChange={(e) => setKeyword(e.target.value)}
         />
         <button onClick={() => fetchPlaceList(selectedCategory, keyword)}>🔍</button>
       </div>
