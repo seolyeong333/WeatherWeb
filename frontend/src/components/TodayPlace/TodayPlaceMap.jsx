@@ -1,3 +1,5 @@
+// src/components/TodayPlace/TodayPlaceMap.jsx
+
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -13,7 +15,6 @@ function TodayPlaceMap() {
   const mapInstanceRef = useRef(null);
   const userMarkerRef = useRef(null);
   const clickMarkerRef = useRef(null);
-  const placeMarkersRef = useRef([]);
   const labelOverlaysRef = useRef([]);
   const showMarkRef = useRef("");
 
@@ -24,7 +25,7 @@ function TodayPlaceMap() {
   const [regionName, setRegionName] = useState("서울시 강남구");
   const [weather, setWeather] = useState(null);
   const [lastRegionCode, setLastRegionCode] = useState(null);
-  const [fitList, setFitList] = useState([]); // ✅ 날씨 추천 키워드 리스트
+  const [fitList, setFitList] = useState([]);
 
   const navigate = useNavigate();
 
@@ -47,7 +48,6 @@ function TodayPlaceMap() {
       clickMarkerRef.current = marker;
 
       const regionCode = await getAddressFromKakao(lat, lon);
-
       if (regionCode !== lastRegionCode) {
         setSelectedLocation({ lat, lon });
         setLastRegionCode(regionCode);
@@ -110,7 +110,6 @@ function TodayPlaceMap() {
       const desc = res.data.weather[0].description;
       setWeather({ temp, desc: getKoreanWeatherDescforWeather(desc) });
 
-      // ✅ 날씨 기반 추천 키워드 불러오기
       try {
         const fitRes = await axios.get(`${API_BASE_URL}/api/weather/message`, {
           params: {
@@ -144,33 +143,31 @@ function TodayPlaceMap() {
       const json = await res.json();
       setPlaces(json);
 
-      placeMarkersRef.current.forEach((m) => m.setMap(null));
-      placeMarkersRef.current = [];
       labelOverlaysRef.current.forEach((l) => l.setMap(null));
       labelOverlaysRef.current = [];
 
       json.forEach((place, idx) => {
         const position = new window.kakao.maps.LatLng(place.y, place.x);
-        const marker = new window.kakao.maps.Marker({
+
+        const overlay = new window.kakao.maps.CustomOverlay({
           map,
           position,
-          title: place.placeName,
-        });
-
-        const label = new window.kakao.maps.CustomOverlay({
-          position,
-          content: `<div class="map-label">${idx + 1}</div>`,
-          yAnchor: 1.8,
+          yAnchor: 0.85, // ⬅ 더 정확한 중앙 하단 정렬
           zIndex: 3,
+          content: `
+            <div class="circle-only-marker" onclick="document.dispatchEvent(new CustomEvent('marker-click-${idx}'))">
+              <div class="circle-number">${idx + 1}</div>
+              <div class="circle-name">${place.placeName}</div>
+            </div>
+          `,
         });
-        label.setMap(map);
+        
 
-        placeMarkersRef.current.push(marker);
-        labelOverlaysRef.current.push(label);
-
-        window.kakao.maps.event.addListener(marker, "click", () => {
+        document.addEventListener(`marker-click-${idx}`, () => {
           navigate("/today-place/place-detail", { state: { placeName: place.placeName, place } });
         });
+
+        labelOverlaysRef.current.push(overlay);
       });
     } catch (err) {
       console.error("카카오 추천 장소 실패:", err);
@@ -187,86 +184,87 @@ function TodayPlaceMap() {
 
   useEffect(() => {
     if (fitList.length > 1 && selectedLocation) {
-      // 키워드 자동 호출은 한 번만 실행되도록 조건을 걸 수 있음
       loadRecommendedPlaces(selectedLocation.lat, selectedLocation.lon, fitList[1]);
     }
   }, [fitList, selectedLocation]);
-  
+
   const handlePlaceClick = (place) => {
     navigate("/today-place/place-detail", { state: { placeName: place.placeName, place } });
   };
 
   return (
     <div className="map-container">
-<main className="map-wrapper">
-  {/* ✅ 지도 위 좌측 상단 버튼 */}
-  <div className="map-category-buttons">
-    {["음식점", "카페", "관광명소"].map((label, idx) => (
-      <button
-        key={idx}
-        className="map-category-button"
-        onClick={() =>
-          selectedLocation &&
-          loadRecommendedPlaces(selectedLocation.lat, selectedLocation.lon, label)
-        }
-      >
-        {label === "음식점" ? "🍽️ 음식점" : label === "카페" ? "☕ 카페" : "🌳 관광명소"}
-      </button>
-    ))}
-  </div>
+      <main className="map-wrapper">
+        <div className="map-category-buttons">
+          {["음식점", "카페", "관광명소"].map((label, idx) => (
+            <button
+              key={idx}
+              className="map-category-button"
+              onClick={() =>
+                selectedLocation &&
+                loadRecommendedPlaces(selectedLocation.lat, selectedLocation.lon, label)
+              }
+            >
+              {label === "음식점" ? "🍽️ 음식점" : label === "카페" ? "☕ 카페" : "🌳 관광명소"}
+            </button>
+          ))}
+        </div>
 
-  <div ref={mapRef} className="kakao-map" />
+        <div ref={mapRef} className="kakao-map" />
 
-    <div className="weather-recommend-box">
-
-
-      <div className="weather-box">
-        <h5>🌤️ 오늘의 날씨</h5>
-        <p>{regionName}</p>
-        <p>{weather ? `${weather.temp}°C / ${weather.desc}` : "날씨 정보 없음"}</p>
-      </div>
-
-      <div className="recommend-box">
-        <h5>📍 날씨 기반 추천 플레이스</h5>
-
-        {fitList.length > 1 && (
-          <div className="recommend-keywords">
-            {fitList
-              .slice(1)
-              .filter((fit, idx, arr) => arr.indexOf(fit) === idx)
-              .map((fit, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => loadRecommendedPlaces(selectedLocation.lat, selectedLocation.lon, fit)}
-                  className="keyword-button"
-                >
-                  {fit}
-                </button>
-              ))}
+        <div className="weather-recommend-box">
+          <div className="weather-box">
+            <h5>🌤️ 오늘의 날씨</h5>
+            <p>{regionName}</p>
+            <p>{weather ? `${weather.temp}°C / ${weather.desc}` : "날씨 정보 없음"}</p>
           </div>
-        )}
 
-        {loading ? (
-          <>
-            <Lottie animationData={loadingAnimation} loop={true} style={{ width: 100, height: 100, margin: "0 auto" }} />
-            <p className="loading-text">ONDA AI의 추천 장소 정보를 불러오는 중입니다…</p>
-          </>
-        ) : (
-          <div className="recommend-list">
-            <ul>
-              {places.map((place, idx) => (
-                <li key={idx} onClick={() => handlePlaceClick(place)}>
-                  {idx + 1}. {place.placeName}
-                </li>
-              ))}
-            </ul>
+          <div className="recommend-box">
+            <h5>📍 날씨 기반 추천 플레이스</h5>
+
+            {fitList.length > 1 && (
+              <div className="recommend-keywords">
+                {fitList
+                  .slice(1)
+                  .filter((fit, idx, arr) => arr.indexOf(fit) === idx)
+                  .map((fit, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() =>
+                        loadRecommendedPlaces(selectedLocation.lat, selectedLocation.lon, fit)
+                      }
+                      className="keyword-button"
+                    >
+                      {fit}
+                    </button>
+                  ))}
+              </div>
+            )}
+
+            {loading ? (
+              <>
+                <Lottie
+                  animationData={loadingAnimation}
+                  loop={true}
+                  style={{ width: 100, height: 100, margin: "0 auto" }}
+                />
+                <p className="loading-text">ONDA AI의 추천 장소 정보를 불러오는 중입니다…</p>
+              </>
+            ) : (
+              <div className="recommend-list">
+                <ul>
+                  {places.map((place, idx) => (
+                    <li key={idx} onClick={() => handlePlaceClick(place)}>
+                      {idx + 1}. {place.placeName}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </div>
-        )}
-      </div>
+        </div>
+      </main>
     </div>
-  </main>
-</div>
-
   );
 }
 

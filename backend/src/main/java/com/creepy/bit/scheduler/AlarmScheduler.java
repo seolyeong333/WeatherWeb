@@ -16,6 +16,7 @@ import org.springframework.scheduling.annotation.Async;
 import jakarta.annotation.PostConstruct;
 import jakarta.mail.MessagingException;
 import java.util.List;
+import java.util.ArrayList;
 
 @Component
 public class AlarmScheduler {
@@ -30,21 +31,23 @@ public class AlarmScheduler {
     private MailService mailService;
 
     @Autowired
-    private UserService userService; 
+    private UserService userService;
 
     @Autowired
     private AlarmSseController alarmSseController;
+
+    // ⏱️ 이메일을 보낸 알람 ID 리스트 (1회 체크마다 초기화됨)
+    private final List<Integer> sentUserIds = new ArrayList<>();
 
     @Async
     @EventListener(ApplicationReadyEvent.class)
     public void runOnceAfterDelay() {
         try {
             System.out.println("⏳ 서버 실행 완료. 10초 후 알람 체크 예정...");
-            Thread.sleep(10_000); // 10초 대기 (10000ms)
+            Thread.sleep(10_000);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
-
         System.out.println("🚀 서버 실행 후 10초 경과 → 알람 체크 1회 실행");
         checkAlarms();
     }
@@ -58,14 +61,10 @@ public class AlarmScheduler {
 
     public void checkAlarms() {
         System.out.println("🔔 알람 조건 검사 시작");
-        System.out.println("AlarmScheduler 호출");
-
-        // 1. 모든 알람 불러오기
         List<AlarmDto> alarmList = alarmService.getAllAlarms();
 
-        // 2. 현재 날씨 및 공기질 정보
-        String currentWeather = weatherService.getCurrentWeatherType(); // 예: 맑음, 흐림
-        String currentAir = weatherService.getCurrentAirCondition();    // 예: 좋음, 보통
+        String currentWeather = weatherService.getCurrentWeatherType();
+        String currentAir = weatherService.getCurrentAirCondition();
 
         System.out.println("현재 날씨 상태: " + currentWeather);
         System.out.println("현재 공기 상태: " + currentAir);
@@ -77,17 +76,15 @@ public class AlarmScheduler {
             String weatherResult = "해당하지 않음";
             String airResult = "해당하지 않음";
 
-            // 날씨 조건 검사
             if (!"air".equals(alarm.getConditionType())) {
                 weatherMatch = alarm.getWeatherCondition() != null &&
-                               alarm.getWeatherCondition().contains(currentWeather);
+                        alarm.getWeatherCondition().contains(currentWeather);
                 weatherResult = weatherMatch ? "해당함" : "해당하지 않음";
             }
 
-            // 공기 조건 검사
             if (!"weather".equals(alarm.getConditionType())) {
                 airMatch = alarm.getAirCondition() != null &&
-                           alarm.getAirCondition().equals(currentAir);
+                        alarm.getAirCondition().equals(currentAir);
                 airResult = airMatch ? "해당함" : "해당하지 않음";
             }
 
@@ -96,9 +93,15 @@ public class AlarmScheduler {
             System.out.println("  - 설정된 날씨 조건: " + alarm.getWeatherCondition() + " → " + weatherResult);
             System.out.println("  - 설정된 공기 조건: " + alarm.getAirCondition() + " → " + airResult);
 
+            // ✅ 이메일 이미 보냈다면 skip
+            if (sentUserIds.contains(alarm.getUserId())) {
+                System.out.println("🔁 이미 해당 유저에게 알림 발송함 → 스킵");
+                continue;
+            }
+
+
             if (weatherMatch && airMatch) {
                 System.out.println("✅ [알림 발송] 조건 일치! 이메일 전송 시도");
-
                 String to = userService.getEmailByUserId(alarm.getUserId());
 
                 if (to == null || to.isEmpty()) {
@@ -115,27 +118,29 @@ public class AlarmScheduler {
                     </div>
                 """.formatted(currentWeather, currentAir);
 
-               try {
+                try {
                     mailService.sendGeneralMail(to, subject, content);
                     System.out.println("📨 이메일 전송 완료 → " + to);
+                    sentUserIds.add(alarm.getUserId());
                 } catch (MessagingException e) {
                     System.out.println("❌ 이메일 전송 실패: " + e.getMessage());
                 }
 
                 String alarmMsg = String.format("🔔 현재 날씨: %s, 공기질: %s\n(알림 설정 조건과 동일)", currentWeather, currentAir);
-
-                // 🟢 프론트에 실시간 알림도 시도
                 if (alarmSseController.hasEmitter(alarm.getUserId())) {
                     alarmSseController.sendAlarm(alarm.getUserId(), alarmMsg);
                 } else {
                     System.out.println("🚫 SSE emitter 없음 (프론트 미접속 상태) → userId=" + alarm.getUserId());
                 }
-
             } else {
                 System.out.println("❌ [알림 미발송] 조건 불일치");
             }
 
             System.out.println("-------------------------------------------");
         }
+
+        // ✅ 알람 순회 후 리스트 초기화
+        sentUserIds.clear();
+        System.out.println("📭 sentAlarmIds 초기화 완료");
     }
 }
