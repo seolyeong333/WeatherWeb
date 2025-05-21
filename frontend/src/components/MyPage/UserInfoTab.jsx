@@ -1,7 +1,7 @@
 // src/components/MyPage/UserInfoTab.jsx
 import { Button, Card, Row, Col } from "react-bootstrap";
 
-function UserInfoTab({ userInfo, setMode, setShowModal }) {
+function UserInfoTab({ userInfo, setMode, setShowPasswordCheckModal }) {
   return (
     <Card className="mypage-card">
       <Card.Body>
@@ -38,19 +38,19 @@ function UserInfoTab({ userInfo, setMode, setShowModal }) {
         <div className="btn-group-bottom mt-4">
           <Button variant="secondary" onClick={() => {
             setMode("password");
-            setShowModal(true);
+            setShowPasswordCheckModal(true);
           }}>
             비밀번호 변경
           </Button>
           <Button variant="primary" onClick={() => {
             setMode("edit");
-            setShowModal(true);
+            setShowPasswordCheckModal(true);
           }}>
             정보 수정
           </Button>
           <Button variant="outline-danger" onClick={() => {
             setMode("delete");
-            setShowModal(true);
+            setShowPasswordCheckModal(true);
           }}>
             회원 탈퇴
           </Button>

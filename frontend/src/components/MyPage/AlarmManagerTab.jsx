@@ -113,10 +113,40 @@ function AlarmManagerTab({ userInfo }) {
           <Form.Group className="mb-4">
             <Form.Label>1️⃣ 어떤 조건에 따라 알람을 받고 싶으신가요?</Form.Label>
             <div className="d-flex flex-column">
-              <Form.Check type="radio" label="날씨 조건만" value="weather" checked={conditionType === "weather"} onChange={(e) => setConditionType(e.target.value)} />
-              <Form.Check type="radio" label="미세먼지 조건만" value="air" checked={conditionType === "air"} onChange={(e) => setConditionType(e.target.value)} />
-              <Form.Check type="radio" label="날씨 + 미세먼지 조건" value="both" checked={conditionType === "both"} onChange={(e) => setConditionType(e.target.value)} />
-            </div>
+            <Form.Check
+  type="radio"
+  label="날씨 조건만"
+  value="weather"
+  checked={conditionType === "weather"}
+  onChange={(e) => {
+    setConditionType(e.target.value);
+    setWeatherCondition([]);
+    setAirCondition("");
+  }}
+/>
+<Form.Check
+  type="radio"
+  label="미세먼지 조건만"
+  value="air"
+  checked={conditionType === "air"}
+  onChange={(e) => {
+    setConditionType(e.target.value);
+    setWeatherCondition([]);
+    setAirCondition("");
+  }}
+/>
+<Form.Check
+  type="radio"
+  label="날씨 + 미세먼지 조건"
+  value="both"
+  checked={conditionType === "both"}
+  onChange={(e) => {
+    setConditionType(e.target.value);
+    setWeatherCondition([]);
+    setAirCondition("");
+  }}
+/>
+</div>
           </Form.Group>
 
           {(conditionType === "weather" || conditionType === "both") && (
