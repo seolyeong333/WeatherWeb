@@ -1,11 +1,20 @@
 import { useState } from "react";
-import { Form, Button } from "react-bootstrap";
+import { Form, Button, Modal } from "react-bootstrap";
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 function ChangePassword({ email, onClose }) {
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [error, setError] = useState("");
+
+  // ✅ 모달 상태 추가
+  const [showModal, setShowModal] = useState(false);
+  const [modalMessage, setModalMessage] = useState("");
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+    onClose?.(); // 모달 닫을 때 onClose 실행
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -21,8 +30,8 @@ function ChangePassword({ email, onClose }) {
       });
 
       if (res.ok) {
-        alert("비밀번호가 성공적으로 변경되었습니다.");
-        onClose?.();
+        setModalMessage("비밀번호가 성공적으로 변경되었습니다.");
+        setShowModal(true);
       } else {
         const msg = await res.text();
         setError("변경 실패: " + msg);
@@ -60,6 +69,19 @@ function ChangePassword({ email, onClose }) {
           비밀번호 변경
         </Button>
       </Form>
+
+      {/* ✅ 모달 UI */}
+      <Modal show={showModal} onHide={handleCloseModal} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>알림</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>{modalMessage}</Modal.Body>
+        <Modal.Footer>
+          <Button variant="primary" onClick={handleCloseModal}>
+            확인
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </>
   );
 }
