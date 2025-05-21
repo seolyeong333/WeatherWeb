@@ -3,11 +3,13 @@ import { useState } from "react";
 import { Card, Form, Button } from "react-bootstrap";
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-function EditUserInfo({ userInfo, setUserInfo, fetchUserInfo, setShowEditComponent }) {
+function EditUserInfo({ userInfo, setUserInfo, fetchUserInfo, setShowEditComponent, handleShowInfoModal }) {
   const [nickname, setNickname] = useState(userInfo.nickname);
   const [gender, setGender] = useState(userInfo.gender);
   const [birthday, setBirthday] = useState(userInfo.birthday);
-
+  const [showModal, setShowModal] = useState(false);
+  const [modalMessage, setModalMessage] = useState("");
+  
   const handleSave = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -27,12 +29,15 @@ function EditUserInfo({ userInfo, setUserInfo, fetchUserInfo, setShowEditCompone
 
       if (!res.ok) throw new Error("수정 실패");
 
-      await fetchUserInfo(); // 최신 userInfo 반영
-      alert("정보가 수정되었습니다.");
+      await fetchUserInfo();
+      setModalMessage("정보가 수정되었습니다.");
+      setShowModal(true);
+
       setShowEditComponent(); // info 탭으로 복귀
     } catch (err) {
       console.error(err);
-      alert("수정 중 오류 발생");
+      setModalMessage("수정 중 오류가 발생했습니다.");
+      setShowModal(true);
     }
   };
 
