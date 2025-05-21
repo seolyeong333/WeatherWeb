@@ -94,10 +94,10 @@ function WeatherDetailSummary({ dailySummary }) {
     <div className="detail-section">
       <h2 className="detail-title">오늘의 날씨 요약</h2>
       <div className="summary-box">
-        <p>오늘은 <strong>{desc}</strong>이며, 기온은 <strong>{min}°C ~ {max}°C</strong>입니다.</p>
+        <p style={{marginTop: "0.3rem", marginBottom: "0.3rem"}}>오늘은 <strong>{desc}</strong>이며, 기온은 <strong>{min}°C ~ {max}°C</strong>입니다.</p>
       </div>
       <div className="recommendation-box">
-        <h3>오늘의 추천</h3>
+        <h3 style={{marginTop: "0.3rem", marginBottom: "0.8rem"}}>오늘의 추천</h3>
         <p>{getTip(desc, max)}</p>
       </div>
     </div>

@@ -1,4 +1,4 @@
-import React from "react";
+import { useState, useEffect } from "react";
 import { getKoreanWeatherDescforWeather } from "../../utils/weatherUtil";
 
 const getWeatherEmoji = (icon) => {
@@ -49,9 +49,33 @@ function WeatherHeader({ currentWeather, hourlyPop, currentPollution, regionName
 
   const pm10Level = pm10 !== undefined ? getLevel(pm10, "pm10") : null;
   const pm25Level = pm25 !== undefined ? getLevel(pm25, "pm25") : null;
+  const images = [
+    '/building.jpg',
+    '/palace.jpg',
+    '/temple-busan.jpg',
+  ];
+
+    const [index, setIndex] = useState(0);
+
+    useEffect(() => {
+      const interval = setInterval(() => {
+        setIndex((prev) => (prev + 1) % images.length);
+      }, 5000); // 5초마다 바뀜
+      return () => clearInterval(interval);
+    }, []);
 
   return (
     <div className="header-section">
+      <div className="header-slider">
+      {images.map((src, i) => (
+        <div
+          key={i}
+          className={`slide ${i === index ? 'active' : ''}`}
+          style={{ backgroundImage: `url(${src})` }}
+        />
+      ))}
+      </div>
+
       <div className="header-overlay">
         <div>
           <h1 className="header-title">맑음이든 흐림이든, 오늘의 하늘은 당신 편이에요</h1>

@@ -115,7 +115,6 @@ function DailyWeatherChart({ dailyData }) {
 
   return (
     <div className="daily-section">
-      <h2 className="chart-title">주간 날씨</h2>
       <div className="chart-box">
         <Bar data={data} options={options} plugins={[ChartDataLabels]} />
       </div>
