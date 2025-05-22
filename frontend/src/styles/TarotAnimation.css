@@ -36,28 +36,42 @@
 
 /* === 1단계: 중앙으로 모으기 === */
 .shuffle-sequence .tarot-card:nth-child(1) {
-  animation: gatherLeft 0.8s ease-in forwards;
+  animation: gatherLeft 0.9s ease-in forwards;
   z-index: 3;
 }
 .shuffle-sequence .tarot-card:nth-child(2) {
-  animation: gatherCenter 0.8s ease-in forwards;
+  animation: gatherCenter 0.9s ease-in forwards;
   z-index: 4;
 }
 .shuffle-sequence .tarot-card:nth-child(3) {
-  animation: gatherRight 0.8s ease-in forwards;
+  animation: gatherRight 0.9s ease-in forwards;
   z-index: 2;
 }
 
 /* === 2단계: 카드 순서 바뀌는 듯한 이동 === */
 .shuffle-sequence.step2 .tarot-card:nth-child(1) {
-  animation: moveToRight 0.6s ease-in-out forwards;
+  animation: moveToRight 0.9s ease-in-out forwards;
 }
 .shuffle-sequence.step2 .tarot-card:nth-child(2) {
-  animation: moveToBackLeft 0.6s ease-in-out forwards;
+  animation: moveToBackLeft 0.9s ease-in-out forwards;
   z-index: 1; /* 뒤로 들어가는 느낌 */
 }
 .shuffle-sequence.step2 .tarot-card:nth-child(3) {
-  animation: moveToCenterFront 0.6s ease-in-out forwards;
+  animation: moveToCenterFront 0.9s ease-in-out forwards;
+  z-index: 5;
+}
+
+/* === 3단계 === */
+.shuffle-sequence.step3 .tarot-card:nth-child(1) {
+  animation: moveToFrontRight 0.8s ease-in-out forwards;
+  z-index: 10;
+}
+.shuffle-sequence.step3 .tarot-card:nth-child(2) {
+  animation: moveToBack 0.8s ease-in-out forwards;
+  z-index: 1; /* 뒤로 들어가는 느낌 */
+}
+.shuffle-sequence.step3 .tarot-card:nth-child(3) {
+  animation: moveToSecondFront 0.8s ease-in-out forwards;
   z-index: 5;
 }
 
@@ -92,6 +106,22 @@
 @keyframes moveToCenterFront {
   0% { transform: translateX(-60px); }
   100% { transform: translateX(-180px) scale(1); }
+}
+
+/* 한번 더 섞기 */
+@keyframes moveToFrontRight {
+  0% { transform: translateX(50px), scale(1); }
+  100% { transform: translateX(340px) }
+}
+
+@keyframes moveToSecondFront {
+  0% { transform: scale(1); }
+  100% { transform: translateX(-210px) }
+}
+
+@keyframes moveToBack {
+  0% { transform: scale(1); }
+  100% { transform: translateX(-130px) }
 }
 
 .tarot-btn {

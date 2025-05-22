@@ -23,6 +23,6 @@ function LoginSuccess() {
     navigate("/"); 
   }, [navigate]);
 
-  return <div> <h2>로그인 처리 중입니다...</h2> </div>;
+  return null;
 }
 export default LoginSuccess;
