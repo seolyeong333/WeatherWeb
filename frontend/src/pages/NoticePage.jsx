@@ -5,6 +5,7 @@ import NoticeForm from "../components/Notice/NoticeForm";
 import NoticeDetail from "../components/Notice/NoticeDetail";
 import NoticeEdit from "../components/Notice/NoticeEdit";
 
+/* 지난 프로젝트 재활용 */
 function NoticePage() {
   const [mode, setMode] = useState("list"); // 'list' | 'detail' | 'form' | 'edit'
   const [selectedId, setSelectedId] = useState(null);
