@@ -213,15 +213,21 @@ function SignupForm({ setMode, closeLogin }) {
 
       {/* ✅ Lottie 로딩 애니메이션 */}
       {isLoading && (
-        <div className="d-flex justify-content-center align-items-center" style={{
+        <div className="d-flex flex-column justify-content-center align-items-center" style={{
           position: "fixed", top: 0, left: 0, width: "100%", height: "100%",
           backgroundColor: "rgba(255,255,255,0.7)", zIndex: 9999
         }}>
-          <div style={{ width: 150 }}>
+          <div style={{ width: 150, marginBottom: "0.2rem" }}> {/* 간격 ↓ */}
             <Lottie animationData={loadingAnimation} loop={true} />
+          </div>
+          <div style={{ fontSize: "1rem", color: "#333", fontWeight: "500" }}>
+            이메일을 전송중입니다...
           </div>
         </div>
       )}
+
+
+
     </>
   );
 }
