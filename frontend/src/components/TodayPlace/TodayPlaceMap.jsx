@@ -203,7 +203,7 @@ function TodayPlaceMap() {
 
   return (
     <div className="map-container">
-      <main className="map-wrapper">0
+      <main className="map-wrapper">
         <div className="map-category-buttons">
           {["음식점", "카페", "관광명소"].map((label, idx) => (
             <button
