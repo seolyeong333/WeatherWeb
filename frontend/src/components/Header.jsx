@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, Link, useLocation } from "react-router-dom";
 import { Navbar, Nav, Button } from "react-bootstrap";
 import { FaBars } from "react-icons/fa";
@@ -37,6 +37,14 @@ function Header() {
     closeMenu(); // 사이드바 닫기
   };
 
+  useEffect(() => {
+    if (isLoggedIn) {
+      const nicknameFromToken = getUserNickname();
+      setNickname(nicknameFromToken);
+    }
+  }, [isLoggedIn]);
+  
+
   return (
     <>
       <Navbar bg="white" expand="md" className="shadow-sm px-3 site-header">
@@ -63,7 +71,7 @@ function Header() {
             <Nav.Link as={Link} to="/" className="main-nav-link" style={{ fontWeight: location.pathname === "/" ? "bold" : "normal" }}>
               오늘의 날씨
             </Nav.Link>
-            <Nav.Link as={Link} to="/today-place" className="main-nav-link" style={{ fontWeight: location.pathname === "/today-place" ? "bold" : "normal" }}>
+            <Nav.Link as={Link} to="/today-place" className="main-nav-link" style={{ fontWeight: location.pathname.startsWith("/today-place") ? "bold" : "normal" }}>
               오늘의 장소
             </Nav.Link>
             <Nav.Link as={Link} to="/today-look" className="main-nav-link" style={{ fontWeight: location.pathname === "/today-look" ? "bold" : "normal" }}>
