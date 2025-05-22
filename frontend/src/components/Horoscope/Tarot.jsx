@@ -26,9 +26,11 @@ function Intro({ onStart, onShufflingStart }) {
   useEffect(() => {
     if (selectedCategory && isShuffling) {
       const gatherTimeout = setTimeout(() => setStep("swap"), 1000);
-      const totalTimeout = setTimeout(() => onStart(selectedCategory), 1800);
+      const swapTimeout = setTimeout(() => setStep("step3"), 1900);
+      const totalTimeout = setTimeout(() => onStart(selectedCategory), 2000);
       return () => {
         clearTimeout(gatherTimeout);
+        clearTimeout(swapTimeout)
         clearTimeout(totalTimeout);
       };
     }
@@ -36,7 +38,13 @@ function Intro({ onStart, onShufflingStart }) {
 
   const handleCardClick = (index) => {
     setSelectedIndex(index);
-    setSelectedCategory(index + 1);
+
+    if (index === 2) {
+      const randomCategory = Math.random() < 0.5 ? 1 : 2;
+      setSelectedCategory(randomCategory);
+    } else {
+      setSelectedCategory(index + 1);
+    }
   };
 
   const handleStart = async () => {
@@ -80,7 +88,7 @@ function Intro({ onStart, onShufflingStart }) {
     }
   };
 
-  const cardClass = `intro-cards ${isShuffling ? "shuffle-sequence" : ""} ${step === "swap" ? "step2" : ""}`;
+  const cardClass = `intro-cards ${isShuffling ? "shuffle-sequence" : ""} ${step === "swap" ? "step2" : ""} ${step === "step3" ? "step3" : ""}`;
 
   return (
     <div style={{ textAlign: "center", padding: "3rem" }}>
@@ -98,7 +106,7 @@ function Intro({ onStart, onShufflingStart }) {
                 : `/tarot/tarot-back${n}.png`
             }
             alt={`카드${n}`}
-            className={`tarot-card ${selectedCategory === index + 1 && !isShuffling ? "selected" : ""}`}
+            className={`tarot-card ${selectedIndex === index && !isShuffling ? "selected" : ""}`}
             onClick={() => handleCardClick(index)}
           />
         ))}
@@ -107,7 +115,7 @@ function Intro({ onStart, onShufflingStart }) {
       {!isShuffling && (
         <button style={{ marginTop: "2.5rem", fontFamily: "'Gowun Dodum', sans-serif" }}
           className="tarot-btn" onClick={handleStart}>
-          {selectedCategory ? `${getCategoryName(selectedCategory)} 타로 Start` : "카드를 선택하세요"}
+          {selectedIndex === 2 ? "랜덤 타로 Start" : selectedCategory ? `${getCategoryName(selectedCategory)} 타로 Start` : "카드를 선택하세요"}
         </button>
       )}
 
