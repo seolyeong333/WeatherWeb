@@ -52,8 +52,13 @@ public class AlarmScheduler {
         checkAlarms();
     }
 
-    // 🕐 매 1시간마다 실행
-    @Scheduled(cron = "0 0 * * * *")
+    // 🕐 매 10분마다 실행
+    @Scheduled(cron = "0 */10 * * * *")
+    public void runEveryTenMinutes() {
+        System.out.println("⏰ 10분마다 알람 체크 실행");
+        checkAlarms();
+    }
+
     public void runEveryHour() {
         System.out.println("⏰ 1시간마다 알람 체크 실행");
         checkAlarms();
