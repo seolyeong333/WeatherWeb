@@ -1,5 +1,4 @@
 import { useSearchParams, useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
 import Header from "../components/Header";
 import NoticeList from "../components/Notice/NoticeList";
 import NoticeForm from "../components/Notice/NoticeForm";
