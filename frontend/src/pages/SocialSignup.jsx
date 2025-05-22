@@ -46,26 +46,27 @@ function SocialSignup({ email, provider, nickname, onClose }) {
     e.preventDefault();
     const error = validateForm();
     if (error) return setErrorMessage(error);
-
+  
     try {
       const res = await fetch(`${API_BASE_URL}/api/users`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
-
+  
+      const data = await res.json().catch(() => null);
+  
       if (res.ok) {
         setModalMessage("회원가입이 완료되었습니다. 로그인 후 이용해주세요.");
         setShowModal(true);
       } else {
-        const err = await res.json();  // ← 기존 res.text() 대신
-        setModalMessage(err.error || "회원가입 실패");
+        setErrorMessage(data?.error || "회원가입 실패");
       }
     } catch (err) {
       console.error(err);
       setErrorMessage("서버 오류가 발생했습니다.");
     }
-  };
+  };  
 
   return (
     <>

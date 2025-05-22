@@ -24,7 +24,7 @@ function TodayPlaceMap() {
   const [regionName, setRegionName] = useState("서울시 강남구");
   const [weather, setWeather] = useState(null);
   const [lastRegionCode, setLastRegionCode] = useState(null);
-  const [fitList, setFitList] = useState([]); // ✅ 날씨 추천 키워드 리스트
+  const [fitList, setFitList] = useState([]);
 
   const navigate = useNavigate();
 
@@ -37,7 +37,7 @@ function TodayPlaceMap() {
     });
     mapInstanceRef.current = map;
 
-    window.kakao.maps.event.addListener(map, "click", async function (mouseEvent) {
+    window.kakao.maps.event.addListener(map, "click", async (mouseEvent) => {
       const latLng = mouseEvent.latLng;
       const lat = latLng.getLat();
       const lon = latLng.getLng();
@@ -88,11 +88,13 @@ function TodayPlaceMap() {
     try {
       const res = await axios.get(
         `https://dapi.kakao.com/v2/local/geo/coord2regioncode.json?x=${lon}&y=${lat}`,
-        { headers: { Authorization: `KakaoAK e7c76873999ef901948568fdbf33233b` } }
+        { headers: { Authorization: "KakaoAK e7c76873999ef901948568fdbf33233b" } }
       );
       if (res.data.documents.length > 0) {
         const region = res.data.documents[0];
-        setRegionName(`${region.region_1depth_name} ${region.region_2depth_name} ${region.region_3depth_name}`);
+        setRegionName(
+          `${region.region_1depth_name} ${region.region_2depth_name} ${region.region_3depth_name}`
+        );
         return region.code;
       }
     } catch (err) {
@@ -110,7 +112,6 @@ function TodayPlaceMap() {
       const desc = res.data.weather[0].description;
       setWeather({ temp, desc: getKoreanWeatherDescforWeather(desc) });
 
-      // ✅ 날씨 기반 추천 키워드 불러오기
       try {
         const fitRes = await axios.get(`${API_BASE_URL}/api/weather/message`, {
           params: {
@@ -151,26 +152,28 @@ function TodayPlaceMap() {
 
       json.forEach((place, idx) => {
         const position = new window.kakao.maps.LatLng(place.y, place.x);
-        const marker = new window.kakao.maps.Marker({
-          map,
-          position,
-          title: place.placeName,
+
+        const markerEl = document.createElement("div");
+        markerEl.className = "circle-only-marker";
+        markerEl.innerHTML = `
+          <div class="circle-number">${idx + 1}</div>
+          <div class="circle-name">${place.placeName}</div>
+        `;
+
+        markerEl.addEventListener("click", () => {
+          navigate("/today-place/place-detail", {
+            state: { placeName: place.placeName, place },
+          });
         });
 
-        const label = new window.kakao.maps.CustomOverlay({
+        const overlay = new window.kakao.maps.CustomOverlay({
           position,
-          content: `<div class="map-label">${idx + 1}</div>`,
           yAnchor: 1.8,
           zIndex: 3,
+          content: markerEl,
         });
-        label.setMap(map);
-
-        placeMarkersRef.current.push(marker);
-        labelOverlaysRef.current.push(label);
-
-        window.kakao.maps.event.addListener(marker, "click", () => {
-          navigate("/today-place/place-detail", { state: { placeName: place.placeName, place } });
-        });
+        overlay.setMap(map);
+        labelOverlaysRef.current.push(overlay);
       });
     } catch (err) {
       console.error("카카오 추천 장소 실패:", err);
@@ -187,87 +190,99 @@ function TodayPlaceMap() {
 
   useEffect(() => {
     if (fitList.length > 1 && selectedLocation) {
-      // 키워드 자동 호출은 한 번만 실행되도록 조건을 걸 수 있음
       loadRecommendedPlaces(selectedLocation.lat, selectedLocation.lon, fitList[1]);
     }
   }, [fitList, selectedLocation]);
-  
+
   const handlePlaceClick = (place) => {
-    navigate("/today-place/place-detail", { state: { placeName: place.placeName, place } });
+    navigate("/today-place/place-detail", {
+      state: { placeName: place.placeName, place },
+    });
   };
+  
 
   return (
     <div className="map-container">
-<main className="map-wrapper">
-  {/* ✅ 지도 위 좌측 상단 버튼 */}
-  <div className="map-category-buttons">
-    {["음식점", "카페", "관광명소"].map((label, idx) => (
-      <button
-        key={idx}
-        className="map-category-button"
-        onClick={() =>
-          selectedLocation &&
-          loadRecommendedPlaces(selectedLocation.lat, selectedLocation.lon, label)
-        }
-      >
-        {label === "음식점" ? "🍽️ 음식점" : label === "카페" ? "☕ 카페" : "🌳 관광명소"}
-      </button>
-    ))}
-  </div>
+      <main className="map-wrapper">0
+        <div className="map-category-buttons">
+          {["음식점", "카페", "관광명소"].map((label, idx) => (
+            <button
+              key={idx}
+              className="map-category-button"
+              onClick={() =>
+                selectedLocation &&
+                loadRecommendedPlaces(selectedLocation.lat, selectedLocation.lon, label)
+              }
+            >
+              {label === "음식점"
+                ? "🍽️ 음식점"
+                : label === "카페"
+                ? "☕ 카페"
+                : "🌳 관광명소"}
+            </button>
+          ))}
+        </div>
 
-  <div ref={mapRef} className="kakao-map" />
+        <div ref={mapRef} className="kakao-map" />
 
-    <div className="weather-recommend-box">
-
-
-      <div className="weather-box">
-        <h5>🌤️ 오늘의 날씨</h5>
-        <p>{regionName}</p>
-        <h5 style={{marginTop: "-0.4rem"}}>{weather ? `${weather.temp}°C / ${weather.desc}` : "날씨 정보 없음"}</h5>
-      </div>
-
-      <div className="recommend-box">
-        <h5>ONDA 추천 플레이스</h5>
-
-        {fitList.length > 1 && (
-          <div className="recommend-keywords">
-            {fitList
-              .slice(1)
-              .filter((fit, idx, arr) => arr.indexOf(fit) === idx)
-              .map((fit, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => loadRecommendedPlaces(selectedLocation.lat, selectedLocation.lon, fit)}
-                  className="keyword-button"
-                >
-                  {fit}
-                </button>
-              ))}
+        <div className="weather-recommend-box">
+          <div className="weather-box">
+            <h5>🌤️ 오늘의 날씨</h5>
+            <p>{regionName}</p>
+            <h5 style={{ marginTop: "-0.4rem" }}>
+              {weather ? `${weather.temp}°C / ${weather.desc}` : "날씨 정보 없음"}
+            </h5>
           </div>
-        )}
-      </div>
-      <div className="recommend-box">
-        {loading ? (
-          <>
-            <Lottie animationData={loadingAnimation} loop={true} style={{ width: 100, height: 100, margin: "0 auto" }} />
-            <p className="loading-text">ONDA AI의 추천 장소 정보를 불러오는 중입니다…</p>
-          </>
-        ) : (
-          <div className="recommend-list">
-            <ul>
-              {places.map((place, idx) => (
-                <li key={idx} onClick={() => handlePlaceClick(place)}>
-                  {idx + 1}. {place.placeName}
-                </li>
-              ))}
-            </ul>
+
+          <div className="recommend-box">
+            <h5>ONDA 추천 플레이스</h5>
+            {fitList.length > 1 && (
+              <div className="recommend-keywords">
+                {fitList
+                  .slice(1)
+                  .filter((fit, idx, arr) => arr.indexOf(fit) === idx)
+                  .map((fit, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() =>
+                        loadRecommendedPlaces(selectedLocation.lat, selectedLocation.lon, fit)
+                      }
+                      className="keyword-button"
+                    >
+                      {fit}
+                    </button>
+                  ))}
+              </div>
+            )}
           </div>
-        )}
-      </div>
+
+          <div className="recommend-box">
+            {loading ? (
+              <>
+                <Lottie
+                  animationData={loadingAnimation}
+                  loop={true}
+                  style={{ width: 100, height: 100, margin: "0 auto" }}
+                />
+                <p className="loading-text">
+                  ONDA AI의 추천 장소 정보를 불러오는 중입니다…
+                </p>
+              </>
+            ) : (
+              <div className="recommend-list">
+                <ul>
+                  {places.map((place, idx) => (
+                    <li key={idx} onClick={() => handlePlaceClick(place)}>
+                      {idx + 1}. {place.placeName}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+        </div>
+      </main>
     </div>
-  </main>
-</div>
-
   );
 }
 

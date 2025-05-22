@@ -12,7 +12,6 @@ import NoticePage from "./pages/NoticePage";
 import MyPage from "./pages/MyPage";
 import AdminPage from "./pages/AdminPage";
 import SocialSignup from "./pages/SocialSignup";
-import LoginSuccess from "./pages/LoginSuccess";
 
 function App() {
   const token = localStorage.getItem("token");
@@ -26,9 +25,6 @@ function App() {
       <CustomToastContainer />
       <BrowserRouter>
         <Routes>
-          <Route path="/kakaologinsuccess" element={<LoginSuccess/>} />
-          <Route path="/googleloginsuccess" element={<LoginSuccess/>} />
-          <Route path="/naverloginsuccess" element={<LoginSuccess/>} />
           <Route path="/mypage" element={<MyPage />} />
           <Route path="/admin" element={<AdminPage />} />
           <Route path="/today-place/*" element={<TodayPlace />} />

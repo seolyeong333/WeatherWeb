@@ -101,6 +101,7 @@ function TodayPlaceList() {
             })
           );
 
+          updated.sort((a, b) => (b.rating || 0) - (a.rating || 0));
           setPlaces(updated);
         } catch (err) {
           console.error("장소 요청 실패:", err);

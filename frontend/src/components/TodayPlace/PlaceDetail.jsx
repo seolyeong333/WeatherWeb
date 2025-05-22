@@ -54,6 +54,7 @@ function PlaceDetail() {
     }
   };
   
+
   const fetchAverageRating = async () => {
     if (!place?.id) return;
     try {
