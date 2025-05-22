@@ -36,15 +36,19 @@ function MyPage() {
   // activeTab 초기값 설정 및 location.state에 따른 업데이트
   const [activeTab, setActiveTab] = useState("info"); // 기본값 'info'
 
-  useEffect(() => {
-    // location.state에 activeTab이 있으면 해당 탭으로 설정
+ useEffect(() => {
+    const savedTab = sessionStorage.getItem("activeTab");
     if (location.state?.activeTab) {
       setActiveTab(location.state.activeTab);
+      sessionStorage.setItem("activeTab", location.state.activeTab);
+      window.history.replaceState({}, document.title);
+    } else if (savedTab) {
+      setActiveTab(savedTab);
     } else {
-      setActiveTab("info"); // 기본 탭으로 명시적 설정
+      setActiveTab("info");
     }
-  }, [location.state]); // location.state 변경 시 마다 실행
-
+  }, [location]);
+  
   // ✅ 알림/오류 모달 제어 함수
   const handleCloseInfoModal = () => {
     setShowInfoModal(false);
@@ -138,7 +142,10 @@ function MyPage() {
               variant="pills"
               className="flex-column shadow-sm rounded-3 p-3 bg-light mypage-nav" // 커스텀 클래스 추가
               activeKey={activeTab}
-              onSelect={(selectedKey) => setActiveTab(selectedKey)}
+              onSelect={(selectedKey) => {
+                setActiveTab(selectedKey);
+                sessionStorage.setItem("activeTab", selectedKey);
+              }}
             >
               <Nav.Item>
                 <Nav.Link eventKey="info"><FaUser className="me-2" />내 정보</Nav.Link>

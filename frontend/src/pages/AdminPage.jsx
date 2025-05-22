@@ -29,6 +29,22 @@ function AdminPage() {
     }
   }, []);
 
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const tab = params.get("tab");
+    if (tab) {
+      setActiveTab(tab);
+    } else {
+      setActiveTab("users");
+    }
+  }, [location.search]);
+
+  const handleSelect = (k) => {
+    setActiveTab(k);
+    navigate(`?tab=${k}`, { replace: true });
+  };
+
+
   if (unauthorized) {
     return (
       <Modal show centered>
@@ -59,7 +75,7 @@ function AdminPage() {
               variant="pills"
               className="flex-column shadow-sm rounded-3 p-3 bg-light"
               activeKey={activeTab}
-              onSelect={(k) => setActiveTab(k)}
+              onSelect={handleSelect}
             >
               <Nav.Item>
                 <Nav.Link eventKey="users">👤 사용자 목록</Nav.Link>
