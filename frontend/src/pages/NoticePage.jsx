@@ -1,47 +1,41 @@
-import { useState } from "react";
+import { useSearchParams, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 import Header from "../components/Header";
 import NoticeList from "../components/Notice/NoticeList";
 import NoticeForm from "../components/Notice/NoticeForm";
 import NoticeDetail from "../components/Notice/NoticeDetail";
 import NoticeEdit from "../components/Notice/NoticeEdit";
 
-/* 지난 프로젝트 재활용 */
 function NoticePage() {
-  const [mode, setMode] = useState("list"); // 'list' | 'detail' | 'form' | 'edit'
-  const [selectedId, setSelectedId] = useState(null);
+  const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
 
-  const handleViewDetail = (id) => {
-    setSelectedId(id);
-    setMode("detail");
-  };
+  const mode = searchParams.get("mode") || "list";
+  const selectedId = searchParams.get("id");
 
-  const handleEdit = (id) => {
-    setSelectedId(id);
-    setMode("edit");
-  };
-
-  const handleCreate = () => {
-    setMode("form");
-  };
-
-  const handleBackToList = () => {
-    setSelectedId(null);
-    setMode("list");
-  };
+  // 이동 함수들
+  const goToList = () => setSearchParams({ mode: "list" });
+  const goToDetail = (id) => setSearchParams({ mode: "detail", id });
+  const goToEdit = (id) => setSearchParams({ mode: "edit", id });
+  const goToForm = () => setSearchParams({ mode: "form" });
 
   return (
     <div className="notice-page-wrapper">
-              <Header />
+      <Header />
+
       {mode === "list" && (
-        <NoticeList onView={handleViewDetail} onCreate={handleCreate} />
+        <NoticeList onView={goToDetail} onCreate={goToForm} />
       )}
+
       {mode === "detail" && selectedId && (
-        <NoticeDetail id={selectedId} onBack={handleBackToList} onEdit={handleEdit} />
+        <NoticeDetail id={selectedId} onBack={goToList} onEdit={goToEdit} />
       )}
-      {mode === "form" && <NoticeForm onBack={handleBackToList} />}
+
       {mode === "edit" && selectedId && (
-        <NoticeEdit id={selectedId} onBack={handleBackToList} />
+        <NoticeEdit id={selectedId} onBack={goToList} />
       )}
+
+      {mode === "form" && <NoticeForm onBack={goToList} />}
     </div>
   );
 }
