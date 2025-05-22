@@ -116,7 +116,7 @@ function PlaceReportTab() {
   };
 
   return (
-    <div className="notice-section">
+    <div className="notice-section" style={{ marginTop: "-0.3rem", height: "100%" }}>
       <h3>📍 장소 신고 처리</h3>
       {reports.length === 0 ? (
         <p>신고된 장소가 없습니다.</p>

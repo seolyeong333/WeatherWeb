@@ -33,7 +33,7 @@ function UserListTab() {
   }, []);
 
   return (
-    <div className="notice-section">
+    <div className="notice-section" style={{ marginTop: "-0.3rem", height: "100%" }}>
       <h3>👥 전체 사용자 목록</h3>
       {users.length === 0 ? (
         <p>사용자 정보가 없습니다.</p>

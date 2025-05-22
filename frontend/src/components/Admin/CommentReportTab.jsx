@@ -109,7 +109,7 @@ function CommentReportTab({ onReportClick }) { // onReportClick prop은 현재 �
   };
 
   return (
-    <div className="notice-section">
+    <div className="notice-section" style={{ marginTop: "-0.3rem", height: "100%" }}>
       <h3>🗨️ 한줄평 신고 처리</h3>
       {reports.length === 0 ? (
         <p>신고된 한줄평이 없습니다.</p>
