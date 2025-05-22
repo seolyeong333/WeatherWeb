@@ -1,5 +1,6 @@
 // src/components/MyPage/UserInfoTab.jsx
 import { Button, Card, Row, Col } from "react-bootstrap";
+import { getZodiacSign } from "../../utils/getZodiacSign";
 
 function UserInfoTab({ userInfo, setMode, setShowPasswordCheckModal }) {
   return (
@@ -29,6 +30,10 @@ function UserInfoTab({ userInfo, setMode, setShowPasswordCheckModal }) {
             <Col sm={6} className="mb-3">
               <strong>가입일</strong>
               <p className="info-value">{userInfo.createdAt?.substring(0, 10)}</p>
+            </Col>
+             <Col sm={6} className="mb-3">
+              <strong>별자리</strong>
+              <p className="info-value">{getZodiacSign(userInfo.birthday)}</p>
             </Col>
           </Row>
         ) : (
