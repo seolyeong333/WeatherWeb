@@ -28,6 +28,7 @@ function NoticePage() {
     setMode("list");
   };
 
+  /* 지난번 프로젝트 재활용*/
   return (
     <div className="notice-page-wrapper">
               <Header />
