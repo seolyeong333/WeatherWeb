@@ -61,8 +61,6 @@ CREATE TABLE opinions (
   content TEXT NOT NULL,                                          -- 한줄평 내용 
   rating INT NOT NULL,
   isPublic BOOLEAN DEFAULT TRUE,                                  -- 공개 여부
-  likes INT DEFAULT 0,                                            -- 좋아요 수
-  dislikes INT DEFAULT 0,                                         -- 싫어요 수
   createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,                   -- 작성 시각
   FOREIGN KEY (userId) REFERENCES users(userId) ON DELETE CASCADE -- 사용자 삭제 시 자동 삭제
 );
@@ -434,24 +432,6 @@ INSERT INTO tarot_card_colors (cardId, colorName, hexCode) VALUES
 (22, '그린', '#45A56B'), (22, '스카이블루', '#BCE5F1');
 
 
-SELECT * FROM weather_messages;
-SELECT * FROM tarot_play_logs;
-SELECT * FROM tarot_card_colors;
-SELECT * FROM tarot_cards;
-SELECT * FROM tarot_cards_category;
-SELECT * FROM place_stats;
-SELECT * FROM place_logs;
-SELECT * FROM weather_logs;
-SELECT * FROM fashion_colors;
-SELECT * FROM reports;
-SELECT * FROM notices;
-SELECT * FROM alarms;
-SELECT * FROM opinions;
-SELECT * FROM bookmarks;
-SELECT * FROM weather_messages;
-SELECT * FROM users;
-
-
 
 INSERT INTO users (
   email, password, nickname, gender, birthday, provider, auth
@@ -599,6 +579,8 @@ INSERT INTO opinions (userId, placeId, placeName, content, rating, isPublic, cre
 (2, '10252806', '대려도', '음식은 맛있는데, 서비스가 너무 불친절했어요.', 1, TRUE, NOW()),
 (3, '10252806', '대려도', '가격에 비해 만족스럽지 못한 경험이었습니다.', 1, TRUE, NOW());
 
+INSERT INTO opinions (userId, placeId, placeName, content, rating, isPublic)
+VALUES (3, '1261109835', '주꾸미골목', '멀리서부터 쭈꾸미 조명이 반겨주는 쭈꾸미 골목 !! 좋아요~~', 5, TRUE);
 
 INSERT INTO bookmarks (userId, placeId, placeName) VALUES
 (1, 'place_001', '스타벅스 강남역점'),
@@ -609,11 +591,9 @@ INSERT INTO bookmarks (userId, placeId, placeName) VALUES
 (1, 'place_006', 'CGV 용산아이파크몰'),
 (1, 'place_007', '국립중앙박물관'),
 (1, 'place_008', '더현대 서울'),
-(1, 'place_009', '익선동 골목'),
 (1, 'place_010', '노들섬');
 
 INSERT INTO bookmarks (userId, placeId, placeName) VALUES
-(2, 'place_011', '서울대입구역 카페거리'),
 (2, 'place_012', '북서울 꿈의숲'),
 (2, 'place_013', '남산서울타워'),
 (2, 'place_014', '경복궁'),
@@ -625,35 +605,40 @@ INSERT INTO bookmarks (userId, placeId, placeName) VALUES
 (2, 'place_020', '청계천');
 
 INSERT INTO bookmarks (userId, placeId, placeName) VALUES
-(3, 'place_021', '양재 시민의숲'),
 (3, 'place_022', '반포한강공원'),
-(3, 'place_023', '성수동 카페거리'),
 (3, 'place_024', '망원시장'),
 (3, 'place_025', '서울식물원'),
-(3, 'place_026', 'DDP 디자인마켓'),
 (3, 'place_027', '이화벽화마을'),
 (3, 'place_028', '마포 석유비축기지'),
-(3, 'place_029', '노들나루공원'),
-(3, 'place_030', '서울 애니메이션센터');
+(3, 'place_029', '노들나루공원');
 
 -- userId 2 신고 (1건: opinionId, 1건: placeId)
 INSERT INTO reports (userId, targetId, targetType, placeName, content, status, createdAt) VALUES
-(2, '894327405', 'place', '놀숲 강남교보타워점', '시설 위생 상태가 좋지 않았습니다. 청결 점검이 필요해요.', 'PENDING', '2025-05-30 10:15:00'),
-(2, '15', 'opinion', '알베르', '의견 내용이 과하게 부정적이에요. 허위 리뷰로 보입니다.', 'PENDING', '2025-05-30 11:05:00');
+(2, '894327405', 'place', '놀숲 강남교보타워점', '시설 위생 상태가 좋지 않았습니다. 청결 점검이 필요해요.', 'PENDING', '2025-05-21 10:15:00');
 
 -- userId 3 신고 (1건: opinionId, 1건: placeId)
 INSERT INTO reports (userId, targetId, targetType, placeName, content, status, createdAt) VALUES
-(3, '8279464', 'place', '딘타이펑 강남점', '음식 알레르기 표기가 부족해요. 위험할 수 있습니다.', 'PENDING', '2025-05-30 13:20:00'),
-(3, '12', 'opinion', '레드버튼 시네마강남점', '이용 경험과 전혀 다른 내용을 리뷰에 적은 것 같아요.', 'PENDING', '2025-05-30 14:10:00');
+(3, '8279464', 'place', '딘타이펑 강남점', '음식 알레르기 표기가 부족해요. 위험할 수 있습니다.', 'PENDING', '2025-05-21 13:20:00'),
+(3, '12', 'opinion', '레드버튼 시네마강남점', '이용 경험과 전혀 다른 내용을 리뷰에 적은 것 같아요.', 'PENDING', '2025-05-21 14:10:00');
 -- userId 2 추가 신고 (opinion + place)
 INSERT INTO reports (userId, targetId, targetType, placeName, content, status, createdAt) VALUES
-(2, '16421356', 'place', '농민백암순대 강남직영점', '음식 온도가 낮아 식중독 위험이 있을 수 있어요.', 'PENDING', '2025-05-30 15:00:00'),
-(2, '14', 'opinion', '놀숲 강남교보타워점', '리뷰가 도배성으로 보입니다. 삭제 검토 바랍니다.', 'PENDING', '2025-05-30 15:40:00');
+(2, '16421356', 'place', '농민백암순대 강남직영점', '음식 온도가 낮아 식중독 위험이 있을 수 있어요.', 'PENDING', '2025-05-21 15:00:00'),
+(2, '14', 'opinion', '놀숲 강남교보타워점', '리뷰가 도배성으로 보입니다. 삭제 검토 바랍니다.', 'PENDING', '2025-05-21 15:40:00');
 
 -- userId 3 추가 신고 (opinion + place)
 INSERT INTO reports (userId, targetId, targetType, placeName, content, status, createdAt) VALUES
-(3, '22837049', 'place', '알베르', '매장 내 소음이 너무 심해서 불쾌했습니다.', 'PENDING', '2025-05-30 16:10:00'),
-(3, '11', 'opinion', '삼성각', '광고성으로 의심되는 리뷰입니다. 확인 부탁드립니다.', 'PENDING', '2025-05-30 16:30:00');
+(3, '11', 'opinion', '삼성각', '광고성으로 의심되는 리뷰입니다. 확인 부탁드립니다.', 'PENDING', '2025-05-21 16:30:00');
+
+-- 공지사항 샘플 데이터 2건 추가
+INSERT INTO notices (title, content) VALUES
+(
+  '📌 [공지] 서비스 점검 안내 (6월 1일)',
+  '안녕하세요, ONDA 서비스팀입니다.\n\n더 나은 서비스 제공을 위해 아래 일정으로 시스템 점검이 진행됩니다.\n\n📅 점검 일시: 2025년 6월 1일(토) 00:00 ~ 06:00\n🔧 점검 내용: 서버 안정화 및 기능 개선 작업\n⛔ 점검 시간 동안 서비스 이용이 일시적으로 제한됩니다.\n\n이용에 불편을 드려 죄송합니다. 빠르고 안정적인 서비스를 위해 최선을 다하겠습니다.\n\n감사합니다.'
+),
+(
+  '🎉 [신기능 출시] 오늘의 운세 & 패션 추천 기능 오픈!',
+  '안녕하세요, ONDA 서비스팀입니다.\n\n2025년 5월부터 새로운 기능이 추가되었습니다!\n\n🔮 오늘의 운세: 매일 아침 3장의 타로 카드를 뽑고, AI가 당신의 하루 운세를 알려드려요.\n👗 날씨 맞춤 패션 추천: 기온과 날씨에 딱 맞는 오늘의 옷차림과 컬러를 확인해보세요.\n\n[마이페이지 > 오늘의 운세 / 오늘의 코디]에서 확인하실 수 있습니다.\n\n앞으로도 더 풍성한 기능으로 찾아뵙겠습니다. 감사합니다!'
+);
 
 
 

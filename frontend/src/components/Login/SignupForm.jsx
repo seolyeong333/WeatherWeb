@@ -1,12 +1,13 @@
 import { useState, useEffect } from "react";
-import { Form, Button, Modal } from "react-bootstrap"; // Modal import 확인
+import { Form, Button, Modal } from "react-bootstrap";
+import Lottie from "lottie-react";
+import loadingAnimation from "../../assets/loading.json"; // Lottie JSON 파일 경로
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 function SignupForm({ setMode, closeLogin }) {
   const [formData, setFormData] = useState({
     email: "", password: "", nickname: "", gender: "", birthday: "", provider: "local", remember: false,
   });
-
   const [repassword, setRepassword] = useState("");
   const [isVerified, setIsVerified] = useState(false);
   const [userInputKey, setUserInputKey] = useState("");
@@ -16,6 +17,9 @@ function SignupForm({ setMode, closeLogin }) {
   const [timeLeft, setTimeLeft] = useState(300);
   const [modalMessage, setModalMessage] = useState("");
   const [showModal, setShowModal] = useState(false);
+
+  const [isLoading, setIsLoading] = useState(false); // ✅ 로딩 상태 추가
+
   const handleCloseModal = () => setShowModal(false);
   const showAlert = (msg) => {
     setModalMessage(msg);
@@ -24,10 +28,10 @@ function SignupForm({ setMode, closeLogin }) {
 
   useEffect(() => {
     if (!isCodeSent || timeLeft <= 0) {
-        if (timeLeft <= 0 && isCodeSent) {
-            setEmailStatus("인증 시간이 만료되었습니다. 다시 요청해주세요.");
-        }
-        return;
+      if (timeLeft <= 0 && isCodeSent) {
+        setEmailStatus("인증 시간이 만료되었습니다. 다시 요청해주세요.");
+      }
+      return;
     }
     const timer = setInterval(() => setTimeLeft(prev => prev - 1), 1000);
     return () => clearInterval(timer);
@@ -45,9 +49,10 @@ function SignupForm({ setMode, closeLogin }) {
     if (!formData.email.trim()) return showAlert("이메일을 입력하세요.");
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(formData.email)) {
-        return showAlert("올바른 이메일 형식이 아닙니다.");
+      return showAlert("올바른 이메일 형식이 아닙니다.");
     }
     try {
+      setIsLoading(true); // ✅ 로딩 시작
       const res = await fetch(`${API_BASE_URL}/api/users/email/auth`, {
         method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: formData.email, type: "signup" }),
@@ -56,7 +61,8 @@ function SignupForm({ setMode, closeLogin }) {
       if (data === "duplicate") {
         setEmailStatus("이미 존재하는 이메일입니다.");
       } else if (res.ok) {
-        setIsCodeSent(true); setTimeLeft(300);
+        setIsCodeSent(true);
+        setTimeLeft(300);
         setEmailStatus("인증코드가 전송되었습니다.");
         setEmailReadOnly(true);
       } else {
@@ -65,14 +71,16 @@ function SignupForm({ setMode, closeLogin }) {
     } catch (err) {
       console.error("이메일 인증 요청 오류:", err);
       setEmailStatus("인증코드 전송 중 오류가 발생했습니다.");
+    } finally {
+      setIsLoading(false); // ✅ 로딩 종료
     }
   };
 
   const verifyAuthKeyHandler = async () => {
     if (!userInputKey.trim()) return showAlert("인증코드를 입력하세요.");
     if (timeLeft <= 0) {
-        setEmailStatus("인증 시간이 만료되었습니다. 인증 코드를 다시 요청해주세요.");
-        return;
+      setEmailStatus("인증 시간이 만료되었습니다. 인증 코드를 다시 요청해주세요.");
+      return;
     }
     try {
       const res = await fetch(`${API_BASE_URL}/api/users/email/verify`, {
@@ -82,15 +90,15 @@ function SignupForm({ setMode, closeLogin }) {
       if (res.ok) {
         setIsVerified(true);
         setEmailReadOnly(true);
-        setEmailStatus(""); // 성공 시 emailStatus 클리어
+        setEmailStatus("");
         showAlert("이메일 인증 완료!");
       } else {
         const errorMsg = await res.text();
         showAlert(errorMsg || "인증에 실패했습니다. 코드를 확인해주세요.");
       }
     } catch (err) {
-        console.error("인증 코드 확인 오류:", err);
-        showAlert("인증 처리 중 오류가 발생했습니다.");
+      console.error("인증 코드 확인 오류:", err);
+      showAlert("인증 처리 중 오류가 발생했습니다.");
     }
   };
 
@@ -100,50 +108,49 @@ function SignupForm({ setMode, closeLogin }) {
     if (formData.password !== repassword) return showAlert("비밀번호가 일치하지 않습니다.");
 
     try {
-        const res = await fetch(`${API_BASE_URL}/api/users`, {
-            method: "POST", headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(formData),
-        });
+      const res = await fetch(`${API_BASE_URL}/api/users`, {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
 
-        if (res.ok) {
-            showAlert("회원가입 완료! 로그인 페이지로 이동합니다.");
-            setMode("login");
-        } else {
-            let errorMessage = "회원가입 중 오류가 발생했습니다."; // 기본 에러 메시지
-            const contentType = res.headers.get("content-type");
+      if (res.ok) {
+        showAlert("회원가입 완료! 로그인 페이지로 이동합니다.");
+        setMode("login");
+      } else {
+        let errorMessage = "회원가입 중 오류가 발생했습니다.";
+        const contentType = res.headers.get("content-type");
 
-            if (contentType && contentType.includes("application/json")) {
-                try {
-                    const errorData = await res.json();
-                    if (errorData && errorData.error) { // 백엔드가 {"error": "메시지"} 형태로 보낸 경우
-                        errorMessage = errorData.error;
-                    } else { // JSON이지만 예상치 못한 구조일 경우
-                        errorMessage = `이미 사용 중인 닉네임입니다.`;
-                    }
-                } catch (jsonParseError) {
-                    console.error("JSON 파싱 에러:", jsonParseError);
-                    errorMessage = `서버 응답 처리 중 문제가 발생했습니다 (상태: ${res.status}).`;
-                }
+        if (contentType && contentType.includes("application/json")) {
+          try {
+            const errorData = await res.json();
+            if (errorData && errorData.error) {
+              errorMessage = errorData.error;
             } else {
-                try {
-                    const errorText = await res.text();
-                    errorMessage = errorText.trim() ? errorText : `서버 오류 (상태 코드: ${res.status})`;
-                } catch (textError) {
-                    errorMessage = `서버 응답을 읽는 중 문제가 발생했습니다 (상태 코드: ${res.status})`;
-                }
+              errorMessage = `이미 사용 중인 닉네임입니다.`;
             }
-            showAlert(errorMessage);
+          } catch (jsonParseError) {
+            console.error("JSON 파싱 에러:", jsonParseError);
+            errorMessage = `서버 응답 처리 중 문제가 발생했습니다 (상태: ${res.status}).`;
+          }
+        } else {
+          try {
+            const errorText = await res.text();
+            errorMessage = errorText.trim() ? errorText : `서버 오류 (상태 코드: ${res.status})`;
+          } catch (textError) {
+            errorMessage = `서버 응답을 읽는 중 문제가 발생했습니다 (상태 코드: ${res.status})`;
+          }
         }
+        showAlert(errorMessage);
+      }
     } catch (networkError) {
-        console.error("회원가입 API 요청 네트워크 오류:", networkError);
-        showAlert("네트워크 오류가 발생했습니다. 인터넷 연결을 확인해주세요.");
+      console.error("회원가입 API 요청 네트워크 오류:", networkError);
+      showAlert("네트워크 오류가 발생했습니다. 인터넷 연결을 확인해주세요.");
     }
   };
 
   return (
     <>
       <Form onSubmit={submitHandler}>
-        {/* 이메일 입력 필드 */}
         <Form.Control
           type="email"
           name="email"
@@ -155,7 +162,6 @@ function SignupForm({ setMode, closeLogin }) {
           required
         />
 
-        {/* 이메일 인증 관련 UI */}
         {!isVerified && (
           <>
             <Button onClick={sendEmailHandler} className="mb-2" size="sm">인증코드 요청</Button>
@@ -176,7 +182,6 @@ function SignupForm({ setMode, closeLogin }) {
           </>
         )}
 
-        {/* 나머지 폼 필드들 (기존과 동일) */}
         <Form.Control type="password" name="password" placeholder="비밀번호" className="mb-3" value={formData.password} onChange={changeHandler} required />
         <Form.Control type="password" name="repassword" placeholder="비밀번호 재입력" className="mb-3" value={repassword} onChange={(e) => setRepassword(e.target.value)} required />
         <Form.Control type="text" name="nickname" placeholder="닉네임" className="mb-3" value={formData.nickname} onChange={changeHandler} required />
@@ -187,14 +192,13 @@ function SignupForm({ setMode, closeLogin }) {
         </Form.Select>
         <Form.Control type="date" name="birthday" className="mb-3" value={formData.birthday} onChange={changeHandler} required max="9999-12-31" />
 
-        <Button type="submit" variant="dark" className="w-100 mb-3" disabled={!isVerified}>회원가입</Button> {/* 이메일 인증 후 활성화 */}
-        <div className="text-center" style={{ fontSize: "0.9rem" }}> {/* 중앙 정렬 및 링크 스타일 */}
+        <Button type="submit" variant="dark" className="w-100 mb-3" disabled={!isVerified}>회원가입</Button>
+        <div className="text-center" style={{ fontSize: "0.9rem" }}>
           이미 계정이 있으신가요?{" "}
-          <a href="#" onClick={(e) => { e.preventDefault(); setMode("login"); }} style={{color: '#007bff', textDecoration: 'none'}}>로그인</a>
+          <a href="#" onClick={(e) => { e.preventDefault(); setMode("login"); }} style={{ color: '#007bff', textDecoration: 'none' }}>로그인</a>
         </div>
       </Form>
 
-      {/* 모달 UI (기존과 동일) */}
       <Modal show={showModal} onHide={handleCloseModal} centered>
         <Modal.Header closeButton>
           <Modal.Title>알림</Modal.Title>
@@ -206,6 +210,18 @@ function SignupForm({ setMode, closeLogin }) {
           </Button>
         </Modal.Footer>
       </Modal>
+
+      {/* ✅ Lottie 로딩 애니메이션 */}
+      {isLoading && (
+        <div className="d-flex justify-content-center align-items-center" style={{
+          position: "fixed", top: 0, left: 0, width: "100%", height: "100%",
+          backgroundColor: "rgba(255,255,255,0.7)", zIndex: 9999
+        }}>
+          <div style={{ width: 150 }}>
+            <Lottie animationData={loadingAnimation} loop={true} />
+          </div>
+        </div>
+      )}
     </>
   );
 }
