@@ -1,5 +1,8 @@
 import { useState, useEffect } from "react";
 import { Form, Button, Modal } from "react-bootstrap";
+import Lottie from "lottie-react";
+import loadingAnimation from "../../assets/loading.json"; // 로딩 애니메이션 경로
+
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 function EmailAuth({ onSuccess, onClose }) {
@@ -9,14 +12,16 @@ function EmailAuth({ onSuccess, onClose }) {
   const [isCodeSent, setIsCodeSent] = useState(false);
   const [timeLeft, setTimeLeft] = useState(300);
 
-  // ✅ 모달 상태 추가
   const [showModal, setShowModal] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
+
+  const [isLoading, setIsLoading] = useState(false); // ✅ 로딩 상태
 
   const showAlert = (msg) => {
     setModalMessage(msg);
     setShowModal(true);
   };
+
   const handleCloseModal = () => setShowModal(false);
 
   useEffect(() => {
@@ -34,6 +39,7 @@ function EmailAuth({ onSuccess, onClose }) {
   const sendEmailHandler = async () => {
     if (!email) return showAlert("이메일을 입력하세요.");
     try {
+      setIsLoading(true); // ✅ 로딩 시작
       const response = await fetch(`${API_BASE_URL}/api/users/email/auth`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -50,11 +56,20 @@ function EmailAuth({ onSuccess, onClose }) {
     } catch (err) {
       console.error(err);
       setEmailStatus("서버 오류");
+    } finally {
+      setIsLoading(false); // ✅ 로딩 종료
     }
   };
 
   const verifyAuthKeyHandler = async () => {
     try {
+      if (!userInputKey.trim()) return showAlert("인증코드를 입력하세요.");
+      if (timeLeft <= 0) {
+        setEmailStatus("인증 시간이 만료되었습니다.");
+        return;
+      }
+
+      setIsLoading(true); // ✅ 로딩 시작
       const res = await fetch(`${API_BASE_URL}/api/users/email/verify`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -71,6 +86,8 @@ function EmailAuth({ onSuccess, onClose }) {
     } catch (err) {
       console.error(err);
       showAlert("서버 오류");
+    } finally {
+      setIsLoading(false); // ✅ 로딩 종료
     }
   };
 
@@ -128,6 +145,18 @@ function EmailAuth({ onSuccess, onClose }) {
           </Button>
         </Modal.Footer>
       </Modal>
+
+      {/* ✅ 로딩 애니메이션 */}
+      {isLoading && (
+        <div className="d-flex justify-content-center align-items-center" style={{
+          position: "fixed", top: 0, left: 0, width: "100%", height: "100%",
+          backgroundColor: "rgba(255,255,255,0.7)", zIndex: 9999
+        }}>
+          <div style={{ width: 150 }}>
+            <Lottie animationData={loadingAnimation} loop={true} />
+          </div>
+        </div>
+      )}
     </>
   );
 }
