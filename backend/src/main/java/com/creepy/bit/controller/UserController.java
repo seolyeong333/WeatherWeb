@@ -39,6 +39,7 @@ public class UserController {
             String token = jwtUtil.generateToken(
                     String.valueOf(userData.getEmail()),
                     userData.getNickname(),
+                    userData.getGender(),
                     userData.getAuth(), 
                     userData.getUserId()
             );
@@ -46,6 +47,7 @@ public class UserController {
             return ResponseEntity.ok(Map.of(
                     "token", token,
                     "userId", userData.getUserId(),
+                    "gender", userData.getGender(),
                     "nickname", userData.getNickname(),
                     "auth", userData.getAuth()
             ));

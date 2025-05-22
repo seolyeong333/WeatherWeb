@@ -27,10 +27,11 @@ public class JWTUtil {
     }
 
     // 토큰 생성
-    public String generateToken(String email, String nickname, String auth, int userId) {
+    public String generateToken(String email, String nickname, String gender, String auth, int userId) {
         return Jwts.builder()
                 .claim("userId", userId)
                 .claim("nickname", nickname)
+                .claim("gender", gender)
                 .setSubject(email)
                 .claim("auth", auth)
                 .setIssuedAt(new Date())
@@ -80,6 +81,10 @@ public class JWTUtil {
 
     public String getNickname(String token) {
         return (String) getClaims(token).get("nickname");
+    }
+
+    public String getGender(String token) {
+        return (String) getClaims(token).get("gender");
     }
 
     public String getAuth(String token) {

@@ -65,6 +65,7 @@ public class SocialLoginController {
             String jwt = jwtUtil.generateToken(
                     String.valueOf(userData.getEmail()),
                     userData.getNickname(),
+                    userData.getGender(),
                     userData.getAuth(),
                     userData.getUserId()
             );
@@ -107,6 +108,7 @@ public class SocialLoginController {
             String jwt = jwtUtil.generateToken(
                     String.valueOf(userData.getEmail()),
                     userData.getNickname(),
+                    userData.getGender(),
                     userData.getAuth(),
                     userData.getUserId()
             );
@@ -168,6 +170,7 @@ public class SocialLoginController {
             String jwt = jwtUtil.generateToken(
                     userData.getEmail(),
                     userData.getNickname(),
+                    userData.getGender(),
                     userData.getAuth(),
                     userData.getUserId()
             );

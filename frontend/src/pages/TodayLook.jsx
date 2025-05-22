@@ -7,6 +7,7 @@ import Header from "../components/Header";
 import loadingAnimation from "../assets/loading.json";
 import { getKoreanWeatherDescription } from "../utils/weatherUtil";
 import { getSeasonalMessage } from "../utils/getSeasonalMsg";
+import { getUserGender } from "../api/jwt";
 import { fancyName, getLuckyColor, getTodayColor } from "../api/colors";
 import { fetchTodayTarotLogs } from "../api/tarot";
 import { getCurrentWeather } from "../api/weather";
@@ -17,23 +18,22 @@ import "../styles/TodayLook.css";
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 function TodayLook() {
-
   const navigate = useNavigate();
   const location = useLocation();
 
   const [current, setCurrent] = useState(null);
-  const [lookImages, setLookImages] = useState([]); // 받아온 코디 이미지 목록
-  const [loading, setLoading] = useState(true); // 로딩 상태
-  const [viewType, setViewType] = useState("grid-4"); // "grid-2" 또는 "grid-4" 설정
+  const [lookImages, setLookImages] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [viewType, setViewType] = useState("grid-4");
   const { userColorName } = location.state || {};
-  const todayColor = getLuckyColor(userColorName) || getTodayColor(); // 오늘 날짜로 고정된 색상 하나 추출
-  const [showModal, setShowModal] = useState(false); // 색상 선택 모달 표시 여부
-  const [subColorCode, setSubColorCode] = useState(todayColor.hex); // 선택된 색상의 색상 코드
-  const [selectedColorName, setSelectedColorName] = useState(todayColor.name); // 선택된 색상 이름
-  const [gender, setGender] = useState("MEN"); // 필터: 성별
-  const [type, setType] = useState("상의"); // 필터: 종류
-  const [showIcons, setShowIcons] = useState({}); // 체감온도에 따른 아이콘 출력
-  const [hasResult, setHasResult] = useState(false); // 타로 봤는지
+  const todayColor = getLuckyColor(userColorName) || getTodayColor();
+  const [showModal, setShowModal] = useState(false);
+  const [subColorCode, setSubColorCode] = useState(todayColor.hex);
+  const [selectedColorName, setSelectedColorName] = useState(todayColor.name);
+  const [gender, setGender] = useState(null);
+  const [type, setType] = useState("상의");
+  const [showIcons, setShowIcons] = useState({});
+  const [hasResult, setHasResult] = useState(false);
 
   const normalizeWeatherType = (rawType) => {
     if (["맑음"].includes(rawType)) return "맑음";
@@ -43,6 +43,22 @@ function TodayLook() {
     if (["기타"].includes(rawType)) return "기타";
     return rawType;
   };
+
+  useEffect(() => {
+    const loadGender = async () => {
+      try {
+        const userGender = await getUserGender();
+        console.log("불러온 성별:", userGender);
+        if (userGender === "male") setGender("MEN");
+        else if (userGender === "female") setGender("WOMEN");
+        else setGender("MEN");
+      } catch (err) {
+        console.error("성별 정보 로딩 실패:", err);
+        setGender("WOMEN");
+      }
+    };
+    loadGender();
+  }, []);
 
   useEffect(() => {
     navigator.geolocation.getCurrentPosition(async (position) => {
@@ -56,29 +72,24 @@ function TodayLook() {
         const weatherType = normalizeWeatherType(desc);
         const feelsLike = res.data.main.feels_like;
 
-        // const token = localStorage.getItem("token"); // 토큰은 현재 사용되지 않는 것으로 보여 주석 처리
-
         const response = await fetch(
           `${API_BASE_URL}/api/weather/recommend?weatherType=${weatherType}&feelsLike=${feelsLike}`
         );
         const data = await response.json();
         if (Array.isArray(data.itemSuggestionList)) {
-          console.log("weatherType : " + weatherType + " feelsLike : " + feelsLike);
-          console.log("추천 아이템:", data.itemSuggestionList); // data.itemSuggestion -> data.itemSuggestionList로 수정 (API 응답에 따라 다를 수 있음)
           setShowIcons(data.itemSuggestionList);
         } else {
-          console.warn("추천 아이템이 없습니다. 기본값을 사용합니다.");
-          setShowIcons(["셔츠", "청바지"]); // 기본값을 배열 형태로 수정 (setShowIcons가 배열을 기대하는 경우)
+          setShowIcons(["셔츠", "청바지"]);
         }
       } catch (err) {
         console.error("추천 API 요청 중 오류:", err);
-        setShowIcons(["자켓", "슬랙스"]); // 에러 시 기본 아이콘 설정
+        setShowIcons(["자켓", "슬랙스"]);
       }
     });
-  }, []); // 빈 배열을 의존성으로 전달하여 마운트 시 한 번만 실행
+  }, []);
 
-  // 필터 변경 시 이미지 크롤링 요청
   useEffect(() => {
+    if (!gender) return;
     setLoading(true);
     const encodedColor = encodeURIComponent(selectedColorName);
     fetch(
@@ -91,12 +102,11 @@ function TodayLook() {
       })
       .catch((err) => {
         console.error("크롤링 실패:", err);
-        setLookImages([]); // 에러 발생 시 빈 배열로 설정
+        setLookImages([]);
         setLoading(false);
       });
   }, [selectedColorName, gender, type]);
 
-  // 타로 운세 봤으면 버튼 바꾸기
   useEffect(() => {
     const loadLogs = async () => {
       try {
@@ -136,7 +146,7 @@ function TodayLook() {
                   : `${fancyName(todayColor.name)} & ${fancyName(selectedColorName)}`}
               </p>
               <p style={{ margin: 0, fontSize: "0.9rem", color: "#666" }}>
-                { getSeasonalMessage() }
+                {getSeasonalMessage()}
               </p>
             </div>
           </div>
@@ -162,9 +172,7 @@ function TodayLook() {
           오늘의 색상 추천 코디
         </h4>
 
-        {/* 필터 + 뷰 토글 영역 전체 */}
         <div className="filter-and-toggle">
-          {/* 성별/종류 필터 */}
           <div className="filter-group">
             <div>
               <button
@@ -196,7 +204,6 @@ function TodayLook() {
             </div>
           </div>
 
-          {/* 2열/4열 전환 아이콘 */}
           <div className="view-toggle">
             <button
               className={viewType === "grid-2" ? "view-active" : ""}
@@ -218,26 +225,13 @@ function TodayLook() {
             <div style={{ maxWidth: "200px", margin: "0 auto" }}>
               <Lottie animationData={loadingAnimation} loop={true} />
             </div>
-            <p
-              style={{
-                marginTop: "1rem",
-                color: "#555",
-                fontFamily: "'Gowun Dodum', sans-serif",
-                fontSize: "1.1rem",
-              }}
-            >
+            <p style={{ marginTop: "1rem", color: "#555", fontFamily: "'Gowun Dodum', sans-serif", fontSize: "1.1rem" }}>
               오늘의 감성 코디를 불러오는 중입니다...
             </p>
           </div>
         ) : lookImages.length === 0 ? (
           <div style={{ textAlign: "center", padding: "3rem" }}>
-            <p
-              style={{
-                color: "#888",
-                fontFamily: "'Gowun Dodum', sans-serif",
-                fontSize: "1.1rem",
-              }}
-            >
+            <p style={{ color: "#888", fontFamily: "'Gowun Dodum', sans-serif", fontSize: "1.1rem" }}>
               아쉽게도 해당 색상의 추천 코디가 없습니다.
             </p>
           </div>
@@ -265,4 +259,4 @@ function TodayLook() {
   );
 }
 
-export default TodayLook;
+export default TodayLook;   
