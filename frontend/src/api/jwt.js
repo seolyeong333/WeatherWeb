@@ -43,3 +43,10 @@ export function getUserNickname() {
   const payload = parseJwt(token);
   return payload?.nickname || null;
 }
+
+export function getUserGender() {
+  const token = localStorage.getItem('token');
+  if (!token) return null;
+  const payload = parseJwt(token);
+  return payload?.gender || null;
+}
